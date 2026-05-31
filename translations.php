@@ -6,7 +6,7 @@ $translations = [
     'ro' => [
         // Header Navigation
         'nav_home' => 'Acasă',
-        'nav_events' => 'Evenimente',
+        'nav_events' => 'evenimente',
         'nav_guide' => 'Ghid Turistic',
         'nav_transport' => 'Transport',
         'nav_blog' => 'Blog',
@@ -25,58 +25,11 @@ $translations = [
         'home_transport_btn' => '🚍 Smart Transit',
         'home_brand' => '@descoperaBraila',
 
-        // Settings Page
-        'settings_title' => 'Setări Cont',
-        'settings_profile' => 'Profil',
-        'settings_password' => 'Parolă',
-        'settings_language' => 'Limbă',
-        'settings_name' => 'Nume',
-        'settings_email' => 'Email',
-        'settings_phone' => 'Telefon',
-        'settings_update' => 'Actualizare Profil',
-        'settings_old_password' => 'Parola veche',
-        'settings_new_password' => 'Parola nouă',
-        'settings_confirm_password' => 'Confirmare parolă',
-        'settings_change_password' => 'Schimbă Parolă',
-        'settings_select_language' => 'Selectează limba',
-        'settings_romanian' => 'Română',
-        'settings_english' => 'Engleză',
-        'settings_save_language' => 'Salvează Limba',
-
-        // Messages
-        'msg_success' => 'Success!',
-        'msg_error' => 'Eroare!',
-        'msg_profile_updated' => 'Datele personale au fost actualizate cu succes!',
-        'msg_email_taken' => 'Acest email este deja asociat altui cont!',
-        'msg_update_error' => 'Eroare la actualizarea datelor.',
-        'msg_password_mismatch' => 'Parolele noi nu coincid!',
-        'msg_password_short' => 'Parola nouă trebuie să aibă minimum 8 caractere!',
-        'msg_password_incorrect' => 'Parola veche este incorectă!',
-        'msg_password_changed' => 'Parola a fost schimbată cu succes!',
-        'msg_language_updated' => 'Limba a fost schimbată cu succes!',
-        'msg_complete_fields' => 'Te rugăm să completezi toate câmpurile!',
-
-        // Footer
-        'footer_about' => 'Despre',
-        'footer_contact' => 'Contact',
-        'footer_terms' => 'Termeni și Condiții',
-        'footer_privacy' => 'Politica de Confidențialitate',
-        'footer_rights' => '© 2024 Descoperă Brăila. Toate drepturile rezervate.',
-
-        // Common
-        'page_title' => 'Descoperă Brăila',
-        'btn_save' => 'Salvează',
-        'btn_cancel' => 'Anulează',
-        'btn_edit' => 'Editează',
-        'btn_delete' => 'Șterge',
-        'btn_back' => 'Înapoi',
-        'btn_submit' => 'Trimite',
-        
         // Events Page
         'events_title' => 'Evenimente',
         'events_choose' => 'Alege categoria de evenimente',
         'events_cultural' => 'Evenimente Culturale',
-        'events_sports' => 'evenimente Sportive',
+        'events_sports' => 'Evenimente Sportive',
         'events_add_new' => '⚙️ Adaugă Eveniment Nou',
         'events_no_found' => 'Nu au fost găsite evenimente pentru această categorie.',
         'events_date' => 'Data',
@@ -104,27 +57,12 @@ $translations = [
         'transport_to_placeholder' => '-- Alege destinația --',
         'transport_search' => '🔍 Caută Traseul',
         'transport_digital_ticket' => '🎫 Bilet Digital (60 min)',
-        'transport_ticket_info' => 'Biletul tău va fi valabil 60 de minute pe orice linie Braicar din momentul achiziției. Plata se face securizat.',
-        'transport_price' => 'Preț: 2.50 RON',
+        'transport_price' => 'Preț: 2 lei',
         'transport_login_required' => 'Trebuie să te loghezi pentru a cumpăra bilete.',
         'transport_buy_ticket' => 'Cumpără Bilet Digital',
         'transport_daily_pass' => '📅 Abonament Zilei',
         'transport_weekly_pass' => '📅 Abonament Săptămânii',
         'transport_monthly_pass' => '📅 Abonament Lunar',
-        
-        // Payment Form
-        'payment_title' => 'Plată Bilet Braicar 🚌',
-        'payment_total_price' => 'Preț total: 2.50 RON. Introdu datele cardului.',
-        'payment_card_number' => 'Număle de pe card',
-        'payment_card_number_placeholder' => 'Număr card (16 cifre)',
-        'payment_expiry' => 'Expirare (LI/AA)',
-        'payment_cvv' => 'CVV',
-        'payment_secure' => '🔒 Plată securizată 256-bit SSL',
-        'payment_submit' => 'Achită 2.50 RON',
-        
-        // Contact Section
-        'contact_stay_connected' => '🔗 Rămâi Conectat',
-        'contact_follow_social' => 'Urmărește-ne pe rețelele sociale pentru noutăți și evenimente!',
 
         // Blog Page
         'blog_title' => 'Articole & Știri Locale',
@@ -144,6 +82,24 @@ $translations = [
         'profile_ticket_expires' => 'Expiră la',
         'profile_ticket_qr' => 'Cod QR',
 
+        // Settings Page
+        'settings_title' => 'Setări Cont',
+        'settings_profile' => 'Profil',
+        'settings_password' => 'Parolă',
+        'settings_language' => 'Limbă',
+        'settings_name' => 'Nume',
+        'settings_email' => 'Email',
+        'settings_phone' => 'Telefon',
+        'settings_update' => 'Actualizare Profil',
+        'settings_old_password' => 'Parola veche',
+        'settings_new_password' => 'Parola nouă',
+        'settings_confirm_password' => 'Confirmare parolă',
+        'settings_change_password' => 'Schimbă Parolă',
+        'settings_select_language' => 'Selectează limba',
+        'settings_romanian' => 'Română',
+        'settings_english' => 'Engleză',
+        'settings_save_language' => 'Salvează Limba',
+
         // Statistics Page
         'stats_title' => 'Statistici',
         'stats_total_users' => 'Utilizatori Totali',
@@ -151,12 +107,68 @@ $translations = [
         'stats_total_tickets_sold' => 'Bilete Vândute',
         'stats_revenue' => 'Venituri Totale',
 
-        // Contact Form
+        // Messages
+        'msg_success' => 'Success!',
+        'msg_error' => 'Eroare!',
+        'msg_profile_updated' => 'Datele personale au fost actualizate cu succes!',
+        'msg_email_taken' => 'Acest email este deja asociat altui cont!',
+        'msg_update_error' => 'Eroare la actualizarea datelor.',
+        'msg_password_mismatch' => 'Parolele noi nu coincid!',
+        'msg_password_short' => 'Parola nouă trebuie să aibă minimum 8 caractere!',
+        'msg_password_incorrect' => 'Parola veche este incorectă!',
+        'msg_password_changed' => 'Parola a fost schimbată cu succes!',
+        'msg_language_updated' => 'Limba a fost schimbată cu succes!',
+        'msg_complete_fields' => 'Te rugăm să completezi toate câmpurile!',
+
+        // Footer & Contact
+        'footer_about' => 'Despre',
+        'footer_contact' => 'Contact',
+        'footer_terms' => 'Termeni și Condiții',
+        'footer_privacy' => 'Politica de Confidențialitate',
+        'footer_rights' => '© 2024 Descoperă Brăila. Toate drepturile rezervate.',
+        'contact_me' => 'Contactează-mă', // <-- Adăugat aici
         'contact_title' => 'Contactează-ne',
         'contact_name' => 'Nume',
         'contact_email' => 'Email',
         'contact_message' => 'Mesaj',
         'contact_send' => 'Trimite Mesaj',
+
+        // Plată / Checkout (Adăugat nou)
+        'payment_method' => 'Metodă de plată',
+        'pay_with_card' => 'Plătește cu Cardul',
+        'pay_cash' => 'Plată la locație',
+        'checkout' => 'Finalizează comanda',
+
+        // Common
+        'page_title' => 'Descoperă Brăila',
+        'btn_save' => 'Salvează',
+        'btn_cancel' => 'Anulează',
+        'btn_edit' => 'Editează',
+        'btn_delete' => 'Șterge',
+        'btn_back' => 'Înapoi',
+        'btn_submit' => 'Trimite',
+
+
+        // Contact Section
+        'contact_stay_connected' => '🔗 Rămâi Conectat',
+        'contact_follow_social' => 'Urmărește-ne pe rețelele sociale pentru noutăți și evenimente!',
+        'contact_fb' => 'Facebook Oficial',
+        'contact_insta' => 'Instagram @fmandrei',
+        'contact_x' => 'Urmărește-ne pe X',
+        
+        // Transport Info
+        'transport_ticket_info' => 'Biletul tău va fi valabil 60 de minute pe orice linie Braicar din momentul achiziției. Plata se face securizat.',
+        
+        // Plata Bilet (genereaza_bilet.php)
+        'payment_title_bus' => 'Plată Bilet Braicar 🚌',
+        'payment_title_event' => 'Plată Bilet Eveniment 🎫',
+        'payment_total_price' => 'Preț total: ',
+        'payment_card_name' => 'Numele de pe card',
+        'payment_card_number' => 'Număr card (16 cifre)',
+        'payment_expiry' => 'Expirare (LL/AA)',
+        'payment_cvv' => 'CVV',
+        'payment_secure' => '🔒 Plată securizată 256-bit SSL',
+        'payment_pay_button' => 'Achită ',
     ],
     'en' => [
         // Header Navigation
@@ -180,53 +192,6 @@ $translations = [
         'home_transport_btn' => '🚍 Smart Transit',
         'home_brand' => '@discoverBraila',
 
-        // Settings Page
-        'settings_title' => 'Account Settings',
-        'settings_profile' => 'Profile',
-        'settings_password' => 'Password',
-        'settings_language' => 'Language',
-        'settings_name' => 'Name',
-        'settings_email' => 'Email',
-        'settings_phone' => 'Phone',
-        'settings_update' => 'Update Profile',
-        'settings_old_password' => 'Old password',
-        'settings_new_password' => 'New password',
-        'settings_confirm_password' => 'Confirm password',
-        'settings_change_password' => 'Change Password',
-        'settings_select_language' => 'Select language',
-        'settings_romanian' => 'Romanian',
-        'settings_english' => 'English',
-        'settings_save_language' => 'Save Language',
-
-        // Messages
-        'msg_success' => 'Success!',
-        'msg_error' => 'Error!',
-        'msg_profile_updated' => 'Personal data has been updated successfully!',
-        'msg_email_taken' => 'This email is already associated with another account!',
-        'msg_update_error' => 'Error updating data.',
-        'msg_password_mismatch' => 'New passwords do not match!',
-        'msg_password_short' => 'New password must be at least 8 characters!',
-        'msg_password_incorrect' => 'Old password is incorrect!',
-        'msg_password_changed' => 'Password has been changed successfully!',
-        'msg_language_updated' => 'Language has been changed successfully!',
-        'msg_complete_fields' => 'Please complete all fields!',
-
-        // Footer
-        'footer_about' => 'About',
-        'footer_contact' => 'Contact',
-        'footer_terms' => 'Terms and Conditions',
-        'footer_privacy' => 'Privacy Policy',
-        'footer_rights' => '© 2024 Discover Brăila. All rights reserved.',
-
-        // Common
-        'page_title' => 'Discover Brăila',
-        'btn_save' => 'Save',
-        'btn_cancel' => 'Cancel',
-        'btn_edit' => 'Edit',
-        'btn_delete' => 'Delete',
-        'btn_back' => 'Back',
-        'btn_submit' => 'Submit',
-        
         // Events Page
         'events_title' => 'Events',
         'events_choose' => 'Choose an event category',
@@ -259,27 +224,12 @@ $translations = [
         'transport_to_placeholder' => '-- Choose destination --',
         'transport_search' => '🔍 Search Route',
         'transport_digital_ticket' => '🎫 Digital Ticket (60 min)',
-        'transport_ticket_info' => 'Your ticket will be valid for 60 minutes on any Braicar line from the moment of purchase. Payment is secure.',
-        'transport_price' => 'Price: 2.50 RON',
+        'transport_price' => 'Price: 2 RON',
         'transport_login_required' => 'You need to log in to purchase tickets.',
         'transport_buy_ticket' => 'Buy Digital Ticket',
         'transport_daily_pass' => '📅 Daily Pass',
         'transport_weekly_pass' => '📅 Weekly Pass',
         'transport_monthly_pass' => '📅 Monthly Pass',
-        
-        // Payment Form
-        'payment_title' => 'Braicar Ticket Payment 🚌',
-        'payment_total_price' => 'Total price: 2.50 RON. Enter your card details.',
-        'payment_card_number' => 'Card Number',
-        'payment_card_number_placeholder' => 'Card number (16 digits)',
-        'payment_expiry' => 'Expiry (MM/YY)',
-        'payment_cvv' => 'CVV',
-        'payment_secure' => '🔒 Secure payment 256-bit SSL',
-        'payment_submit' => 'Pay 2.50 RON',
-        
-        // Contact Section
-        'contact_stay_connected' => '🔗 Stay Connected',
-        'contact_follow_social' => 'Follow us on social networks for news and events!',
 
         // Blog Page
         'blog_title' => 'Articles & Local News',
@@ -299,6 +249,24 @@ $translations = [
         'profile_ticket_expires' => 'Expires at',
         'profile_ticket_qr' => 'QR Code',
 
+        // Settings Page
+        'settings_title' => 'Account Settings',
+        'settings_profile' => 'Profile',
+        'settings_password' => 'Password',
+        'settings_language' => 'Language',
+        'settings_name' => 'Name',
+        'settings_email' => 'Email',
+        'settings_phone' => 'Phone',
+        'settings_update' => 'Update Profile',
+        'settings_old_password' => 'Old password',
+        'settings_new_password' => 'New password',
+        'settings_confirm_password' => 'Confirm password',
+        'settings_change_password' => 'Change Password',
+        'settings_select_language' => 'Select language',
+        'settings_romanian' => 'Romanian',
+        'settings_english' => 'English',
+        'settings_save_language' => 'Save Language',
+
         // Statistics Page
         'stats_title' => 'Statistics',
         'stats_total_users' => 'Total Users',
@@ -306,12 +274,69 @@ $translations = [
         'stats_total_tickets_sold' => 'Tickets Sold',
         'stats_revenue' => 'Total Revenue',
 
-        // Contact Form
+        // Messages
+        'msg_success' => 'Success!',
+        'msg_error' => 'Error!',
+        'msg_profile_updated' => 'Personal data has been updated successfully!',
+        'msg_email_taken' => 'This email is already associated with another account!',
+        'msg_update_error' => 'Error updating data.',
+        'msg_password_mismatch' => 'New passwords do not match!',
+        'msg_password_short' => 'New password must be at least 8 characters!',
+        'msg_password_incorrect' => 'Old password is incorrect!',
+        'msg_password_changed' => 'Password has been changed successfully!',
+        'msg_language_updated' => 'Language has been changed successfully!',
+        'msg_complete_fields' => 'Please complete all fields!',
+
+        // Footer & Contact
+        'footer_about' => 'About',
+        'footer_contact' => 'Contact',
+        'footer_terms' => 'Terms and Conditions',
+        'footer_privacy' => 'Privacy Policy',
+        'footer_rights' => '© 2024 Discover Brăila. All rights reserved.',
+        'contact_me' => 'Contact Me', // <-- Adăugat aici
         'contact_title' => 'Contact Us',
         'contact_name' => 'Name',
         'contact_email' => 'Email',
         'contact_message' => 'Message',
         'contact_send' => 'Send Message',
+
+        // Plată / Checkout (Adăugat nou)
+        'payment_method' => 'Payment Method',
+        'pay_with_card' => 'Pay with Card',
+        'pay_cash' => 'Pay at Venue',
+        'checkout' => 'Checkout',
+
+        // Common
+        'page_title' => 'Discover Brăila',
+        'btn_save' => 'Save',
+        'btn_cancel' => 'Cancel',
+        'btn_edit' => 'Edit',
+        'btn_delete' => 'Delete',
+        'btn_back' => 'Back',
+        'btn_submit' => 'Submit',
+
+
+        // Contact Section
+        'contact_stay_connected' => '🔗 Stay Connected',
+        'contact_follow_social' => 'Follow us on social networks for news and events!',
+        'contact_fb' => 'Official Facebook',
+        'contact_insta' => 'Instagram @fmandrei',
+        'contact_x' => 'Follow us on X',
+
+        
+        // Transport Info
+        'transport_ticket_info' => 'Your ticket will be valid for 60 minutes on any Braicar line from the moment of purchase. Payment is secure.',
+        
+        // Plata Bilet (genereaza_bilet.php)
+        'payment_title_bus' => 'Braicar Ticket Payment 🚌',
+        'payment_title_event' => 'Event Ticket Payment 🎫',
+        'payment_total_price' => 'Total price: ',
+        'payment_card_name' => 'Name on card',
+        'payment_card_number' => 'Card number (16 digits)',
+        'payment_expiry' => 'Expiry (MM/YY)',
+        'payment_cvv' => 'CVV',
+        'payment_secure' => '🔒 Secure payment 256-bit SSL',
+        'payment_pay_button' => 'Pay ',
     ]
 ];
 

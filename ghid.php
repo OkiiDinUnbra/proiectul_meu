@@ -27,6 +27,13 @@ include 'header.php';
         z-index: 1; 
         border: 4px solid #fff;
     }
+
+    .legend {
+    line-height: 18px;
+    color: #555;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    font-size: 14px;
+}
 </style>
 
 <section class="ghid-hero">
@@ -38,13 +45,22 @@ include 'header.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Inițializăm harta
         var map = L.map('harta-turistica');
 
-        // Stratul de hartă (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
+        // Definește iconițele colorate
+        const blueIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+        });
+
+        const greenIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+        });
 
         // Lista de puncte cu coordonatele tale exacte și link-uri către info
         var locatii = [
@@ -69,21 +85,13 @@ include 'header.php';
         var markerePeHarta = L.featureGroup();
 
         // Parcurgem lista și punem fiecare punct pe hartă
-        locatii.forEach(function(loc) {
-            var marker = L.marker([loc.lat, loc.lng]);
+       locatii.forEach(function(loc) {
+            var marker = L.marker([loc.lat, loc.lng], {
+                icon: (loc.tip === 'restaurant') ? greenIcon : blueIcon
+            });
 
-            // Creăm design-ul pentru fereastra de detalii
-            var popupContent = `
-                <div style="text-align: center; padding: 5px;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #0056b3;">${loc.nume}</h3>
-                    <a href="${loc.wiki}" target="_blank" style="background: #28a745; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 13px;">
-                        📖 Află mai multe
-                    </a>
-                </div>
-            `;
-            
-            // Atașăm bula la marker și adăugăm marker-ul la grup
-            marker.bindPopup(popupContent);
+            marker.bindPopup(`<h3>${loc.nume}</h3><a href="${loc.wiki}" target="_blank">Află mai multe</a>`);
+            marker.addTo(map);
             markerePeHarta.addLayer(marker);
         });
 
@@ -92,7 +100,21 @@ include 'header.php';
 
         // Calculăm automat cadrul optim de zoom ca să se vadă TOATE punctele pe ecran
         map.fitBounds(markerePeHarta.getBounds(), { padding: [30, 30] });
+
+        var legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            div.style.background = 'white'; div.style.padding = '10px'; div.style.borderRadius = '5px';
+            div.innerHTML = `
+                <strong>Legenda</strong><br>
+                <i style="background: blue; width: 10px; height: 10px; display: inline-block; border-radius: 50%;"></i> Atracții<br>
+                <i style="background: green; width: 10px; height: 10px; display: inline-block; border-radius: 50%;"></i> Restaurante
+            `;
+            return div;
+        };
+        legend.addTo(map);
     });
+    
 </script>
 
 <?php include 'footer.php'; ?>

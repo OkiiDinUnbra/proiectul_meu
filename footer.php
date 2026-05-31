@@ -95,19 +95,19 @@
             <li>
                 <a href="https://www.facebook.com/andrei.filote.50/" target="_blank" class="fb-link">
                     <i class="fab fa-facebook-f"></i>
-                    <span>Facebook Oficial</span>
+                    <span><?= t('contact_fb') ?></span>
                 </a>
             </li>
             <li>
                 <a href="https://www.instagram.com/fmandrei/" target="_blank" class="insta-link">
                     <i class="fab fa-instagram"></i>
-                    <span>Instagram @fmandrei</span>
+                    <span><?= t('contact_insta') ?></span>
                 </a>
             </li>
             <li>
                 <a href="https://x.com/MAFilot" target="_blank" class="x-link">
                     <i class="fab fa-x-twitter"></i>
-                    <span>Urmărește-ne pe X</span>
+                    <span><?= t('contact_x') ?></span>
                 </a>
             </li>
         </ul>

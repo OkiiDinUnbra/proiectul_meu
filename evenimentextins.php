@@ -21,6 +21,42 @@ if ($result->num_rows === 0) {
 }
 $eveniment = $result->fetch_assoc();
 $stmt->close();
+$show_free_ticket_popup = false;
+
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    
+    // Verificăm dacă există bilete gratuite setate și dacă mai sunt disponibile
+    if (isset($eveniment['bilete_gratuite_total']) && isset($eveniment['bilete_gratuite_date']) && 
+        $eveniment['bilete_gratuite_total'] > $eveniment['bilete_gratuite_date']) {
+        
+        // Verificăm dacă utilizatorul a primit DEJA un bilet la acest eveniment (să nu ia infinite dacă dă refresh)
+        $stmt_check = $conn->prepare("SELECT id FROM bilete_achizitionate WHERE user_id = ? AND id_eveniment = ?");
+        $stmt_check->bind_param("ii", $user_id, $id_eveniment);
+        $stmt_check->execute();
+        
+        if ($stmt_check->get_result()->num_rows === 0) {
+            // Nu are bilet, îi generăm unul GRATUIT pe loc!
+            $cod_unic = "BR-EV-FREE-" . strtoupper(substr(uniqid(), -4)) . rand(10,99);
+            $data_achizitie = date('Y-m-d H:i:s');
+            $tip = 'eveniment'; // Rămâne tip 'eveniment' ca să fie citit corect în pagina Profil
+            
+            // Inserăm biletul direct în contul lui
+            $stmt_ins = $conn->prepare("INSERT INTO bilete_achizitionate (user_id, cod_qr_unic, data_achizitie, data_expirare, status, tip_bilet, id_eveniment) VALUES (?, ?, ?, NULL, 'activ', ?, ?)");
+            $stmt_ins->bind_param("isssi", $user_id, $cod_unic, $data_achizitie, $tip, $id_eveniment);
+            
+            if ($stmt_ins->execute()) {
+                // Actualizăm contorul: am mai dat un bilet gratuit
+                $conn->query("UPDATE evenimente SET bilete_gratuite_date = bilete_gratuite_date + 1 WHERE id = " . $id_eveniment);
+                
+                // Setăm pe true ca să îi apară mesajul frumos pe ecran
+                $show_free_ticket_popup = true;
+            }
+            $stmt_ins->close();
+        }
+        $stmt_check->close();
+    }
+}
 
 // 2. ADĂUGARE RECENZIE
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adauga_recenzie'])) {
@@ -204,5 +240,23 @@ include 'header.php';
         <?php endif; ?>
     </div>
 </div>
+
+<?php if ($show_free_ticket_popup): ?>
+<div id="freeTicketModal" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; backdrop-filter: blur(5px);">
+    <div style="background: white; padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; box-shadow: 0 10px 40px rgba(255, 215, 0, 0.5); border: 4px solid #ffd700; animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);">
+        <h1 style="font-size: 60px; margin:0;">🎉</h1>
+        <h2 style="color: #28a745; margin-top: 10px; font-weight: 800; font-size: 30px;">FELICITĂRI!</h2>
+        <p style="font-size: 18px; color: #333;">Ai fost printre primii vizitatori și ai câștigat un bilet <strong style="color: #e74c3c;">GRATUIT</strong> la evenimentul:<br>
+        <span style="font-size: 24px; color: #0056b3; font-weight: bold; margin-top: 15px; display: block;"><?= htmlspecialchars($eveniment['titlu']) ?></span></p>
+        <div style="background: #f8f9fa; border-left: 4px solid #28a745; padding: 10px; margin-top: 20px; font-size: 14px; color: #555; text-align: left;">
+            Biletul tău a fost generat și adăugat automat în contul tău la secțiunea <strong>"Biletele Mele"</strong>.
+        </div>
+        <button onclick="document.getElementById('freeTicketModal').style.display='none'" class="btn-cumpara" style="margin-top: 25px; background: #ffd700; color: #111; border: none; cursor: pointer; width: 100%; font-size: 18px;">Super! Mergi mai departe</button>
+    </div>
+</div>
+<style>
+    @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+</style>
+<?php endif; ?>
 
 <?php include 'footer.php'; ?>

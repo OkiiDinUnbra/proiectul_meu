@@ -939,3 +939,116 @@ section h2 {
 .btn-delete { background: #dc3545; color: white; }
 
 .admin-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+@media (max-width: 992px) {
+    header .container {
+        flex-direction: column;
+        gap: 15px;
+        padding-bottom: 10px;
+    }
+    
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    nav ul li {
+        margin-left: 0;
+    }
+
+    /* Compensăm spațiul ocupat de meniul care acum e pe 2 rânduri */
+    .hero { padding-top: 140px; }
+    .form-admin-section, .stats-dashboard, .bilet-container { padding-top: 160px; }
+}
+
+/* ----- Ecrane Mici (Telefoane mobile) max 768px ----- */
+@media (max-width: 768px) {
+    /* Secțiuni generale */
+    section { padding: 40px 0; }
+    .hero-content { width: 95%; padding: 25px; }
+    .hero h2 { font-size: 32px; }
+    
+    /* Pop-up-uri să încapă pe ecran */
+    .popup-box { 
+        width: 90% !important; 
+        max-width: 400px; 
+        padding: 20px; 
+    }
+    
+    /* Eveniment extins */
+    .event-hero { 
+        flex-direction: column; 
+        padding: 20px; 
+        gap: 20px;
+    }
+    .event-image { 
+        min-width: 100%; 
+        height: 250px; 
+    }
+    .event-title { font-size: 26px; }
+    
+    /* Tabel Statistici - adăugăm scroll orizontal ca să nu se spargă site-ul */
+    .top-events-table { 
+        display: block; 
+        overflow-x: auto; 
+        white-space: nowrap; 
+    }
+
+    /* Meniu dropdown profil și limba pe mobil */
+    .dropdown-content {
+        position: static;
+        box-shadow: none;
+        background: rgba(255, 255, 255, 0.1);
+        display: none;
+        margin-top: 10px;
+    }
+    
+    /* Afișează dropdown-ul direct pe mobil cand apesi */
+    .dropdown-profil:hover .dropdown-content,
+    .dropdown-language:hover .dropdown-content {
+        display: block;
+    }
+    
+    .dropdown-content a, .dropdown-content button {
+        color: #fff !important; 
+        text-align: center;
+    }
+    
+    .dropdown-content a:hover, .dropdown-content button:hover {
+        background: #ffd700;
+        color: #000 !important;
+    }
+    
+    /* Plată Bilet - Câmpurile Expirare și CVV să cadă pe rânduri separate */
+    .form-group-modern { width: 100% !important; }
+    div[style*="display: flex; gap: 15px;"] {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* ----- Ecrane Foarte Mici (Telefoane mici gen iPhone SE) max 480px ----- */
+@media (max-width: 480px) {
+    .logo { font-size: 22px; }
+    nav ul li a { font-size: 13px; padding: 5px 8px; }
+    .btn { padding: 10px 20px; font-size: 14px; }
+    .stats-grid { grid-template-columns: 1fr; } /* Cărțile de statistici pe o singură coloană */
+}
+
+/* ----- Ecrane Mari (TV & Monitoare Ultra-Wide) min 1600px ----- */
+@media (min-width: 1600px) {
+    .container { max-width: 1400px; }
+    .hero h2 { font-size: 60px; }
+    .hero p { font-size: 24px; }
+}
+
+.legend {
+    line-height: 18px;
+    color: #555;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+.legend i {
+    margin-right: 5px;
+    border-radius: 50%;
+}

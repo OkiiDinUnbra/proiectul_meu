@@ -137,8 +137,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php if ($pas === 1): ?>
         <div class="modern-popup" style="background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 20px; padding: 40px; text-align: left;">
-            <h2 style="text-align: center; margin-bottom: 10px;">Plată <?= ($tip_bilet === 'eveniment' ? 'Bilet Eveniment' : 'Bilet Braicar') ?> 💳</h2>
-            <p class="popup-subtitle">Preț total: <strong><?= number_format($pret_bilet, 2) ?> RON</strong>. Introdu datele cardului.</p>
+            <h2 style="text-align: center; margin-bottom: 10px;">
+                <?= ($tip_bilet === 'eveniment' ? t('payment_title_event') : t('payment_title_bus')) ?>
+            </h2>
+            <p class="popup-subtitle"><?= t('payment_total_price') ?> <strong><?= number_format($pret_bilet, 2) ?> RON</strong>.</p>
             
             <form method="POST" action="genereaza_bilet.php" class="modern-form">
                 <input type="hidden" name="payment_token" value="<?= $_SESSION['payment_token'] ?>">
@@ -148,31 +150,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <div class="form-group-modern">
                     <input type="text" name="nume_card" id="nume_card" required placeholder=" " autocomplete="cc-name">
-                    <label for="nume_card">Numele de pe card</label>
+                    <label for="nume_card"><?= t('payment_card_name') ?></label>
                 </div>
                 
                 <div class="form-group-modern">
                     <input type="text" name="numar_card" id="numar_card" required placeholder=" " maxlength="19" autocomplete="cc-number">
-                    <label for="numar_card">Număr card (16 cifre)</label>
+                    <label for="numar_card"><?= t('payment_card_number') ?></label>
                 </div>
                 
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group-modern" style="flex: 1;">
                         <input type="text" name="expirare" id="expirare" required placeholder=" " maxlength="5" autocomplete="cc-exp">
-                        <label for="expirare">Expirare (LL/AA)</label>
+                        <label for="expirare"><?= t('payment_expiry') ?></label>
                     </div>
                     
                     <div class="form-group-modern" style="flex: 1;">
                         <input type="text" name="cvv" id="cvv" required placeholder=" " maxlength="3" autocomplete="cc-csc">
-                        <label for="cvv">CVV</label>
+                        <label for="cvv"><?= t('payment_cvv') ?></label>
                     </div>
                 </div>
 
                 <div class="form-options" style="justify-content: center; margin-top: 10px;">
-                    <small style="color: #28a745; font-weight: 600;">🔒 Plată securizată 256-bit SSL</small>
+                    <small style="color: #28a745; font-weight: 600;"><?= t('payment_secure') ?></small>
                 </div>
                 
-                <button type="submit" name="finalizeaza_plata" class="btn-submit-modern" style="background: #28a745; margin-top: 20px;">Achită <?= number_format($pret_bilet, 2) ?> RON</button>
+                <button type="submit" name="finalizeaza_plata" class="btn-submit-modern" style="background: #28a745; margin-top: 20px;">
+                    <?= t('payment_pay_button') ?> <?= number_format($pret_bilet, 2) ?> RON
+                </button>
             </form>
         </div>
 

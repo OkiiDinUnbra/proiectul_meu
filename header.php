@@ -5,7 +5,7 @@ $current_lang = getCurrentLanguage();
 $page_title = isset($page_title) ? $page_title : t('page_title');
 ?>
 <!DOCTYPE html>
-<html lang="<?= $current_lang ?>"
+<html lang="<?= $current_lang ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +37,6 @@ $page_title = isset($page_title) ? $page_title : t('page_title');
 
                     <li><a href="#" onclick="openPopup('contactPopup')"><?= t('nav_contact') ?></a></li>
 
-                    <!-- Language Selector -->
                     <li class="dropdown-language" style="position: relative;">
                         <a href="#" class="dropbtn" style="font-weight: 600;">
                             <?= $current_lang === 'ro' ? '🇷🇴 RO' : '🇬🇧 EN' ?> ▼

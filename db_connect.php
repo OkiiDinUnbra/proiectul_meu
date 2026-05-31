@@ -18,15 +18,15 @@ if ($conn->connect_error) {
     die("A apărut o eroare internă. Încearcă mai târziu.");
 }
 
-// Încarcă sistemul de traduceri
-require_once 'language.php';
+// Încarcă sistemul de traduceri (DOAR language.php, el se ocupă de restul)
+require_once __DIR__ . '/language.php';
 
-// Procesează schimbarea limbii din form (CRED)
+// Procesează schimbarea limbii din form
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['change_language'])) {
     if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
         $language = $_POST['language'] ?? 'ro';
         if (in_array($language, ['ro', 'en'])) {
-            // Setează limba în sesiune
+            // Setează limba în sesiune (folosim 'language', cum e in language.php)
             $_SESSION['language'] = $language;
             
             // Dacă utilizatorul e logat, salvează în BD
