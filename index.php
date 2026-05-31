@@ -195,6 +195,10 @@ if (isset($_GET['register'])) {
                 <h2><?= getCurrentLanguage() === 'ro' ? 'Cont Nou 🚀' : 'New Account 🚀' ?></h2>
                 <p class="glass-subtitle"><?= getCurrentLanguage() === 'ro' ? 'Alătură-te comunității noastre' : 'Join our community' ?></p>
                 
+                <button type="button" class="btn-back-register" onclick="toggleForms()" style="background: transparent; color: #ffd700; border: none; cursor: pointer; margin-bottom: 15px; font-weight: 600; text-decoration: underline;">
+                    ← <?= getCurrentLanguage() === 'ro' ? 'Înapoi la login' : 'Back to login' ?>
+                </button>
+                
                 <?php if ($register_status === 'error'): ?>
                     <div class="alert-error-glass"><?= $register_msg ?></div>
                 <?php endif; ?>

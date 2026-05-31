@@ -1,5 +1,6 @@
-﻿<?php 
-$page_title = "Evenimente | Descoperă Brăila";
+<?php 
+require_once 'db_connect.php';
+$page_title = t('events_title') . " | " . t('page_title');
 include 'header.php'; 
 ?>
 
@@ -20,22 +21,22 @@ include 'header.php';
 </style>
 
 <section class="evenimente-home">
-    <h1>Alege categoria de evenimente</h1>
+    <h1><?= t('events_choose') ?></h1>
 
     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
         <div style="margin-bottom: 20px;">
-            <a href="adauga_eveniment.php" class="btn" style="background-color: #333; color: #fff; padding: 10px 20px; border-radius: 8px;">⚙️ Adaugă Eveniment Nou</a>
+            <a href="adauga_eveniment.php" class="btn" style="background-color: #333; color: #fff; padding: 10px 20px; border-radius: 8px;"><?= t('events_add_new') ?></a>
         </div>
     <?php endif; ?>
 
     <div class="evenimente-grid">
         <a href="calendar.php?categorie=cultural" class="eveniment-card">
-            <img src="img/cultural-bg.jpg" alt="Evenimente Culturale">
-            <h3>Evenimente Culturale</h3>
+            <img src="img/cultural-bg.jpg" alt="<?= t('events_cultural') ?>">
+            <h3><?= t('events_cultural') ?></h3>
         </a>
         <a href="calendar.php?categorie=sportiv" class="eveniment-card">
-            <img src="img/sport-bg.jpg" alt="Evenimente Sportive">
-            <h3>Evenimente Sportive</h3>
+            <img src="img/sport-bg.jpg" alt="<?= t('events_sports') ?>">
+            <h3><?= t('events_sports') ?></h3>
         </a>
     </div>
 </section>

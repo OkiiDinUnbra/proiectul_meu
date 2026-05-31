@@ -88,8 +88,8 @@
 <div id="contactPopup" class="popup-overlay">
     <div class="popup-box" style="width: 400px; padding: 30px;">
         <span class="close-btn" onclick="closePopup('contactPopup')">×</span>
-        <h2 style="text-align: center; color: #333; margin-bottom: 10px;">🔗 Rămâi Conectat</h2>
-        <p style="text-align: center; color: #666; font-size: 15px; margin-bottom: 25px;">Urmărește-ne pe rețelele sociale pentru noutăți și evenimente!</p>
+        <h2 style="text-align: center; color: #333; margin-bottom: 10px;"><?= t('contact_stay_connected') ?></h2>
+        <p style="text-align: center; color: #666; font-size: 15px; margin-bottom: 25px;"><?= t('contact_follow_social') ?></p>
         
         <ul class="contact-social-list">
             <li>

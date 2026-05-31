@@ -1,6 +1,7 @@
-﻿<?php 
-$page_title = "Ghid Turistic | Descoperă Brăila";
-include 'header.php'; 
+<?php 
+require_once 'db_connect.php';
+$page_title = t('guide_title') . " | " . t('page_title');
+include 'header.php';
 ?>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -29,8 +30,8 @@ include 'header.php';
 </style>
 
 <section class="ghid-hero">
-    <h1>📍 Harta Obiectivelor din Brăila</h1>
-    <p>Apasă pe oricare dintre punctele de interes de pe harta de mai jos pentru a afla ce reprezintă și pentru a citi mai multe detalii despre istoria și importanța sa!</p>
+    <h1><?= t('guide_map_title') ?></h1>
+    <p><?= t('guide_map_desc') ?></p>
     
     <div id="harta-turistica"></div>
 </section>

@@ -1,7 +1,7 @@
 ﻿<?php 
 require_once 'db_connect.php';
 $page_title = t('home_welcome') . " | " . t('page_title');
-include 'header.php'; 
+include 'header.php';
 ?>
 
 <section class="hero" id="acasa" style="position: relative;">
