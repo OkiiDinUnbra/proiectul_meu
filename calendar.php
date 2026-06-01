@@ -26,7 +26,8 @@ include 'header.php';
 <style>
     .hero-calendar { background: url('<?= $bg_image ?>') no-repeat center center/cover; color: white; padding: 100px 20px; text-align: center; margin-top: 80px; }
     .hero-calendar h1 { font-size: 48px; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
-    .calendar-section { background: <?= $culoare_bg_sectiune ?>; padding: 60px 20px; text-align: center; }
+    .calendar-section { background: var(--bg-section); padding: 60px 20px; text-align: center; color: var(--text-main); }
+    .calendar-section h2 { color: var(--text-main); }
 
     .fc-event-title {
         white-space: normal !important;
@@ -55,7 +56,7 @@ include 'header.php';
     </div>
     <?php endif; ?>
 
-    <div id="calendar" style="max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"></div>
+    <div id="calendar" style="max-width: 900px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px var(--shadow-light); color: var(--text-main);"></div>
 </section>
 
 <script>

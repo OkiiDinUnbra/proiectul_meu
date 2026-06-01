@@ -44,32 +44,32 @@ include 'header.php';
 ?>
 
 <style>
-    .trafic-page { padding: 140px 20px 60px; max-width: 1200px; margin: 0 auto; color: white; }
+    .trafic-page { padding: 140px 20px 60px; max-width: 1200px; margin: 0 auto; color: var(--text-main); }
     .trafic-header { text-align: center; margin-bottom: 40px; }
     .trafic-header h1 { color: #ffd700; font-size: 36px; margin-bottom: 10px; }
     
     /* Layout pentru hartă și rapoarte */
     .trafic-grid { display: flex; gap: 30px; flex-wrap: wrap; }
-    .map-container { flex: 2; min-width: 300px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-    .reports-container { flex: 1; min-width: 300px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+    .map-container { flex: 2; min-width: 300px; background: var(--card-bg); padding: 15px; border-radius: 20px; border: 1px solid var(--border-color); }
+    .reports-container { flex: 1; min-width: 300px; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); }
 
     /* Buton și Formular Raportare */
     .btn-toggle-raport { background: #dc3545; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4); }
     .btn-toggle-raport:hover { background: #c82333; transform: translateY(-2px); }
     
-    .form-raport-box { display: none; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #dc3545; animation: fadeInDown 0.4s; }
+    .form-raport-box { display: none; background: var(--bg-section); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #dc3545; animation: fadeInDown 0.4s; color: var(--text-main); }
     .form-raport-box.active { display: block; }
     
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; margin-bottom: 15px; outline: none; font-family: 'Poppins', sans-serif; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); margin-bottom: 15px; outline: none; font-family: 'Poppins', sans-serif; }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #ffd700; }
-    .form-group select option { background: #111; color: white; }
+    .form-group select option { background: var(--card-bg); color: var(--text-main); }
     .btn-trimite { background: #28a745; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
     /* Carduri Rapoarte */
-    .raport-card { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #007bff; }
+    .raport-card { background: var(--bg-section); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #007bff; color: var(--text-main); }
     .raport-card.critic { border-left: 4px solid #dc3545; background: rgba(220, 53, 69, 0.15); }
-    .raport-titlu { font-weight: bold; color: #fff; font-size: 16px; margin-bottom: 5px; }
-    .raport-detalii { font-size: 13px; color: #aaa; margin-bottom: 10px; }
+    .raport-titlu { font-weight: bold; color: var(--text-main); font-size: 16px; margin-bottom: 5px; }
+    .raport-detalii { font-size: 13px; color: var(--text-light); margin-bottom: 10px; }
     .btn-confirma { background: rgba(255,255,255,0.1); border: 1px solid #ffd700; color: #ffd700; text-decoration: none; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; transition: 0.2s; display: inline-block; }
     .btn-confirma:hover { background: #ffd700; color: #000; }
 
@@ -78,6 +78,9 @@ include 'header.php';
 
 <div class="trafic-page">
     <div class="trafic-header">
+        <h1>🚦 Info Trafic Live în Brăila</h1>
+        <p style="color: var(--text-light);">Rapoarte în timp real de la comunitate despre traficul în oraș</p>
+    </div>
         <h1>🚗 Info Trafic & Radar Brăila</h1>
         <p style="color: #aaa;">Harta live Waze și alertele raportate de comunitatea locală.</p>
     </div>

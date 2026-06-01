@@ -20,8 +20,10 @@
     --link-hover: #003d82;
     --success-bg: #d4edda;
     --success-text: #155724;
+    --success-border: #c3e6cb;
     --error-bg: #f8d7da;
     --error-text: #721c24;
+    --error-border: #f5c6cb;
     --info-bg: #e7f3ff;
     --info-text: #0056b3;
     --input-bg: #f8fafd;
@@ -48,8 +50,10 @@
     --link-hover: #90caf9;
     --success-bg: rgba(76, 175, 80, 0.2);
     --success-text: #81c784;
+    --success-border: rgba(76, 175, 80, 0.4);
     --error-bg: rgba(244, 67, 54, 0.2);
     --error-text: #ef5350;
+    --error-border: rgba(244, 67, 54, 0.4);
     --info-bg: rgba(33, 150, 243, 0.2);
     --info-text: #64b5f6;
     --input-bg: #2a2a2a;

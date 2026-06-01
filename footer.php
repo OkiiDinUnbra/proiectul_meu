@@ -38,7 +38,7 @@
 </div>
 
 <div id="registerPopup" class="popup-overlay">
-     <div class="popup-box modern-popup" style="width: 380px;">
+     <div class="popup-box" style="width: 380px;">
         <span class="close-btn" onclick="closePopup('registerPopup')">&times;</span>
         <h2>Creare Cont Nou 🚀</h2>
         <p class="popup-subtitle">Alătură-te comunității noastre</p>
@@ -117,13 +117,13 @@
 <div id="eventDetailsPopup" class="popup-overlay">
     <div class="popup-box" style="width: 450px; text-align: left;">
         <span class="close-btn" onclick="closePopup('eventDetailsPopup')">×</span>
-        <h2 id="modalEventTitle" style="margin-bottom: 15px; text-align: center; color: #333; font-weight: 700;">Titlu Eveniment</h2>
+        <h2 id="modalEventTitle" style="margin-bottom: 15px; text-align: center; color: var(--text-main); font-weight: 700;">Titlu Eveniment</h2>
         
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-            <p style="margin-bottom: 8px; font-size: 16px;"><strong>📅 Data:</strong> <span id="modalEventDate" style="color: #0056b3;"></span></p>
-            <p style="margin-bottom: 0; font-size: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="background: var(--bg-section); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+            <p style="margin-bottom: 8px; font-size: 16px; color: var(--text-main);"><strong>📅 Data:</strong> <span id="modalEventDate" style="color: var(--link-color);"></span></p>
+            <p style="margin-bottom: 0; font-size: 16px; display: flex; justify-content: space-between; align-items: center; color: var(--text-main);">
                 <span><strong>📍 Locație:</strong> <span id="modalEventLocation"></span></span>
-                <a id="btnMapEvent" href="#" style="background: #eef5ff; color: #0056b3; padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #cce5ff; transition: 0.2s;">🗺️ Deschide Harta</a>
+                <a id="btnMapEvent" href="#" style="background: var(--info-bg); color: var(--link-color); padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid var(--link-color); transition: 0.2s;">🗺️ Deschide Harta</a>
             </p>
         </div>
         
@@ -131,13 +131,13 @@
         <p id="modalEventDescription" style="font-size: 15px; color: #555; line-height: 1.6;"></p>
 
         <div style="text-align: center; margin-top: 25px;">
-            <a id="btnPaginaEveniment" href="#" style="display: inline-block; background: #0056b3; color: white; padding: 12px 20px; border-radius: 12px; font-weight: bold; text-decoration: none; width: 100%; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,86,179,0.3); box-sizing: border-box;">
+            <a id="btnPaginaEveniment" href="#" style="display: inline-block; background: var(--link-color); color: white; padding: 12px 20px; border-radius: 12px; font-weight: bold; text-decoration: none; width: 100%; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,86,179,0.3); box-sizing: border-box;">
                 Vezi mai mult
             </a>
         </div>
 
-        <div id="adminEventControls" style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; text-align: right; display: none;">
-            <a id="btnEditEvent" href="#" style="background-color: #ffc107; color: #333; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 10px; transition: 0.3s;">✏️ Editează</a>
+        <div id="adminEventControls" style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border-color); text-align: right; display: none;">
+            <a id="btnEditEvent" href="#" style="background-color: #ffc107; color: #000; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 10px; transition: 0.3s;">✏️ Editează</a>
             <a id="btnDeleteEvent" href="#" style="background-color: #dc3545; color: white; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s;" onclick="return confirm('Ești sigur că vrei să ștergi definitiv acest eveniment?');">🗑️ Șterge</a>
         </div>
     </div>
@@ -146,9 +146,9 @@
 <div id="mapPopup" class="popup-overlay">
     <div class="popup-box" style="width: 700px; max-width: 95%; padding: 20px;">
         <span class="close-btn" onclick="closePopup('mapPopup')">×</span>
-        <h2 style="margin-bottom: 15px; text-align: center; color: #333; font-weight: 700;">📍 Locație Eveniment</h2>
+        <h2 style="margin-bottom: 15px; text-align: center; color: var(--text-main); font-weight: 700;">📍 Locație Eveniment</h2>
         
-        <div style="width: 100%; height: 450px; border-radius: 12px; overflow: hidden; background: #eee; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);">
+        <div style="width: 100%; height: 450px; border-radius: 12px; overflow: hidden; background: var(--bg-section); box-shadow: inset 0 0 10px var(--shadow-light);">
             <iframe id="googleMapIframe" width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src=""></iframe>
         </div>
     </div>

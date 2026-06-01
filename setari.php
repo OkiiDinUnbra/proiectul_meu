@@ -105,8 +105,8 @@ $stmt->close();
         margin-bottom: 40px;
         text-align: center;
     }
-    .settings-header h2 { font-size: 32px; color: #333; }
-    .settings-header p { color: #666; font-size: 16px; }
+    .settings-header h2 { font-size: 32px; color: var(--text-main); }
+    .settings-header p { color: var(--text-light); font-size: 16px; }
 
     .settings-grid {
         display: grid;
@@ -122,23 +122,57 @@ $stmt->close();
     }
 
     .settings-card {
-        background: #fff;
+        background: var(--card-bg);
         padding: 35px 30px;
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        border: 1px solid #f0f0f0;
+        box-shadow: 0 10px 30px var(--shadow-light);
+        border: 1px solid var(--border-light);
+        color: var(--text-main);
     }
 
     .settings-card h3 {
         margin-top: 0;
         margin-bottom: 25px;
-        color: #0056b3;
+        color: var(--link-color);
         display: flex;
         align-items: center;
         gap: 10px;
         font-size: 20px;
-        border-bottom: 2px solid #f8fafd;
+        border-bottom: 2px solid var(--border-light);
         padding-bottom: 15px;
+    }
+
+    .theme-selector {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .theme-option {
+        flex: 1;
+        min-width: 120px;
+        padding: 15px;
+        border: 2px solid var(--border-light);
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--card-bg);
+        color: var(--text-main);
+    }
+
+    .theme-option:hover {
+        border-color: var(--link-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow-light);
+    }
+
+    .theme-option.active {
+        border-color: var(--link-color);
+        background: var(--link-color);
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 86, 179, 0.3);
     }
 
     .alert-msg {
@@ -148,8 +182,8 @@ $stmt->close();
         font-weight: 500;
         text-align: center;
     }
-    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .alert-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+    .alert-error { background: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
 </style>
 
 <section class="settings-container">
@@ -215,6 +249,53 @@ $stmt->close();
         </div>
 
     </div>
-</section>
+
+    <!-- Tema / Appearance Settings - Full Width Section -->
+    <div style="margin-top: 30px;">
+        <div class="settings-card" style="grid-column: 1 / -1;">
+            <h3>🎨 Preferințe Temă</h3>
+            
+            <p style="color: var(--text-light); margin-bottom: 20px;">Alege modul de afișare preferat:</p>
+            
+            <div class="theme-selector">
+                <div class="theme-option" id="theme-light-btn" onclick="setTheme('light')">
+                    <span style="font-size: 32px;">☀️</span>
+                    <p style="margin: 10px 0 0 0; font-weight: bold;">Mod Luminos</p>
+                    <small style="opacity: 0.7;">Fundal clar, text închis</small>
+                </div>
+                
+                <div class="theme-option" id="theme-dark-btn" onclick="setTheme('dark')">
+                    <span style="font-size: 32px;">🌙</span>
+                    <p style="margin: 10px 0 0 0; font-weight: bold;">Mod Întunecat</p>
+                    <small style="opacity: 0.7;">Fundal închis, text clar</small>
+                </div>
+            </div>
+
+            <script>
+                function setTheme(theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('site_theme', theme);
+                    updateThemeButtons(theme);
+                }
+
+                function updateThemeButtons(theme) {
+                    document.getElementById('theme-light-btn').classList.remove('active');
+                    document.getElementById('theme-dark-btn').classList.remove('active');
+                    
+                    if (theme === 'light') {
+                        document.getElementById('theme-light-btn').classList.add('active');
+                    } else {
+                        document.getElementById('theme-dark-btn').classList.add('active');
+                    }
+                }
+
+                // Inițializare la încărcarea paginii
+                document.addEventListener('DOMContentLoaded', function() {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                    updateThemeButtons(currentTheme);
+                });
+            </script>
+        </div>
+    </div>
 
 <?php include 'footer.php'; ?>

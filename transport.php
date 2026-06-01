@@ -11,10 +11,10 @@ while ($row = $statii_query->fetch_assoc()) {
 ?>
 
 <style>
-    /* Fundalul general al paginii să se îmbine perfect cu meniul de sus */
+    /* Fundalul general al paginii se adapteaza la tema */
     body {
-        background-color: #111 !important; /* Aceeași nuanță ca header-ul */
-        color: white;
+        background-color: var(--bg-main) !important;
+        color: var(--text-main);
         margin: 0;
         padding: 0;
         min-height: 100vh;
@@ -25,17 +25,18 @@ while ($row = $statii_query->fetch_assoc()) {
     .hero-transport {
         text-align: center;
         padding: 140px 20px 40px;
-        background: #111 !important; 
-        background-image: none !important; /* Asta omoară poza din style.css! */
+        background: var(--bg-main) !important; 
+        background-image: none !important;
+        color: var(--text-main);
     }
     .hero-transport h1 {
         font-size: 42px;
-        color: #fff;
+        color: var(--text-main);
         margin-bottom: 10px;
     }
 
     .hero-transport p {
-        color: #aaa;
+        color: var(--text-light);
     }
 
     /* Containerul pentru carduri */
@@ -50,51 +51,51 @@ while ($row = $statii_query->fetch_assoc()) {
         flex-grow: 1;
     }
 
-    /* Design curat, premium (fără imagine pe fundal) */
+    /* Design curat, premium - adaptat la tema */
     .card-modul {
-        background: rgba(255, 255, 255, 0.03); /* Gri foarte subtil */
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
         border-radius: 20px;
         padding: 40px;
         flex: 1;
         min-width: 320px;
-        color: white;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        color: var(--text-main);
+        box-shadow: 0 10px 30px var(--shadow-light);
     }
 
     .card-modul h2 {
         color: #ffd700;
         margin-bottom: 25px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid var(--border-light);
         padding-bottom: 15px;
         font-size: 22px;
     }
     
     .card-modul label { 
-        color: #ddd; 
+        color: var(--text-light);
         font-weight: 500;
         display: block;
         margin-bottom: 8px;
     }
     
-    .bilet-info { color: #aaa; margin-bottom: 20px; font-size: 14px; line-height: 1.5; }
+    .bilet-info { color: var(--text-light); margin-bottom: 20px; font-size: 14px; line-height: 1.5; }
     
-    /* Input-uri adaptate temei Dark Mode curat */
+    /* Input-uri adaptate temei */
     .form-group { margin-bottom: 25px; }
     .form-group select {
         width: 100%;
         padding: 14px 15px;
         border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.15);
-        background: rgba(0,0,0,0.3);
-        color: white;
+        border: 1px solid var(--border-color);
+        background: var(--input-bg);
+        color: var(--text-main);
         outline: none;
         font-family: 'Poppins', sans-serif;
         font-size: 15px;
         transition: 0.3s;
     }
-    .form-group select:focus { border-color: #ffd700; background: rgba(0,0,0,0.6); }
-    .form-group select option { background: #111; color: white; }
+    .form-group select:focus { border-color: #ffd700; }
+    .form-group select option { background: var(--card-bg); color: var(--text-main); }
     
     /* Butoane */
     .btn-full {

@@ -16,19 +16,20 @@ if ($result && $result->num_rows > 0) {
 ?>
 
 <style>
-    .blog-page { padding: 140px 20px 60px; min-height: 100vh; color: white; }
+    .blog-page { padding: 140px 20px 60px; min-height: 100vh; color: var(--text-main); }
     .blog-header { text-align: center; margin-bottom: 40px; }
     .blog-header h1 { color: #ffd700; font-size: 36px; margin-bottom: 10px; }
+    .blog-header p { color: var(--text-light); }
     .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1200px; margin: auto; }
     
     .blog-card { 
-        background: rgba(255, 255, 255, 0.05); 
-        border: 1px solid rgba(255, 255, 255, 0.1); 
+        background: var(--card-bg); 
+        border: 1px solid var(--border-color); 
         border-radius: 16px; 
         overflow: hidden; 
         transition: transform 0.3s, box-shadow 0.3s; 
     }
-    .blog-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.6); border-color: rgba(0, 123, 255, 0.5); }
+    .blog-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px var(--shadow-medium); border-color: rgba(0, 123, 255, 0.5); }
     .blog-img { width: 100%; height: 220px; object-fit: cover; }
     .blog-info { padding: 25px; }
     
@@ -36,9 +37,9 @@ if ($result && $result->num_rows > 0) {
         display: inline-block; padding: 5px 12px; font-size: 12px; font-weight: bold; border-radius: 20px; margin-bottom: 15px; 
         background: rgba(0, 123, 255, 0.2); color: #66b2ff; border: 1px solid rgba(0, 123, 255, 0.3); 
     }
-    .blog-title { font-size: 20px; margin-bottom: 15px; color: #fff; line-height: 1.4; }
+    .blog-title { font-size: 20px; margin-bottom: 15px; color: var(--text-main); line-height: 1.4; }
     .blog-btn { display: inline-block; color: #66b2ff; text-decoration: none; font-weight: 600; font-size: 15px; transition: 0.2s; }
-    .blog-btn:hover { color: #fff; transform: translateX(5px); }
+    .blog-btn:hover { color: var(--link-color); transform: translateX(5px); }
 </style>
 
 <div class="blog-page">
