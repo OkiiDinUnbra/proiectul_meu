@@ -4,7 +4,7 @@ $page_title = "Editează Eveniment";
 include 'header.php';
 
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-    die("<div style='text-align:center; padding: 120px 20px; min-height: 60vh;'><h2>Acces interzis!</h2></div>");
+    die("<div style='text-align:center; padding: 120px 20px; min-height: 60vh;'><h2 style='color: var(--text-main);'>Acces interzis!</h2></div>");
 }
 
 $mesaj = "";
@@ -64,66 +64,66 @@ if (isset($_GET['id']) && is_numeric($_GET['id']) || isset($id)) {
     if ($result->num_rows == 1) {
         $eveniment = $result->fetch_assoc();
     } else {
-        die("<div style='text-align:center; padding: 120px 20px; min-height: 60vh;'><h2>Evenimentul nu a fost găsit!</h2></div>");
+        die("<div style='text-align:center; padding: 120px 20px; min-height: 60vh;'><h2 style='color: var(--text-main);'>Evenimentul nu a fost găsit!</h2></div>");
     }
     $stmt->close();
 }
 ?>
 
 <section style="padding: 120px 20px 60px; max-width: 800px; margin: auto; min-height: 70vh;">
-    <h2 style="margin-bottom: 20px; color: #333;">✏️ Editează Evenimentul</h2>
+    <h2 style="margin-bottom: 20px; color: var(--text-main);">✏️ Editează Evenimentul</h2>
     
     <?= $mesaj ?>
 
     <?php if ($eveniment): ?>
-    <form action="editeaza_eveniment.php?id=<?= $eveniment['id'] ?>" method="POST" enctype="multipart/form-data" class="modern-form" style="background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee;">
+    <form action="editeaza_eveniment.php?id=<?= $eveniment['id'] ?>" method="POST" enctype="multipart/form-data" class="modern-form" style="background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-color);">
         
         <input type="hidden" name="id" value="<?= $eveniment['id'] ?>">
 
         <div style="margin-bottom: 25px;">
-            <label style="font-weight: 700; color: #222; display: block; margin-bottom: 12px; font-size: 16px;">Titlu Eveniment:</label>
-            <input type="text" name="titlu" value="<?= htmlspecialchars($eveniment['titlu']) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-family: inherit; font-size: 15px;">
+            <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Titlu Eveniment:</label>
+            <input type="text" name="titlu" value="<?= htmlspecialchars($eveniment['titlu']) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
         </div>
 
-        <div style="margin-bottom: 25px; background: #f8fafd; padding: 15px; border-radius: 10px; border: 1px solid #e1e5eb; display: flex; align-items: center; gap: 20px;">
+        <div style="margin-bottom: 25px; background: var(--bg-section); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px;">
             <?php if (!empty($eveniment['imagine'])): ?>
-                <img src="<?= htmlspecialchars($eveniment['imagine']) ?>" alt="Imagine curentă" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd;">
+                <img src="<?= htmlspecialchars($eveniment['imagine']) ?>" alt="Imagine curentă" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid var(--border-color);">
             <?php else: ?>
-                <div style="width: 80px; height: 80px; background: #eee; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 12px;">Fără poză</div>
+                <div style="width: 80px; height: 80px; background: var(--bg-main); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-main); opacity: 0.6; font-size: 12px;">Fără poză</div>
             <?php endif; ?>
             
             <div style="flex: 1;">
-                <label style="font-weight: 700; color: #222; display: block; margin-bottom: 12px; font-size: 16px;">Schimbă Imaginea (Opțional):</label>
-                <input type="file" name="imagine" accept="image/*" style="width: 100%; padding: 8px; background: #fff; border: 1px solid #ccc; border-radius: 8px; font-family: inherit;">
-                <small style="color: #888;">Lasă gol dacă vrei să păstrezi imaginea actuală.</small>
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Schimbă Imaginea (Opțional):</label>
+                <input type="file" name="imagine" accept="image/*" style="width: 100%; padding: 8px; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; color: var(--text-main);">
+                <small style="color: var(--text-main); opacity: 0.7;">Lasă gol dacă vrei să păstrezi imaginea actuală.</small>
             </div>
         </div>
 
         <div style="display: flex; gap: 20px; margin-bottom: 25px;">
             <div style="flex: 1;">
-                <label style="font-weight: 700; color: #222; display: block; margin-bottom: 12px; font-size: 16px;">Data Evenimentului:</label>
-                <input type="date" name="data_eveniment" value="<?= htmlspecialchars(date('Y-m-d', strtotime($eveniment['data_eveniment']))) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-family: inherit; font-size: 15px;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Data Evenimentului:</label>
+                <input type="date" name="data_eveniment" value="<?= htmlspecialchars(date('Y-m-d', strtotime($eveniment['data_eveniment']))) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
             </div>
 
             <div style="flex: 1;">
-                <label style="font-weight: 700; color: #222; display: block; margin-bottom: 12px; font-size: 16px;">Preț Bilet (RON):</label>
-                <input type="number" step="0.01" min="0" name="pret" value="<?= htmlspecialchars($eveniment['pret'] ?? '0') ?>" style="width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-family: inherit; font-size: 15px;">
-                <small style="color: #888; display: block; margin-top: 5px;">* Lasă 0 pentru Intrare Liberă</small>
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Preț Bilet (RON):</label>
+                <input type="number" step="0.01" min="0" name="pret" value="<?= htmlspecialchars($eveniment['pret'] ?? '0') ?>" style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+                <small style="color: var(--text-main); opacity: 0.7; display: block; margin-top: 5px;">* Lasă 0 pentru Intrare Liberă</small>
             </div>
         </div>
 
         <div style="margin-bottom: 25px;">
-            <label style="font-weight: 700; color: #222; display: block; margin-bottom: 12px; font-size: 16px;">Locație:</label>
-            <input type="text" name="locatie" value="<?= htmlspecialchars($eveniment['locatie']) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-family: inherit; font-size: 15px;">
+            <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Locație:</label>
+            <input type="text" name="locatie" value="<?= htmlspecialchars($eveniment['locatie']) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
         </div>
 
         <div style="margin-bottom: 30px;">
-            <label style="font-weight: 700; color: #222; display: block; margin-bottom: 12px; font-size: 16px;">Descriere Detaliată:</label>
-            <textarea name="descriere" rows="6" required style="width: 100%; padding: 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-family: inherit; font-size: 15px; resize: vertical;"><?= htmlspecialchars($eveniment['descriere']) ?></textarea>
+            <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Descriere Detaliată:</label>
+            <textarea name="descriere" rows="6" required style="width: 100%; padding: 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; resize: vertical; background: var(--bg-main); color: var(--text-main);"><?= htmlspecialchars($eveniment['descriere']) ?></textarea>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #f0f0f0; padding-top: 20px;">
-            <a href="evenimentextins.php?id=<?= $eveniment['id'] ?>" style="color: #6c757d; text-decoration: none; font-weight: 600; transition: color 0.3s;">⬅️ Înapoi la Eveniment</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid var(--border-color); padding-top: 20px;">
+            <a href="evenimentextins.php?id=<?= $eveniment['id'] ?>" style="color: var(--text-main); opacity: 0.8; text-decoration: none; font-weight: 600; transition: color 0.3s;">⬅️ Înapoi la Eveniment</a>
             <button type="submit" class="btn-submit-modern" style="background: #28a745; width: auto; padding: 12px 30px; margin-top: 0;">💾 Salvează Modificările</button>
         </div>
     </form>

@@ -18,8 +18,8 @@ if ($result && $result->num_rows > 0) {
 <style>
     .blog-page { padding: 140px 20px 60px; min-height: 100vh; color: var(--text-main); }
     .blog-header { text-align: center; margin-bottom: 40px; }
-    .blog-header h1 { color: #ffd700; font-size: 36px; margin-bottom: 10px; }
-    .blog-header p { color: var(--text-light); }
+    .blog-header h1 { color: var(--text-main); font-size: 36px; margin-bottom: 10px; }
+    .blog-header p { color: var(--text-main); opacity: 0.8; }
     .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1200px; margin: auto; }
     
     .blog-card { 
@@ -27,45 +27,45 @@ if ($result && $result->num_rows > 0) {
         border: 1px solid var(--border-color); 
         border-radius: 16px; 
         overflow: hidden; 
-        transition: transform 0.3s, box-shadow 0.3s; 
+        transition: transform 0.3s, box-shadow 0.3s;
     }
-    .blog-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px var(--shadow-medium); border-color: rgba(0, 123, 255, 0.5); }
+    .blog-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: #007bff; }
     .blog-img { width: 100%; height: 220px; object-fit: cover; }
     .blog-info { padding: 25px; }
     
     .blog-tag { 
-        display: inline-block; padding: 5px 12px; font-size: 12px; font-weight: bold; border-radius: 20px; margin-bottom: 15px; 
-        background: rgba(0, 123, 255, 0.2); color: #66b2ff; border: 1px solid rgba(0, 123, 255, 0.3); 
+        display: inline-block; 
+        padding: 5px 12px; font-size: 12px; font-weight: bold; border-radius: 20px; margin-bottom: 15px; 
+        background: rgba(0, 123, 255, 0.1); color: #007bff; 
+        border: 1px solid rgba(0, 123, 255, 0.2); 
     }
     .blog-title { font-size: 20px; margin-bottom: 15px; color: var(--text-main); line-height: 1.4; }
-    .blog-btn { display: inline-block; color: #66b2ff; text-decoration: none; font-weight: 600; font-size: 15px; transition: 0.2s; }
-    .blog-btn:hover { color: var(--link-color); transform: translateX(5px); }
+    .blog-btn { display: inline-block; color: #007bff; text-decoration: none; font-weight: 600; font-size: 15px; transition: 0.2s; }
+    .blog-btn:hover { color: #0056b3; transform: translateX(5px); }
 </style>
 
 <div class="blog-page">
     <div class="blog-header">
         <h1>📝 Articole Originale</h1>
-        <p style="color: #aaa;">Povești, istorie și cultură scrise de echipa Descoperă Brăila.</p>
+        <p>Povești, istorie și cultură scrise de echipa Descoperă Brăila.</p>
         
-        <!-- Butonul Magic doar pentru Admin -->
         <?php if($este_admin): ?>
             <div style="margin-top: 25px;">
-                <a href="admin_articol.php" class="btn" style="background: #28a745; color: white; font-weight: bold; padding: 10px 25px; border-radius: 8px;">+ Adaugă Articol Nou</a>
+                <a href="admin_articol.php" class="btn" style="background: #28a745; color: white;">+ Adaugă Articol Nou</a>
             </div>
         <?php endif; ?>
     </div>
 
     <div class="blog-grid">
         <?php if(empty($articole)): ?>
-            <p style="text-align:center; width:100%; color:#aaa;">Nu există articole momentan.</p>
+            <p style="text-align:center; width:100%; color: var(--text-main); opacity: 0.7;">Nu există articole momentan.</p>
         <?php else: ?>
             <?php foreach($articole as $articol): ?>
                 <div class="blog-card">
-                    <img src="img/<?= htmlspecialchars($articol['imagine'] ?? 'default.jpg') ?>" class="blog-img">
+                    <img src="img/<?= htmlspecialchars($articol['imagine'] ?? 'default.jpg') ?>" class="blog-img" onerror="this.src='https://via.placeholder.com/400x220/333/fff?text=Articol'">
                     <div class="blog-info">
                         <span class="blog-tag">Ghid & Istorie</span>
                         <h3 class="blog-title"><?= htmlspecialchars($articol['titlu']) ?></h3>
-                        <!-- Aici te trimite spre interiorul site-ului tău -->
                         <a href="articol.php?id=<?= $articol['id'] ?>" class="blog-btn">Citește articolul →</a>
                     </div>
                 </div>

@@ -155,40 +155,40 @@ if (isset($_GET['plecare']) && isset($_GET['destinatie'])) {
 ?>
 
 <style>
-    :root { --primary: #0056b3; --accent: #ffd700; --bg: #f8f9fa; }
-    .rutare-page { background: var(--bg); padding-top: 100px; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
+    /* Folosim variabilele globale din style.css */
+    .rutare-page { background: var(--bg-main); padding-top: 100px; min-height: 100vh; font-family: 'Segoe UI', sans-serif; color: var(--text-main); }
     .container { max-width: 900px; margin: 0 auto; padding: 20px; }
     
-    .route-summary { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-bottom: 4px solid var(--accent); }
+    .route-summary { background: var(--card-bg); border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px var(--shadow-light); margin-bottom: 30px; border-bottom: 4px solid var(--accent-primary); }
     .route-nodes { display: flex; align-items: center; justify-content: space-between; position: relative; }
     .node { text-align: center; flex: 1; }
-    .node span { font-weight: 700; font-size: 1.1rem; color: #333; }
-    .connector { flex: 0.5; height: 2px; background: #ddd; position: relative; margin-top: 10px; }
-    .connector::after { content: '➔'; position: absolute; top: -10px; left: 45%; color: #bbb; }
+    .node span { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
+    .connector { flex: 0.5; height: 2px; background: var(--border-light); position: relative; margin-top: 10px; }
+    .connector::after { content: '➔'; position: absolute; top: -10px; left: 45%; color: var(--text-lighter); }
 
-    .card-route { background: white; border-radius: 12px; overflow: hidden; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .route-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; background: #fdfdfd;}
-    .line-badge { background: var(--primary); color: white; padding: 8px 15px; border-radius: 8px; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+    .card-route { background: var(--card-bg); border-radius: 12px; overflow: hidden; margin-bottom: 25px; box-shadow: 0 4px 12px var(--shadow-light); }
+    .route-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); background: var(--bg-section);}
+    .line-badge { background: var(--link-color); color: white; padding: 8px 15px; border-radius: 8px; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
     
-    .itinerary { padding: 20px; background: #fff; }
+    .itinerary { padding: 20px; background: var(--card-bg); }
     .timeline { position: relative; padding-left: 30px; list-style: none; margin-bottom: 0;}
-    .timeline::before { content: ''; position: absolute; left: 7px; top: 5px; width: 2px; height: 90%; background: #e0e0e0; }
-    .timeline-item { position: relative; margin-bottom: 15px; font-size: 0.95rem; color: #555; }
-    .timeline-item::before { content: ''; position: absolute; left: -28px; top: 4px; width: 12px; height: 12px; background: white; border: 2px solid var(--primary); border-radius: 50%; z-index: 2; }
-    .timeline-item.active { color: var(--primary); font-weight: bold; }
-    .timeline-item.active::before { background: var(--primary); }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 5px; width: 2px; height: 90%; background: var(--border-light); }
+    .timeline-item { position: relative; margin-bottom: 15px; font-size: 0.95rem; color: var(--text-light); }
+    .timeline-item::before { content: ''; position: absolute; left: -28px; top: 4px; width: 12px; height: 12px; background: var(--card-bg); border: 2px solid var(--link-color); border-radius: 50%; z-index: 2; }
+    .timeline-item.active { color: var(--link-color); font-weight: bold; }
+    .timeline-item.active::before { background: var(--link-color); }
 
-    .route-footer { padding: 15px 20px; background: #fefefe; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee;}
-    .btn-ticket { background: #28a745; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: 0.3s; }
-    .btn-ticket:hover { background: #218838; box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3); }
+    .route-footer { padding: 15px 20px; background: var(--bg-section); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light);}
+    .btn-ticket { background: var(--accent-success); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: 0.3s; }
+    .btn-ticket:hover { background: var(--accent-success-dark); box-shadow: 0 3px 10px var(--shadow-medium); }
 
-    .transfer-box { background: #ffc107; color: #000; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin: 15px 0 25px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 2px dashed #d39e00;}
+    .transfer-box { background: var(--accent-edit); color: var(--text-main); padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin: 15px 0 25px 0; box-shadow: 0 4px 6px var(--shadow-light); border: 2px dashed rgba(255, 193, 7, 0.6);}
 </style>
 
 <div class="rutare-page">
     <div class="container">
         <?php if ($mesaj_eroare): ?>
-            <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <div style="background: var(--error-bg); color: var(--error-text); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <?= $mesaj_eroare ?>
             </div>
         <?php else: ?>

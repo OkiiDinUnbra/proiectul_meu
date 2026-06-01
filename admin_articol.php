@@ -81,12 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salveaza_articol'])) 
 ?>
 
 <style>
-    .admin-page { padding: 140px 20px 60px; min-height: 100vh; color: white; display: flex; justify-content: center; }
+    .admin-page { padding: 140px 20px 60px; min-height: 100vh; color: var(--text-main); display: flex; justify-content: center; background: var(--bg-main); }
     .glass-box-admin { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border-radius: 24px; padding: 40px; width: 100%; max-width: 800px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
-    .glass-box-admin h2 { margin-bottom: 30px; font-size: 28px; color: #ffd700; text-align: center; }
+    .glass-box-admin h2 { margin-bottom: 30px; font-size: 28px; color: var(--accent-primary); text-align: center; }
     
     .admin-group { display: flex; flex-direction: column; margin-bottom: 20px; }
-    .admin-group label { margin-bottom: 8px; color: #ffd700; font-weight: 600; font-size: 15px; }
+    .admin-group label { margin-bottom: 8px; color: var(--accent-primary); font-weight: 600; font-size: 15px; }
     .admin-group input, .admin-group textarea {
         width: 100%; padding: 15px; font-size: 15px; border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 12px; outline: none; background: rgba(0, 0, 0, 0.5); color: white;
@@ -97,18 +97,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salveaza_articol'])) 
     .admin-group input[type="file"] {
         padding: 10px;
         background: rgba(255, 255, 255, 0.05);
-        color: #ddd;
+        color: var(--text-light);
         border: 1px dashed rgba(255, 215, 0, 0.5);
         cursor: pointer;
     }
     
-    .admin-group input:focus, .admin-group textarea:focus { border-color: #ffd700; background: rgba(0, 0, 0, 0.8); }
+    .admin-group input:focus, .admin-group textarea:focus { border-color: var(--accent-primary); background: rgba(0, 0, 0, 0.8); }
     
     .alert { padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: bold; text-align: center; }
-    .alert-success { background: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
-    .alert-error { background: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
-    .btn-submit-modern { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-    .btn-submit-modern:hover { background: #218838; }
+    .alert-success { background: rgba(40, 167, 69, 0.2); color: var(--accent-success); border: 1px solid var(--accent-success); }
+    .alert-error { background: rgba(220, 53, 69, 0.2); color: var(--accent-delete); border: 1px solid var(--accent-delete); }
+    .btn-submit-modern { background: var(--accent-success); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    .btn-submit-modern:hover { background: var(--accent-success-dark); }
 </style>
 
 <div class="admin-page">
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salveaza_articol'])) 
                 <input type="file" name="imagine_upload" accept="image/png, image/jpeg, image/jpg, image/webp">
                 
                 <?php if ($edit_id > 0 && !empty($articol_curent['imagine']) && $articol_curent['imagine'] !== 'default.jpg'): ?>
-                    <small style="color: #aaa; margin-top: 8px;">Imagine curentă: <strong style="color: #fff;"><?= htmlspecialchars($articol_curent['imagine']) ?></strong>. Încarcă alta doar dacă dorești să o schimbi.</small>
+                    <small style="margin-top: 8px; color: var(--text-light);">Imagine curentă: <strong style="color: var(--text-main);"><?= htmlspecialchars($articol_curent['imagine']) ?></strong>. Încarcă alta doar dacă dorești să o schimbi.</small>
                 <?php endif; ?>
             </div>
 
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salveaza_articol'])) 
 
             <button type="submit" name="salveaza_articol" class="btn-submit-modern"><?= $edit_id > 0 ? '🔄 Actualizează Articolul' : '✅ Publică Articolul' ?></button>
             <div style="text-align: center; margin-top: 15px;">
-                <a href="articole.php" style="color: #ccc; text-decoration: none;">← Întoarce-te la lista de articole</a>
+                <a href="articole.php" style="color: var(--text-light); text-decoration: none;">← Întoarce-te la lista de articole</a>
             </div>
         </form>
     </div>

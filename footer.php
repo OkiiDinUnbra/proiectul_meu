@@ -1,329 +1,135 @@
-<footer id="contact">
+<?php
+require_once 'db_connect.php'; 
+
+$current_lang = getCurrentLanguage();
+$page_title = isset($page_title) ? $page_title : t('page_title');
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
+<!DOCTYPE html>
+<html lang="<?= $current_lang ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $page_title ?></title>
+
+    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    
+    <?php if(isset($needs_calendar) && $needs_calendar): ?>
+        <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <?php endif; ?>
+</head>
+<body>
+
+<header>
     <div class="container">
-        <!-- Contact section removed as per user request -->
-    </div>
-</footer>
-
-<div id="loginPopup" class="popup-overlay">
-    <div class="popup-box modern-popup">
-        <span class="close-btn" onclick="closePopup('loginPopup')">&times;</span>
-        <h2>Bine ai revenit! 👋</h2>
-        <p class="popup-subtitle">Autentifică-te pentru a continua</p>
-        
-        <form method="POST" action="login.php" class="modern-form">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-            
-            <div class="form-group-modern">
-                <input type="email" name="email" id="loginEmail" required placeholder=" ">
-                <label for="loginEmail">Email-ul tău</label>
-            </div>
-            
-            <div class="form-group-modern password-group">
-                <input type="password" name="parola" id="loginParola" required placeholder=" ">
-                <label for="loginParola">Parola</label>
-                <span class="toggle-password" onclick="togglePassword('loginParola', this)">👁️</span>
-            </div>
-            
-            <div class="form-options">
-                <a href="#" class="forgot-link" onclick="showToast('Resetarea parolei nu este disponibilă momentan.', 'info'); return false;">
-                    Ai uitat parola?
-                </a>
-            </div>
-            
-            <button type="submit" class="btn-submit-modern">Autentificare</button>
-        </form>
-        
-        <p class="popup-footer-text">Nu ai cont? <a href="#" onclick="closePopup('loginPopup'); setTimeout(() => openPopup('registerPopup'), 300); return false;">Înregistrează-te aici</a></p>
-    </div>
-</div>
-
-<div id="registerPopup" class="popup-overlay">
-     <div class="popup-box" style="width: 380px;">
-        <span class="close-btn" onclick="closePopup('registerPopup')">&times;</span>
-        <h2>Creare Cont Nou 🚀</h2>
-        <p class="popup-subtitle">Alătură-te comunității noastre</p>
-        
-        <form method="POST" action="register.php" class="modern-form">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-            
-            <div class="form-group-modern">
-                <input type="text" name="nume" id="regNume" required placeholder=" ">
-                <label for="regNume">Nume complet</label>
-            </div>
-            
-            <div class="form-group-modern">
-                <input type="email" name="email" id="regEmail" required placeholder=" ">
-                <label for="regEmail">Adresă de email</label>
-            </div>
-            
-            <div class="form-group-modern password-group">
-                <input type="password" name="parola" id="regParola" required placeholder=" ">
-                <label for="regParola">Parola (min. 8 caract., o majusculă, o cifră)</label>
-                <span class="toggle-password" onclick="togglePassword('regParola', this)">👁️</span>
-            </div>
-            
-            <div class="form-group-modern password-group">
-                <input type="password" name="confirmare" id="regConfirmare" required placeholder=" ">
-                <label for="regConfirmare">Confirmare parolă</label>
-                <span class="toggle-password" onclick="togglePassword('regConfirmare', this)">👁️</span>
-            </div>
-
-            <div class="form-group-modern">
-                <input type="text" name="telefon" id="regTelefon" required placeholder=" ">
-                <label for="regTelefon">Număr de telefon (ex: 0722123456)</label>
-            </div>
-
-            <div class="checkbox-modern">
-                <input type="checkbox" id="newsletter" name="newsletter" value="1">
-                <label for="newsletter">Doresc să primesc noutăți pe email</label>
-            </div>
-
-            <button type="submit" class="btn-submit-modern">Creează Contul</button>
-        </form>
-        
-        <p class="popup-footer-text">Ai deja cont? <a href="#" onclick="closePopup('registerPopup'); setTimeout(() => openPopup('loginPopup'), 300); return false;">Autentifică-te</a></p>
-    </div>
-</div>
-
-<div id="contactPopup" class="popup-overlay">
-    <div class="popup-box" style="width: 400px; padding: 30px;">
-        <span class="close-btn" onclick="closePopup('contactPopup')">×</span>
-        <h2 style="text-align: center; color: #333; margin-bottom: 10px;"><?= t('contact_stay_connected') ?></h2>
-        <p style="text-align: center; color: #666; font-size: 15px; margin-bottom: 25px;"><?= t('contact_follow_social') ?></p>
-        
-        <ul class="contact-social-list">
-            <li>
-                <a href="https://www.facebook.com/andrei.filote.50/" target="_blank" class="fb-link">
-                    <i class="fab fa-facebook-f"></i>
-                    <span><?= t('contact_fb') ?></span>
-                </a>
-            </li>
-            <li>
-                <a href="https://www.instagram.com/fmandrei/" target="_blank" class="insta-link">
-                    <i class="fab fa-instagram"></i>
-                    <span><?= t('contact_insta') ?></span>
-                </a>
-            </li>
-            <li>
-                <a href="https://x.com/MAFilot" target="_blank" class="x-link">
-                    <i class="fab fa-x-twitter"></i>
-                    <span><?= t('contact_x') ?></span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div id="eventDetailsPopup" class="popup-overlay">
-    <div class="popup-box" style="width: 450px; text-align: left;">
-        <span class="close-btn" onclick="closePopup('eventDetailsPopup')">×</span>
-        <h2 id="modalEventTitle" style="margin-bottom: 15px; text-align: center; color: var(--text-main); font-weight: 700;">Titlu Eveniment</h2>
-        
-        <div style="background: var(--bg-section); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-            <p style="margin-bottom: 8px; font-size: 16px; color: var(--text-main);"><strong>📅 Data:</strong> <span id="modalEventDate" style="color: var(--link-color);"></span></p>
-            <p style="margin-bottom: 0; font-size: 16px; display: flex; justify-content: space-between; align-items: center; color: var(--text-main);">
-                <span><strong>📍 Locație:</strong> <span id="modalEventLocation"></span></span>
-                <a id="btnMapEvent" href="#" style="background: var(--info-bg); color: var(--link-color); padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid var(--link-color); transition: 0.2s;">🗺️ Deschide Harta</a>
-            </p>
-        </div>
-        
-       <p style="margin-bottom: 5px; font-size: 16px; font-weight: bold;">📝 Descriere:</p>
-        <p id="modalEventDescription" style="font-size: 15px; color: #555; line-height: 1.6;"></p>
-
-        <div style="text-align: center; margin-top: 25px;">
-            <a id="btnPaginaEveniment" href="#" style="display: inline-block; background: var(--link-color); color: white; padding: 12px 20px; border-radius: 12px; font-weight: bold; text-decoration: none; width: 100%; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,86,179,0.3); box-sizing: border-box;">
-                Vezi mai mult
+        <h1 class="logo">
+            <a href="acasa.php">
+                ⚓ <?= t('page_title') ?>
+                <span class="logo-tagline">descoperă orașul tău</span>
             </a>
-        </div>
-
-        <div id="adminEventControls" style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border-color); text-align: right; display: none;">
-            <a id="btnEditEvent" href="#" style="background-color: #ffc107; color: #000; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 10px; transition: 0.3s;">✏️ Editează</a>
-            <a id="btnDeleteEvent" href="#" style="background-color: #dc3545; color: white; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s;" onclick="return confirm('Ești sigur că vrei să ștergi definitiv acest eveniment?');">🗑️ Șterge</a>
-        </div>
-    </div>
-</div>
-
-<div id="mapPopup" class="popup-overlay">
-    <div class="popup-box" style="width: 700px; max-width: 95%; padding: 20px;">
-        <span class="close-btn" onclick="closePopup('mapPopup')">×</span>
-        <h2 style="margin-bottom: 15px; text-align: center; color: var(--text-main); font-weight: 700;">📍 Locație Eveniment</h2>
+        </h1>
         
-        <div style="width: 100%; height: 450px; border-radius: 12px; overflow: hidden; background: var(--bg-section); box-shadow: inset 0 0 10px var(--shadow-light);">
-            <iframe id="googleMapIframe" width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src=""></iframe>
+        <div class="header-weather-time">
+            <span id="live-time">--:--</span>
+            <span style="color: rgba(255,255,255,0.2); font-weight: 300;">|</span>
+            <span id="live-weather">⏳</span>
         </div>
+
+        <nav>
+           <ul>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li><a href="acasa.php" <?= $current_page==='acasa.php'?'class="nav-active"':'' ?>><?= t('nav_home') ?></a></li>
+                    <li><a href="evenimente.php" <?= $current_page==='evenimente.php'||$current_page==='evenimentextins.php'?'class="nav-active"':'' ?>><?= t('nav_events') ?></a></li>
+                    <li><a href="ghid.php" <?= $current_page==='ghid.php'?'class="nav-active"':'' ?>><?= t('nav_guide') ?></a></li>
+                    <li><a href="trafic.php" class="nav-warning<?= $current_page==='trafic.php'?' nav-active':'' ?>">🚦 Info Trafic</a></li>
+                    <li><a href="transport.php" class="nav-success<?= $current_page==='transport.php'?' nav-active':'' ?>"><?= t('nav_transport') ?></a></li>
+                    
+                    <li class="dropdown-profil">
+                        <a href="#" class="dropbtn<?= in_array($current_page,['stiri.php','articole.php','articol.php','admin_articol.php'])?' nav-active':'' ?>"><?= t('nav_blog') ?> ▼</a>
+                        <div class="dropdown-content">
+                            <a href="stiri.php">📰 Știri Locale</a>
+                            <a href="articole.php">📝 Articole Originale</a>
+                        </div>
+                    </li>
+
+                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                        <li><a href="statistici.php" class="nav-warning<?= $current_page==='statistici.php'?' nav-active':'' ?>"><?= t('nav_statistics') ?></a></li>
+                    <?php endif; ?>
+
+                    <li><a href="#" onclick="openPopup('contactPopup')"><?= t('nav_contact') ?></a></li>
+
+                    <li class="dropdown-language" style="position: relative;">
+                        <a href="#" class="dropbtn" style="font-weight: 600;">
+                            <?= $current_lang === 'ro' ? '🇷🇴 RO' : '🇬🇧 EN' ?> ▼
+                        </a>
+                        <div class="dropdown-content" style="width: 150px;">
+                            <?php if ($current_lang !== 'ro'): ?>
+                                <form method="POST" style="padding: 0;">
+                                    <input type="hidden" name="change_language" value="1">
+                                    <input type="hidden" name="language" value="ro">
+                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                    <button type="submit" style="width:100%;text-align:left;padding:9px 14px;border:none;background:none;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.7);">🇷🇴 Română</button>
+                                </form>
+                            <?php endif; ?>
+                            <?php if ($current_lang !== 'en'): ?>
+                                <form method="POST" style="padding: 0;">
+                                    <input type="hidden" name="change_language" value="1">
+                                    <input type="hidden" name="language" value="en">
+                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                    <button type="submit" style="width:100%;text-align:left;padding:9px 14px;border:none;background:none;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.7);">🇬🇧 English</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                    </li>
+
+                    <li class="dropdown-profil">
+                        <a href="#" class="dropbtn<?= in_array($current_page,['profil.php','setari.php'])?' nav-active':'' ?>">👤 <?= htmlspecialchars($_SESSION['nume']) ?> ▼</a>
+                        <div class="dropdown-content">
+                            <a href="profil.php"><?= t('nav_tickets') ?></a>
+                            <a href="setari.php"><?= t('nav_settings') ?></a>
+                            <a href="logout.php" style="color:var(--accent-delete)!important"><?= t('nav_logout') ?></a>
+                        </div>
+                    </li>
+
+                <?php else: ?>
+                    <li><a href="#" onclick="openPopup('loginPopup')"><?= t('nav_login') ?></a></li>
+                    <li><a href="#" onclick="openPopup('registerPopup')"><?= t('nav_register') ?></a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
     </div>
-</div>
-
-<style>
-    #toast-container {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        z-index: 10000;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .toast-msg {
-        min-width: 250px;
-        padding: 15px 20px;
-        border-radius: 8px;
-        color: white;
-        font-weight: 500;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.4s ease-in-out;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 15px;
-    }
-    .toast-msg.show {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    .toast-success { background: #28a745; }
-    .toast-error { background: #dc3545; }
-    .toast-info { background: #0056b3; }
-</style>
-
-<div id="toast-container"></div>
+</header>
 
 <script>
-    // 1. Funcții Pop-up Moderne
-    function openPopup(id) {
-        const popup = document.getElementById(id);
-        popup.style.display = 'flex';
-        setTimeout(() => {
-            popup.classList.add('active');
-        }, 10);
+document.addEventListener('DOMContentLoaded', function() {
+    function updateTime() {
+        const acum = new Date();
+        const ora = acum.getHours().toString().padStart(2, '0');
+        const min = acum.getMinutes().toString().padStart(2, '0');
+        document.getElementById('live-time').textContent = ora + ':' + min;
     }
-    
-    function closePopup(id) {
-        const popup = document.getElementById(id);
-        popup.classList.remove('active');
-        setTimeout(() => {
-            popup.style.display = 'none';
-        }, 300);
-    }
+    setInterval(updateTime, 1000);
+    updateTime();
 
-    // 2. Parola Arata/Ascunde
-    function togglePassword(inputId, icon) {
-        const input = document.getElementById(inputId);
-        if (input.type === "password") {
-            input.type = "text";
-            icon.innerText = "🙈";
-        } else {
-            input.type = "password";
-            icon.innerText = "👁️";
+    async function fetchWeather() {
+        try {
+            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=45.2692&longitude=27.9575&current_weather=true');
+            const data = await response.json();
+            const temp = Math.round(data.current_weather.temperature);
+            const isDay = data.current_weather.is_day;
+            const code = data.current_weather.weathercode;
+            let icon = isDay ? '☀️' : '🌙';
+            if (code >= 1 && code <= 3) icon = isDay ? '⛅' : '☁️';
+            if (code >= 45 && code <= 67) icon = '🌧️';
+            if (code >= 71 && code <= 82) icon = '❄️';
+            if (code >= 95) icon = '⛈️';
+            document.getElementById('live-weather').textContent = `${icon} ${temp}°C`;
+        } catch (error) {
+            document.getElementById('live-weather').textContent = '☁️ --°C';
         }
     }
-
-    // 3. Afisare Pop-up Evenimente + Logica de Harta In-App
-    // 3. Afisare Pop-up Evenimente + Logica de Harta In-App
-function openEventPopup(id, title, date, location, description) {
-    document.getElementById('modalEventTitle').innerText = title;
-    document.getElementById('modalEventDate').innerText = date;
-    document.getElementById('btnPaginaEveniment').href = 'evenimentextins.php?id=' + id;
-    document.getElementById('modalEventLocation').innerText = location || 'Nespecificat';
-    document.getElementById('modalEventDescription').innerText = description || 'Nu există o descriere pentru acest eveniment.';
-    fetch('track_view.php?id=' + id);
-
-    let mapBtn = document.getElementById('btnMapEvent');
-    if (location && location !== 'Nespecificat') {
-        mapBtn.style.display = 'inline-block';
-        mapBtn.onclick = function(e) {
-            e.preventDefault();
-            let embedUrl = 'https://maps.google.com/maps?q=' + encodeURIComponent(location + ', Braila, Romania') + '&t=&z=16&ie=UTF8&iwloc=&output=embed';
-            document.getElementById('googleMapIframe').src = embedUrl;
-            closePopup('eventDetailsPopup');
-            setTimeout(() => { openPopup('mapPopup'); }, 300);
-        };
-    } else {
-        mapBtn.style.display = 'none';
-    }
-
-    let adminControls = document.getElementById('adminEventControls');
-    let btnEdit = document.getElementById('btnEditEvent');
-    let btnDelete = document.getElementById('btnDeleteEvent');
-    
-    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-        adminControls.style.display = 'block';
-        if (btnEdit && btnDelete) {
-            btnEdit.href = 'editeaza_eveniment.php?id=' + id;
-            btnDelete.href = 'sterge_eveniment.php?id=' + id;
-        }
-    <?php else: ?>
-        adminControls.style.display = 'none';
-    <?php endif; ?>
-    
-    openPopup('eventDetailsPopup');
-}
-
-    // 4. Logica Toast Messages
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast-msg toast-${type}`;
-        
-        let icon = type === 'success' ? '✅' : '❌';
-        toast.innerHTML = `<span style="font-size: 18px;">${icon}</span> <span>${message}</span>`;
-        container.appendChild(toast);
-
-        setTimeout(() => toast.classList.add('show'), 100);
-
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 400); 
-        }, 4000);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        if (urlParams.get('login') === 'eroare_parola') {
-            showToast('Parola introdusă este incorectă!', 'error');
-            openPopup('loginPopup');
-        }
-        if (urlParams.get('login') === 'eroare_email') {
-            showToast('Nu am găsit niciun cont cu acest email.', 'error');
-            openPopup('loginPopup');
-        }
-        if (urlParams.get('login') === 'succes') {
-            showToast('Te-ai autentificat cu succes!', 'success');
-        }
-
-        if (urlParams.get('register') === 'succes') {
-            showToast('Cont creat cu succes! Acum te poți autentifica.', 'success');
-            openPopup('loginPopup');
-        }
-       if (urlParams.get('register') === 'eroare_parola_scurta') {
-    showToast('Parola trebuie să aibă minim 8 caractere.', 'error');
-    openPopup('registerPopup');
-}
-if (urlParams.get('register') === 'eroare_parola_slaba') {
-    showToast('Parola trebuie să conțină cel puțin o majusculă și o cifră.', 'error');
-    openPopup('registerPopup');
-}
-        if (urlParams.get('register') === 'eroare_duplicat') {
-            showToast('Acest email este deja folosit.', 'error');
-            openPopup('registerPopup');
-        }
-        if (urlParams.get('register') === 'eroare_server') {
-          showToast('A apărut o eroare. Încearcă din nou.', 'error');
-           openPopup('registerPopup');
-            }
-
-            if (urlParams.get('register') === 'eroare_telefon') {
-    showToast('Numărul de telefon nu este valid. Exemplu: 0722123456', 'error');
-    openPopup('registerPopup');
-}
-
-        if(window.history.replaceState && (urlParams.has('login') || urlParams.has('register'))) {
-            window.history.replaceState(null, null, window.location.pathname);
-        }
-    });
+    fetchWeather();
+    setInterval(fetchWeather, 1800000);
+});
 </script>
-</body>
-</html>

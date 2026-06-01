@@ -142,39 +142,6 @@ $stmt->close();
         padding-bottom: 15px;
     }
 
-    .theme-selector {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-        margin-top: 20px;
-    }
-
-    .theme-option {
-        flex: 1;
-        min-width: 120px;
-        padding: 15px;
-        border: 2px solid var(--border-light);
-        border-radius: 12px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: var(--card-bg);
-        color: var(--text-main);
-    }
-
-    .theme-option:hover {
-        border-color: var(--link-color);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px var(--shadow-light);
-    }
-
-    .theme-option.active {
-        border-color: var(--link-color);
-        background: var(--link-color);
-        color: white;
-        box-shadow: 0 4px 15px rgba(0, 86, 179, 0.3);
-    }
-
     .alert-msg {
         padding: 15px;
         border-radius: 10px;
@@ -249,53 +216,6 @@ $stmt->close();
         </div>
 
     </div>
-
-    <!-- Tema / Appearance Settings - Full Width Section -->
-    <div style="margin-top: 30px;">
-        <div class="settings-card" style="grid-column: 1 / -1;">
-            <h3>🎨 Preferințe Temă</h3>
-            
-            <p style="color: var(--text-light); margin-bottom: 20px;">Alege modul de afișare preferat:</p>
-            
-            <div class="theme-selector">
-                <div class="theme-option" id="theme-light-btn" onclick="setTheme('light')">
-                    <span style="font-size: 32px;">☀️</span>
-                    <p style="margin: 10px 0 0 0; font-weight: bold;">Mod Luminos</p>
-                    <small style="opacity: 0.7;">Fundal clar, text închis</small>
-                </div>
-                
-                <div class="theme-option" id="theme-dark-btn" onclick="setTheme('dark')">
-                    <span style="font-size: 32px;">🌙</span>
-                    <p style="margin: 10px 0 0 0; font-weight: bold;">Mod Întunecat</p>
-                    <small style="opacity: 0.7;">Fundal închis, text clar</small>
-                </div>
-            </div>
-
-            <script>
-                function setTheme(theme) {
-                    document.documentElement.setAttribute('data-theme', theme);
-                    localStorage.setItem('site_theme', theme);
-                    updateThemeButtons(theme);
-                }
-
-                function updateThemeButtons(theme) {
-                    document.getElementById('theme-light-btn').classList.remove('active');
-                    document.getElementById('theme-dark-btn').classList.remove('active');
-                    
-                    if (theme === 'light') {
-                        document.getElementById('theme-light-btn').classList.add('active');
-                    } else {
-                        document.getElementById('theme-dark-btn').classList.add('active');
-                    }
-                }
-
-                // Inițializare la încărcarea paginii
-                document.addEventListener('DOMContentLoaded', function() {
-                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                    updateThemeButtons(currentTheme);
-                });
-            </script>
-        </div>
-    </div>
+</section>
 
 <?php include 'footer.php'; ?>

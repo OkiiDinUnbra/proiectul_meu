@@ -11,7 +11,6 @@ while ($row = $statii_query->fetch_assoc()) {
 ?>
 
 <style>
-    /* Fundalul general al paginii se adapteaza la tema */
     body {
         background-color: var(--bg-main) !important;
         color: var(--text-main);
@@ -30,45 +29,45 @@ while ($row = $statii_query->fetch_assoc()) {
         color: var(--text-main);
     }
     .hero-transport h1 {
-        font-size: 42px;
+        font-size: 38px;
         color: var(--text-main);
         margin-bottom: 10px;
     }
-
     .hero-transport p {
         color: var(--text-light);
+        font-size: 16px;
     }
 
-    /* Containerul pentru carduri */
     .transport-container {
         display: flex;
         justify-content: center;
         gap: 30px;
-        max-width: 1000px;
+        max-width: 900px; /* Lățime redusă pentru un aspect mai compact */
         margin: 0 auto 60px;
         padding: 0 20px;
         flex-wrap: wrap;
         flex-grow: 1;
     }
 
-    /* Design curat, premium - adaptat la tema */
     .card-modul {
         background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 40px;
-        flex: 1;
-        min-width: 320px;
+        border-radius: 16px;
+        padding: 25px; /* Spațiere interioară redusă */
+        flex: 1 1 300px;
+        max-width: 420px; /* Limităm alungirea cardurilor */
         color: var(--text-main);
-        box-shadow: 0 10px 30px var(--shadow-light);
+        box-shadow: var(--shadow-medium);
     }
 
     .card-modul h2 {
-        color: #ffd700;
-        margin-bottom: 25px;
+        color: var(--accent-primary);
+        margin-bottom: 20px;
         border-bottom: 1px solid var(--border-light);
-        padding-bottom: 15px;
-        font-size: 22px;
+        padding-bottom: 12px;
+        font-size: 20px;
     }
     
     .card-modul label { 
@@ -76,54 +75,65 @@ while ($row = $statii_query->fetch_assoc()) {
         font-weight: 500;
         display: block;
         margin-bottom: 8px;
+        font-size: 14px;
     }
     
-    .bilet-info { color: var(--text-light); margin-bottom: 20px; font-size: 14px; line-height: 1.5; }
+    .bilet-info { 
+        color: var(--text-light); 
+        margin-bottom: 15px;
+        font-size: 13px; 
+        line-height: 1.5; 
+    }
     
-    /* Input-uri adaptate temei */
-    .form-group { margin-bottom: 25px; }
+    .form-group { margin-bottom: 15px; }
+    
     .form-group select {
         width: 100%;
-        padding: 14px 15px;
+        padding: 12px 15px;
         border-radius: 10px;
         border: 1px solid var(--border-color);
         background: var(--input-bg);
         color: var(--text-main);
         outline: none;
         font-family: 'Poppins', sans-serif;
-        font-size: 15px;
+        font-size: 14px;
         transition: 0.3s;
     }
-    .form-group select:focus { border-color: #ffd700; }
-    .form-group select option { background: var(--card-bg); color: var(--text-main); }
+    .form-group select:focus { border-color: var(--link-color); box-shadow: 0 0 0 3px rgba(91, 176, 255, 0.15); }
+    .form-group select option { background: var(--bg-section); color: var(--text-main); }
     
-    /* Butoane */
     .btn-full {
         width: 100%;
-        padding: 15px;
+        padding: 12px;
         border: none;
         border-radius: 10px;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 15px;
         cursor: pointer;
-        background: #ffd700;
+        background: var(--accent-primary);
         color: #111;
         transition: 0.3s;
     }
-    .btn-full:hover { background: #e6c200; transform: translateY(-2px); }
+    .btn-full:hover { background: var(--accent-primary-dark); transform: translateY(-2px); }
+    .btn-success { background: var(--accent-success); color: #000; }
+    .btn-success:hover { background: var(--accent-success-dark); }
     
     .ticket-demo {
         background: rgba(0,0,0,0.3);
-        padding: 30px;
-        border-radius: 15px;
+        padding: 20px;
+        border-radius: 12px;
         text-align: center;
         border: 1px dashed rgba(255, 215, 0, 0.3);
     }
+    
+    .text-error { color: var(--accent-delete); font-size: 14px; margin-bottom: 10px; font-weight: 600; }
+    .btn-accent-border { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); }
+    .btn-accent-border:hover { background: var(--accent-primary); color: #000; }
 </style>
 
 <section class="hero-transport">
     <h1><?= t('transport_title') ?></h1>
-    <p style="font-size: 18px;"><?= t('transport_subtitle') ?></p>
+    <p><?= t('transport_subtitle') ?></p>
 </section>
 
 <div class="transport-container">
@@ -161,17 +171,17 @@ while ($row = $statii_query->fetch_assoc()) {
             <p class="bilet-info"><?= t('transport_ticket_info') ?></p>
 
             <div class="ticket-demo">
-                <h3 style="margin-bottom: 20px; color: white; font-size: 24px;"><?= t('transport_price') ?></h3>
+                <h3 style="margin-bottom: 15px; color: var(--text-main); font-size: 22px;"><?= t('transport_price') ?></h3>
                 <?php $_SESSION['payment_token'] = bin2hex(random_bytes(16)); ?>
                 <form method="POST" action="genereaza_bilet.php">
                     <input type="hidden" name="payment_token" value="<?= $_SESSION['payment_token'] ?>">
-                    <button type="submit" class="btn-full" style="background: #28a745; color: white; border: 1px solid #1e7e34;">💳 <?= t('transport_buy_ticket') ?></button>
+                    <button type="submit" class="btn-full btn-success">💳 <?= t('transport_buy_ticket') ?></button>
                 </form>
             </div>
         <?php else: ?>
             <div class="ticket-demo">
-                <p style="color: #ff6b6b; font-weight: 500; margin-bottom: 20px; font-size: 15px;"><?= t('transport_login_required') ?></p>
-                <button onclick="openPopup('loginPopup')" class="btn-full" style="background: rgba(255,255,255,0.1); color: #ffd700; border: 1px solid #ffd700;">🔒 Login pentru achiziție</button>
+                <p class="text-error"><?= t('transport_login_required') ?></p>
+                <button onclick="openPopup('loginPopup')" class="btn-full btn-accent-border">🔒 Login pentru achiziție</button>
             </div>
         <?php endif; ?>
     </div>

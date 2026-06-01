@@ -29,30 +29,32 @@ include 'header.php';
 ?>
 
 <style>
-    .articol-page { padding: 120px 20px 60px; max-width: 900px; margin: 0 auto; color: #fff; }
-    .articol-img { width: 100%; height: 400px; object-fit: cover; border-radius: 16px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1); }
+    .articol-page { padding: 120px 20px 60px; max-width: 900px; margin: 0 auto; color: var(--text-main); }
+    .articol-img { width: 100%; height: 400px; object-fit: cover; border-radius: 16px; margin-bottom: 30px; border: 1px solid var(--border-color); }
     .articol-titlu { font-size: 38px; color: #ffd700; margin-bottom: 10px; }
-    .articol-meta { color: #888; font-size: 14px; margin-bottom: 30px; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
-    .articol-continut { font-size: 18px; line-height: 1.8; color: #ddd; margin-bottom: 50px; white-space: pre-wrap; }
+    .articol-meta { color: #888; font-size: 14px; margin-bottom: 30px; display: block; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+    .articol-continut { font-size: 18px; line-height: 1.8; color: var(--text-main); margin-bottom: 50px; white-space: pre-wrap; }
     
-    .admin-bar { background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 15px; }
-    .admin-bar a { text-decoration: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; color: #fff; }
+    .admin-bar { background: var(--bg-section); padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 15px; border: 1px solid var(--border-color); align-items: center; }
+    .admin-bar a { text-decoration: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; color: #111; }
     
-    .comentarii-sec { background: rgba(0,0,0,0.3); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
-    .comentarii-sec h3 { color: #ffd700; margin-bottom: 20px; }
-    .com-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-    .com-nume { font-weight: bold; color: #66b2ff; margin-bottom: 5px; display: block; }
+    .comentarii-sec { background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .comentarii-sec h3 { color: var(--text-main); margin-bottom: 20px; border-bottom: 2px solid #ffd700; display: inline-block; padding-bottom: 5px; }
+    .com-box { background: var(--bg-section); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+    .com-nume { font-weight: bold; color: #007bff; margin-bottom: 5px; display: block; }
     .com-data { font-size: 12px; color: #888; }
     
-    .form-comentariu textarea { width: 100%; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 15px; resize: vertical; }
-    .form-comentariu button { background: #0056b3; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .form-comentariu textarea { width: 100%; padding: 15px; border-radius: 10px; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); margin-bottom: 15px; resize: vertical; font-family: inherit; }
+    .form-comentariu textarea:focus { border-color: #007bff; outline: none; }
+    .form-comentariu button { background: #0056b3; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    .form-comentariu button:hover { background: #004494; }
 </style>
 
 <div class="articol-page">
     <?php if($este_admin): ?>
         <div class="admin-bar">
-            <span style="color: #ffd700; font-weight: bold;">Unelte Admin:</span>
-            <a href="admin_articol.php?edit_id=<?= $id ?>" style="background: #ffc107; color: #000;">✏️ Editează</a>
+            <span style="color: var(--text-main); font-weight: bold;">⚙️ Unelte Admin:</span>
+            <a href="admin_articol.php?edit_id=<?= $id ?>" style="background: #ffc107;">✏️ Editează</a>
         </div>
     <?php endif; ?>
 
@@ -63,23 +65,22 @@ include 'header.php';
     
     <div class="articol-continut"><?= htmlspecialchars($articol['continut']) ?></div>
 
-    <!-- Secțiune Comentarii -->
     <div class="comentarii-sec">
         <h3>💬 Comentarii (<?= count($comentarii) ?>)</h3>
         
         <form class="form-comentariu" method="POST" action="">
             <textarea name="mesaj" rows="3" placeholder="Scrie un comentariu..." required></textarea>
-            <button type="submit" name="adauga_comentariu">Postează</button>
+            <button type="submit" name="adauga_comentariu">Postează Comentariul</button>
         </form>
 
         <div style="margin-top: 30px;">
             <?php if(empty($comentarii)): ?>
-                <p style="color: #aaa;">Fii primul care lasă un comentariu!</p>
+                <p style="color: var(--text-main); opacity: 0.7;">Fii primul care lasă un comentariu!</p>
             <?php else: ?>
                 <?php foreach($comentarii as $com): ?>
                     <div class="com-box">
                         <span class="com-nume"><?= htmlspecialchars($com['nume']) ?> <span class="com-data">• <?= date('d.m.Y', strtotime($com['data_adaugare'])) ?></span></span>
-                        <p style="margin-top: 5px;"><?= htmlspecialchars($com['mesaj']) ?></p>
+                        <p style="margin-top: 5px; color: var(--text-main);"><?= htmlspecialchars($com['mesaj']) ?></p>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>

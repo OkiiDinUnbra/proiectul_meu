@@ -9,13 +9,23 @@ include 'header.php';
 
 <style>
     .ghid-hero {
-    padding: 160px 20px 60px; /* Am compensat din interior */
-    text-align: center;
-    background: #f8f9fa;
-    margin-top: 0; /* Am scos gaura albă și de pe această pagină */
-}
-    .ghid-hero h1 { font-size: 42px; color: #333; margin-bottom: 15px; }
-    .ghid-hero p { font-size: 18px; color: #666; max-width: 800px; margin: 0 auto 30px auto; }
+        padding: 160px 20px 60px;
+        text-align: center;
+        background: var(--bg-main); /* Setat pe dark mode */
+        color: var(--text-main);
+        margin-top: 0; 
+    }
+    .ghid-hero h1 { 
+        font-size: 42px; 
+        color: var(--text-main); 
+        margin-bottom: 15px; 
+    }
+    .ghid-hero p { 
+        font-size: 18px; 
+        color: var(--text-light); 
+        max-width: 800px; 
+        margin: 0 auto 30px auto; 
+    }
     
     #harta-turistica {
         height: 600px;
@@ -23,17 +33,18 @@ include 'header.php';
         max-width: 1200px; 
         margin: 0 auto; 
         border-radius: 12px; 
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         z-index: 1; 
-        border: 4px solid #fff;
+        border: 2px solid var(--border-color);
     }
 
     .legend {
-    line-height: 18px;
-    color: #555;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    font-size: 14px;
-}
+        line-height: 18px;
+        color: #333;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.9);
+    }
 </style>
 
 <section class="ghid-hero">
@@ -45,15 +56,12 @@ include 'header.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Inițializăm harta (centrată inițial pe Brăila)
         var map = L.map('harta-turistica');
 
-        // Stratul de hartă (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Definește iconițele colorate
         const blueIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
             iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
@@ -64,9 +72,12 @@ include 'header.php';
             iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
         });
 
-        // Lista completă de locații (Atracții + Restaurante & Fast Food)
+        const redIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+        });
+
         var locatii = [
-            // ================== ATRACȚII TURISTICE & MALL (Albastru) ==================
             { nume: "Ceasul Public", lat: 45.271606, lng: 27.974753, wiki: "https://ro.wikipedia.org/wiki/Pia%C8%9Ba_Traian_din_Br%C4%83ila#Ceasul_public", tip: "atractie" },
             { nume: "Faleza Brăilei", lat: 45.262879, lng: 27.967981, wiki: "https://ro.wikipedia.org/wiki/Br%C4%83ila#Turism", tip: "atractie" },
             { nume: "Stadionul Municipal", lat: 45.258271, lng: 27.946957, wiki: "https://ro.wikipedia.org/wiki/Stadionul_Municipal_(Br%C4%83ila)", tip: "atractie" },
@@ -82,13 +93,11 @@ include 'header.php';
             { nume: "Secția Științelor Naturii a Muzeului", lat: 45.255086, lng: 27.946441, wiki: "https://www.google.com/search?q=Sectia+Stiintelor+Naturii+Muzeul+Brailei", tip: "atractie" },
             { nume: "Biserica Greacă „Buna Vestire”", lat: 45.270258, lng: 27.975432, wiki: "https://ro.wikipedia.org/wiki/Biserica_Greac%C4%83_din_Br%C4%83ila", tip: "atractie" },
             { nume: "Promenada Mall", lat: 45.230273860412765, lng: 27.93828318564685, wiki: "https://www.google.com/search?q=Promenada+Mall+Braila", tip: "atractie" },
-
-            // ================== RESTAURANTE & FAST FOOD (Verde) ==================
             { nume: "McDonald's (Barieră)", lat: 45.2550517694067, lng: 27.958166039091335, wiki: "https://www.google.com/search?q=McDonalds+Bariera+Braila", tip: "restaurant" },
             { nume: "Domino's Pizza", lat: 45.25533324134098, lng: 27.95837057298481, wiki: "https://www.google.com/search?q=Dominos+Pizza+Braila", tip: "restaurant" },
             { nume: "KFC Bariera", lat: 45.25598001783551, lng: 27.960233624981157, wiki: "https://www.google.com/search?q=KFC+Bariera+Braila", tip: "restaurant" },
-            { nume: "Restaurant Carol (Cel mai bun din Oras)", lat: 45.27210479958391, lng: 27.975163712161493, wiki: "https://www.google.com/search?q=Restaurant+Carol+Braila", tip: "restaurant" },
-            { nume: "Cherhanaua (fosta Sunrise Marina)", lat: 45.26934443572491, lng: 27.97946802340389, wiki: "https://www.google.com/search?q=Cherhanaua+Braila", tip: "restaurant" },
+            { nume: "Restaurant Carol", lat: 45.27210479958391, lng: 27.975163712161493, wiki: "https://www.google.com/search?q=Restaurant+Carol+Braila", tip: "restaurant" },
+            { nume: "Cherhanaua", lat: 45.26934443572491, lng: 27.97946802340389, wiki: "https://www.google.com/search?q=Cherhanaua+Braila", tip: "restaurant" },
             { nume: "Heavens", lat: 45.267897478489445, lng: 27.972469424073214, wiki: "https://www.google.com/search?q=Heavens+Braila", tip: "restaurant" },
             { nume: "Bella Italia", lat: 45.2764115374821, lng: 27.9666702642137, wiki: "https://www.google.com/search?q=Bella+Italia+Braila", tip: "restaurant" },
             { nume: "The Irish Pub", lat: 45.26533042429084, lng: 27.97059461115861, wiki: "https://www.google.com/search?q=The+Irish+Pub+Braila", tip: "restaurant" },
@@ -99,19 +108,16 @@ include 'header.php';
 
         var markerePeHarta = L.featureGroup();
 
-        // Parcurgem lista și punem fiecare punct pe hartă
         locatii.forEach(function(loc) {
-            // Aici selectăm culoarea pe baza tipului setat în array
             var marker = L.marker([loc.lat, loc.lng], {
                 icon: (loc.tip === 'restaurant') ? greenIcon : blueIcon
             });
 
-            // Creăm design-ul pentru fereastra de detalii
             var popupContent = `
                 <div style="text-align: center; padding: 5px;">
                     <h3 style="margin: 0 0 10px 0; font-size: 16px; color: ${loc.tip === 'restaurant' ? '#28a745' : '#0056b3'};">${loc.nume}</h3>
                     <a href="${loc.wiki}" target="_blank" style="background: ${loc.tip === 'restaurant' ? '#28a745' : '#0056b3'}; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 13px;">
-                        📖 Află mai multe
+                        Află mai multe
                     </a>
                 </div>
             `;
@@ -120,28 +126,35 @@ include 'header.php';
             markerePeHarta.addLayer(marker);
         });
 
-        // Adăugăm toate markerele pe hartă
         markerePeHarta.addTo(map);
 
-        // Facem zoom automat pentru a cuprinde toate punctele pe ecran
-        map.fitBounds(markerePeHarta.getBounds(), { padding: [30, 30] });
+        // Tracking live locație utilizator
+        map.locate({setView: true, maxZoom: 14});
 
-        // ================== ADĂUGARE LEGENDĂ ==================
+        map.on('locationfound', function(e) {
+            var radius = e.accuracy / 2;
+            L.marker(e.latlng, {icon: redIcon}).addTo(map)
+                .bindPopup("Te afli aici! (Acuratețe: " + Math.round(radius) + " metri)").openPopup();
+            L.circle(e.latlng, radius).addTo(map);
+        });
+
+        map.on('locationerror', function(e) {
+            console.log("Locația nu a putut fi preluată. Harta se centrează pe Brăila implicit.");
+            map.fitBounds(markerePeHarta.getBounds(), { padding: [30, 30] });
+        });
+
         var legend = L.control({ position: 'bottomright' });
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
-            div.style.background = 'white'; 
             div.style.padding = '12px'; 
             div.style.borderRadius = '8px';
-            div.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
-            div.style.fontSize = '14px';
-            div.style.color = '#333';
-            div.style.lineHeight = '24px';
+            div.style.border = '1px solid #ccc';
             
             div.innerHTML = `
                 <strong style="display:block; margin-bottom: 5px; font-size:15px;">Legenda Hărții</strong>
                 <i style="background: #2A81CB; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></i> Atracții Turistice<br>
-                <i style="background: #2AAD27; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></i> Restaurante & Fast Food
+                <i style="background: #2AAD27; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></i> Restaurante & Fast Food<br>
+                <i style="background: #CB2B3E; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></i> Locația Ta
             `;
             return div;
         };

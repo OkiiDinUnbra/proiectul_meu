@@ -46,13 +46,13 @@ function t($key) {
             'home_transport_btn' => '🚍 Transport Live',
             'home_brand' => '@descoperaBraila',
             
-            // Evenimente (NOU)
+            // Evenimente
             'events_choose' => 'Alege categoria de evenimente',
             'events_add_new' => 'Adaugă eveniment nou',
             'events_cultural' => 'Culturale (Teatru, Concerte)',
             'events_sports' => 'Sportive (Meciuri, Competiții)',
             
-            // Ghid Turistic / Harta (NOU)
+            // Ghid Turistic / Harta
             'guide_map_title' => 'Harta Turistică Interactivă',
             'guide_map_desc' => 'Descoperă atracțiile principale și cele mai bune restaurante din oraș.',
             
@@ -71,8 +71,21 @@ function t($key) {
             'transport_buy_ticket' => 'Cumpără Bilet Digital',
             'transport_login_required' => 'Trebuie să fii autentificat pentru a cumpăra bilete.',
             
+            // Contact
+            'contact_stay_connected' => 'Rămâi Conectat',
+            'contact_follow_social' => 'Urmărește-ne pe rețelele sociale',
+            'contact_fb' => 'Facebook',
+            'contact_insta' => 'Instagram',
+            'contact_x' => 'X (Twitter)',
+
             // Login / Setări generale
             'settings_title' => 'Autentificare',
+            'settings_profile' => 'Profilul Meu',
+            'settings_language' => 'Limbă',
+            'settings_update' => 'Actualizează Profilul',
+            'settings_old_password' => 'Parola Veche',
+            'settings_new_password' => 'Parola Nouă',
+            'settings_change_password' => 'Schimbă Parola',
             'settings_email' => 'Email',
             'settings_name' => 'Nume complet',
             'settings_password' => 'Parolă',
@@ -102,13 +115,13 @@ function t($key) {
             'home_transport_btn' => '🚍 Live Transport',
             'home_brand' => '@discoverBraila',
             
-            // Evenimente (NOU)
+            // Evenimente
             'events_choose' => 'Choose event category',
             'events_add_new' => 'Add new event',
             'events_cultural' => 'Cultural (Theater, Concerts)',
             'events_sports' => 'Sports (Matches, Competitions)',
             
-            // Ghid Turistic / Harta (NOU)
+            // Ghid Turistic / Harta
             'guide_map_title' => 'Interactive Tourist Map',
             'guide_map_desc' => 'Discover the main attractions and best restaurants in the city.',
             
@@ -126,9 +139,22 @@ function t($key) {
             'transport_price' => 'Price: 2 RON',
             'transport_buy_ticket' => 'Buy Digital Ticket',
             'transport_login_required' => 'You must be logged in to purchase tickets.',
+
+            // Contact
+            'contact_stay_connected' => 'Stay Connected',
+            'contact_follow_social' => 'Follow us on social media',
+            'contact_fb' => 'Facebook',
+            'contact_insta' => 'Instagram',
+            'contact_x' => 'X (Twitter)',
             
             // Login / Setări generale
             'settings_title' => 'Authentication',
+            'settings_profile' => 'My Profile',
+            'settings_language' => 'Language',
+            'settings_update' => 'Update Profile',
+            'settings_old_password' => 'Old Password',
+            'settings_new_password' => 'New Password',
+            'settings_change_password' => 'Change Password',
             'settings_email' => 'Email',
             'settings_name' => 'Full Name',
             'settings_password' => 'Password',
