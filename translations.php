@@ -6,7 +6,7 @@ $translations = [
     'ro' => [
         // Header Navigation
         'nav_home' => 'Acasă',
-        'nav_events' => 'evenimente',
+        'nav_events' => 'Evenimente',
         'nav_guide' => 'Ghid Turistic',
         'nav_transport' => 'Transport',
         'nav_blog' => 'Blog',

@@ -8,13 +8,19 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #fefefe;
-    color: #333;
-    line-height: 1.6;
+/* Blochează saltul paginii și setează fundalul din spate negru pentru a se îmbina cu header-ul */
+html {
+    background-color: #111; /* Spatele suprem al site-ului devine negru */
+    overscroll-behavior: none;
 }
 
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #111; /* Gaura albă devine neagră aici */
+    color: #333;
+    line-height: 1.6;
+    overscroll-behavior: none;
+}
 /* Container responsive */
 .container {
     max-width: 1200px;
@@ -479,9 +485,9 @@ section h2 {
 .hero-transport {
     background: url('img/hero-braila.jpg') no-repeat center center/cover;
     color: white;
-    padding: 100px 20px 60px;
+    padding: 150px 20px 60px; /* Am mărit padding-ul ca textul să nu intre sub header */
     text-align: center;
-    margin-top: 70px;
+    margin-top: 0; /* AICI ERA PROBLEMA! Gaura albă a dispărut. */
     position: relative;
 }
 

@@ -9,11 +9,11 @@ include 'header.php';
 
 <style>
     .ghid-hero {
-        padding: 120px 20px 60px;
-        text-align: center;
-        background: #f8f9fa;
-        margin-top: 80px;
-    }
+    padding: 160px 20px 60px; /* Am compensat din interior */
+    text-align: center;
+    background: #f8f9fa;
+    margin-top: 0; /* Am scos gaura albă și de pe această pagină */
+}
     .ghid-hero h1 { font-size: 42px; color: #333; margin-bottom: 15px; }
     .ghid-hero p { font-size: 18px; color: #666; max-width: 800px; margin: 0 auto 30px auto; }
     
@@ -45,8 +45,10 @@ include 'header.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Inițializăm harta (centrată inițial pe Brăila)
         var map = L.map('harta-turistica');
 
+        // Stratul de hartă (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
@@ -62,59 +64,89 @@ include 'header.php';
             iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
         });
 
-        // Lista de puncte cu coordonatele tale exacte și link-uri către info
+        // Lista completă de locații (Atracții + Restaurante & Fast Food)
         var locatii = [
-            { nume: "Ceasul Public", lat: 45.271606001433845, lng: 27.97475371201764, wiki: "https://ro.wikipedia.org/wiki/Pia%C8%9Ba_Traian_din_Br%C4%83ila#Ceasul_public" },
-            { nume: "Faleza Brăilei", lat: 45.262879549259345, lng: 27.967981528840024, wiki: "https://ro.wikipedia.org/wiki/Br%C4%83ila#Turism" },
-            { nume: "Stadionul Municipal", lat: 45.258271419999794, lng: 27.94695780431002, wiki: "https://ro.wikipedia.org/wiki/Stadionul_Municipal_(Br%C4%83ila)" },
-            { nume: "Brăila Mall", lat: 45.229470046258726, lng: 27.93692885140785, wiki: "https://ro.wikipedia.org/wiki/Br%C4%83ila_Mall" },
-            { nume: "Grădina Zoologică", lat: 45.237733180864026, lng: 27.932565538581596, wiki: "https://www.google.com/search?q=Gradina+Zoologica+Braila" },
-            { nume: "Parcul Monument", lat: 45.25455271981476, lng: 27.947634223404553, wiki: "https://ro.wikipedia.org/wiki/Parcul_Monument_din_Br%C4%83ila" },
-            { nume: "Stațiunea Lacu Sărat", lat: 45.21589723357077, lng: 27.91302759483157, wiki: "https://ro.wikipedia.org/wiki/Lacu_S%C4%83rat,_Br%C4%83ila" },
-            { nume: "Casa Memorială Panait Istrati", lat: 45.27403745324816, lng: 27.979128204525807, wiki: "https://ro.wikipedia.org/wiki/Casa_Memorial%C4%83_%E2%80%9EPanait_Istrati%E2%80%9D" },
-            { nume: "Teatrul Maria Filotti", lat: 45.272024971432, lng: 27.97332028137194, wiki: "https://ro.wikipedia.org/wiki/Teatrul_%E2%80%9EMaria_Filotti%E2%80%9D" },
-            { nume: "Centrul Istoric Brăila", lat: 45.271499690895254, lng: 27.971406542088857, wiki: "https://ro.wikipedia.org/wiki/Br%C4%83ila#Centrul_istoric" },
-            { nume: "Muzeul Brăilei „Carol I”", lat: 45.27221224456756, lng: 27.974188202777317, wiki: "https://ro.wikipedia.org/wiki/Muzeul_Br%C4%83ilei" },
-            { nume: "Grădina Publică", lat: 45.274676386983664, lng: 27.977218017727434, wiki: "https://ro.wikipedia.org/wiki/Gr%C4%83dina_Public%C4%83_din_Br%C4%83ila" },
-            { nume: "Casa Memorială D.P. Perpessicius", lat: 45.27726323651136, lng: 27.97953979425381, wiki: "https://ro.wikipedia.org/wiki/Dumitru_Panaitescu-Perpessicius#Casa_memorială" },
-            { nume: "Secția Științelor Naturii a Muzeului", lat: 45.255086768446226, lng: 27.946441752964706, wiki: "https://www.google.com/search?q=Sectia+Stiintelor+Naturii+Muzeul+Brailei" },
-            { nume: "Biserica Greacă „Buna Vestire”", lat: 45.27025850952869, lng: 27.9754324925146, wiki: "https://ro.wikipedia.org/wiki/Biserica_Greac%C4%83_din_Br%C4%83ila" }
+            // ================== ATRACȚII TURISTICE & MALL (Albastru) ==================
+            { nume: "Ceasul Public", lat: 45.271606, lng: 27.974753, wiki: "https://ro.wikipedia.org/wiki/Pia%C8%9Ba_Traian_din_Br%C4%83ila#Ceasul_public", tip: "atractie" },
+            { nume: "Faleza Brăilei", lat: 45.262879, lng: 27.967981, wiki: "https://ro.wikipedia.org/wiki/Br%C4%83ila#Turism", tip: "atractie" },
+            { nume: "Stadionul Municipal", lat: 45.258271, lng: 27.946957, wiki: "https://ro.wikipedia.org/wiki/Stadionul_Municipal_(Br%C4%83ila)", tip: "atractie" },
+            { nume: "Grădina Zoologică", lat: 45.237733, lng: 27.932565, wiki: "https://www.google.com/search?q=Gradina+Zoologica+Braila", tip: "atractie" },
+            { nume: "Parcul Monument", lat: 45.254552, lng: 27.947634, wiki: "https://ro.wikipedia.org/wiki/Parcul_Monument_din_Br%C4%83ila", tip: "atractie" },
+            { nume: "Stațiunea Lacu Sărat", lat: 45.215897, lng: 27.913027, wiki: "https://ro.wikipedia.org/wiki/Lacu_S%C4%83rat,_Br%C4%83ila", tip: "atractie" },
+            { nume: "Casa Memorială Panait Istrati", lat: 45.274037, lng: 27.979128, wiki: "https://ro.wikipedia.org/wiki/Casa_Memorial%C4%83_%E2%80%9EPanait_Istrati%E2%80%9D", tip: "atractie" },
+            { nume: "Teatrul Maria Filotti", lat: 45.272024, lng: 27.973320, wiki: "https://ro.wikipedia.org/wiki/Teatrul_%E2%80%9EMaria_Filotti%E2%80%9D", tip: "atractie" },
+            { nume: "Centrul Istoric Brăila", lat: 45.271499, lng: 27.971406, wiki: "https://ro.wikipedia.org/wiki/Br%C4%83ila#Centrul_istoric", tip: "atractie" },
+            { nume: "Muzeul Brăilei „Carol I”", lat: 45.272212, lng: 27.974188, wiki: "https://ro.wikipedia.org/wiki/Muzeul_Br%C4%83ilei", tip: "atractie" },
+            { nume: "Grădina Publică", lat: 45.274676, lng: 27.977218, wiki: "https://ro.wikipedia.org/wiki/Gr%C4%83dina_Public%C4%83_din_Br%C4%83ila", tip: "atractie" },
+            { nume: "Casa Memorială D.P. Perpessicius", lat: 45.277263, lng: 27.979539, wiki: "https://ro.wikipedia.org/wiki/Dumitru_Panaitescu-Perpessicius#Casa_memorială", tip: "atractie" },
+            { nume: "Secția Științelor Naturii a Muzeului", lat: 45.255086, lng: 27.946441, wiki: "https://www.google.com/search?q=Sectia+Stiintelor+Naturii+Muzeul+Brailei", tip: "atractie" },
+            { nume: "Biserica Greacă „Buna Vestire”", lat: 45.270258, lng: 27.975432, wiki: "https://ro.wikipedia.org/wiki/Biserica_Greac%C4%83_din_Br%C4%83ila", tip: "atractie" },
+            { nume: "Promenada Mall", lat: 45.230273860412765, lng: 27.93828318564685, wiki: "https://www.google.com/search?q=Promenada+Mall+Braila", tip: "atractie" },
+
+            // ================== RESTAURANTE & FAST FOOD (Verde) ==================
+            { nume: "McDonald's (Barieră)", lat: 45.2550517694067, lng: 27.958166039091335, wiki: "https://www.google.com/search?q=McDonalds+Bariera+Braila", tip: "restaurant" },
+            { nume: "Domino's Pizza", lat: 45.25533324134098, lng: 27.95837057298481, wiki: "https://www.google.com/search?q=Dominos+Pizza+Braila", tip: "restaurant" },
+            { nume: "KFC Bariera", lat: 45.25598001783551, lng: 27.960233624981157, wiki: "https://www.google.com/search?q=KFC+Bariera+Braila", tip: "restaurant" },
+            { nume: "Restaurant Carol (Cel mai bun din Oras)", lat: 45.27210479958391, lng: 27.975163712161493, wiki: "https://www.google.com/search?q=Restaurant+Carol+Braila", tip: "restaurant" },
+            { nume: "Cherhanaua (fosta Sunrise Marina)", lat: 45.26934443572491, lng: 27.97946802340389, wiki: "https://www.google.com/search?q=Cherhanaua+Braila", tip: "restaurant" },
+            { nume: "Heavens", lat: 45.267897478489445, lng: 27.972469424073214, wiki: "https://www.google.com/search?q=Heavens+Braila", tip: "restaurant" },
+            { nume: "Bella Italia", lat: 45.2764115374821, lng: 27.9666702642137, wiki: "https://www.google.com/search?q=Bella+Italia+Braila", tip: "restaurant" },
+            { nume: "The Irish Pub", lat: 45.26533042429084, lng: 27.97059461115861, wiki: "https://www.google.com/search?q=The+Irish+Pub+Braila", tip: "restaurant" },
+            { nume: "Thassos Food", lat: 45.258678319899076, lng: 27.96140826671608, wiki: "https://www.google.com/search?q=Thassos+Food+Braila", tip: "restaurant" },
+            { nume: "All Saints", lat: 45.25749069272165, lng: 27.959114917769334, wiki: "https://www.google.com/search?q=All+Saints+Braila", tip: "restaurant" },
+            { nume: "KY'S Kebab", lat: 45.25636542931921, lng: 27.959029056836886, wiki: "https://www.google.com/search?q=KYS+Kebab+Braila", tip: "restaurant" }
         ];
 
-        // Creăm un FeatureGroup ca să putem face zoom automat mai târziu
         var markerePeHarta = L.featureGroup();
 
         // Parcurgem lista și punem fiecare punct pe hartă
-       locatii.forEach(function(loc) {
+        locatii.forEach(function(loc) {
+            // Aici selectăm culoarea pe baza tipului setat în array
             var marker = L.marker([loc.lat, loc.lng], {
                 icon: (loc.tip === 'restaurant') ? greenIcon : blueIcon
             });
 
-            marker.bindPopup(`<h3>${loc.nume}</h3><a href="${loc.wiki}" target="_blank">Află mai multe</a>`);
-            marker.addTo(map);
+            // Creăm design-ul pentru fereastra de detalii
+            var popupContent = `
+                <div style="text-align: center; padding: 5px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: ${loc.tip === 'restaurant' ? '#28a745' : '#0056b3'};">${loc.nume}</h3>
+                    <a href="${loc.wiki}" target="_blank" style="background: ${loc.tip === 'restaurant' ? '#28a745' : '#0056b3'}; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 13px;">
+                        📖 Află mai multe
+                    </a>
+                </div>
+            `;
+            
+            marker.bindPopup(popupContent);
             markerePeHarta.addLayer(marker);
         });
 
-        // Adăugăm toate markerele pe hartă dintr-un foc
+        // Adăugăm toate markerele pe hartă
         markerePeHarta.addTo(map);
 
-        // Calculăm automat cadrul optim de zoom ca să se vadă TOATE punctele pe ecran
+        // Facem zoom automat pentru a cuprinde toate punctele pe ecran
         map.fitBounds(markerePeHarta.getBounds(), { padding: [30, 30] });
 
+        // ================== ADĂUGARE LEGENDĂ ==================
         var legend = L.control({ position: 'bottomright' });
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
-            div.style.background = 'white'; div.style.padding = '10px'; div.style.borderRadius = '5px';
+            div.style.background = 'white'; 
+            div.style.padding = '12px'; 
+            div.style.borderRadius = '8px';
+            div.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+            div.style.fontSize = '14px';
+            div.style.color = '#333';
+            div.style.lineHeight = '24px';
+            
             div.innerHTML = `
-                <strong>Legenda</strong><br>
-                <i style="background: blue; width: 10px; height: 10px; display: inline-block; border-radius: 50%;"></i> Atracții<br>
-                <i style="background: green; width: 10px; height: 10px; display: inline-block; border-radius: 50%;"></i> Restaurante
+                <strong style="display:block; margin-bottom: 5px; font-size:15px;">Legenda Hărții</strong>
+                <i style="background: #2A81CB; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></i> Atracții Turistice<br>
+                <i style="background: #2AAD27; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></i> Restaurante & Fast Food
             `;
             return div;
         };
         legend.addTo(map);
     });
-    
 </script>
 
 <?php include 'footer.php'; ?>
