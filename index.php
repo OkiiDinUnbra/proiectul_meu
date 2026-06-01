@@ -70,29 +70,29 @@ if (isset($_GET['register'])) {
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <style>
         /* Setup Full-screen */
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Poppins', sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Poppins', sans-serif; background-color: transparent !important; }
         
         /* Slideshow Background */
-        .slideshow-container { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; }
+        .slideshow-container { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
         .mySlides { 
-    width: 100%; 
-    height: 100%; 
-    background-size: cover; 
-    background-position: center; 
-    background-repeat: no-repeat;
-    position: absolute; 
-    opacity: 0; 
-    transition: opacity 1.5s ease-in-out;
-    filter: blur(6px); /* Aici e magia! Poți schimba 6px cu o valoare mai mică sau mai mare */
-    transform: scale(1.05); /* Mărește fff puțin poza ca blur-ul să nu strice marginile albe */
-}
+            width: 100%; 
+            height: 100%; 
+            background-size: cover;
+            background-position: center; 
+            background-repeat: no-repeat;
+            position: absolute; 
+            opacity: 0; 
+            transition: opacity 1.5s ease-in-out;
+            filter: blur(6px); /* Aici e magia! Poți schimba 6px cu o valoare mai mică sau mai mare */
+            transform: scale(1.05); /* Mărește fff puțin poza ca blur-ul să nu strice marginile albe */
+        }
         .mySlides.active { opacity: 1; }
         
         /* Overlay Gradient pentru o estetică premium */
-        .overlay { position: fixed; width: 100%; height: 100%; top: 0; left: 0; background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,86,179,0.4) 100%); z-index: 0; }
+        .overlay { position: fixed; width: 100%; height: 100%; top: 0; left: 0; background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,86,179,0.4) 100%); z-index: 1; }
         
         /* Wrapper Centrat */
-        .login-page-wrapper { position: relative; z-index: 1; height: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .login-page-wrapper { position: relative; z-index: 2; height: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; }
         
         /* Glassmorphism Box */
         .glass-box {
@@ -154,7 +154,6 @@ if (isset($_GET['register'])) {
         <div class="mySlides" style="background-image: url('img/braila4.jpg');"></div>
         <div class="mySlides" style="background-image: url('img/braila5.jpg');"></div>
         <div class="mySlides" style="background-image: url('img/braila6.jpg');"></div>
-
     </div>
     
     <div class="overlay"></div>
@@ -246,7 +245,7 @@ if (isset($_GET['register'])) {
             slideIndex++;
             if (slideIndex >= slides.length) slideIndex = 0;
             slides[slideIndex].classList.add("active");
-            setTimeout(showSlides, 5000); 
+            setTimeout(showSlides, 5000);
         }
         if (slides.length > 0) setTimeout(showSlides, 5000);
 

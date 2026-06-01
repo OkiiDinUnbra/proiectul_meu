@@ -10,6 +10,12 @@ $page_title = isset($page_title) ? $page_title : t('page_title');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $page_title ?></title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('site_theme') || 'dark'; 
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     
     <?php if(isset($needs_calendar) && $needs_calendar): ?>
@@ -23,12 +29,11 @@ $page_title = isset($page_title) ? $page_title : t('page_title');
     <div class="container">
         <h1 class="logo"><a href="acasa.php"><?= t('page_title') ?></a></h1>
         
-<!-- ====== WIDGET VREME ȘI ORĂ (WIDE) ====== -->
-<div class="header-weather-time" style="display: flex; justify-content: center; align-items: center; gap: 25px; font-weight: 700; font-size: 20px; color: #ffd700; background: rgba(255, 255, 255, 0.15); padding: 10px 50px; min-width: 280px; border-radius: 30px; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-    <span id="live-time">--:--</span>
-    <span style="color: rgba(255,255,255,0.5); font-weight: 300;">|</span>
-    <span id="live-weather" style="color: #fff;">⏳</span>
-</div>
+        <div class="header-weather-time">
+            <span id="live-time">--:--</span>
+            <span style="color: rgba(255,255,255,0.5); font-weight: 300;">|</span>
+            <span id="live-weather" style="color: #fff;">⏳</span>
+        </div>
 
         <nav>
            <ul>
@@ -38,13 +43,14 @@ $page_title = isset($page_title) ? $page_title : t('page_title');
                     <li><a href="ghid.php"><?= t('nav_guide') ?></a></li>
                     <li><a href="trafic.php" style="color: #ff4757; font-weight: bold;">🚦 Info Trafic</a></li>
                     <li><a href="transport.php" style="color: #ffd700; font-weight: bold;"><?= t('nav_transport') ?></a></li>
+                    
                     <li class="dropdown-profil">
-    <a href="#" class="dropbtn"><?= t('nav_blog') ?> ▼</a>
-    <div class="dropdown-content">
-        <a href="stiri.php">📰 Știri Locale</a>
-        <a href="articole.php">📝 Articole Originale</a>
-    </div>
-</li>
+                        <a href="#" class="dropbtn"><?= t('nav_blog') ?> ▼</a>
+                        <div class="dropdown-content">
+                            <a href="stiri.php">📰 Știri Locale</a>
+                            <a href="articole.php">📝 Articole Originale</a>
+                        </div>
+                    </li>
 
                     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
                         <li><a href="statistici.php" style="color: #ff4757; font-weight: bold;"><?= t('nav_statistics') ?></a></li>
@@ -89,14 +95,42 @@ $page_title = isset($page_title) ? $page_title : t('page_title');
                     <li><a href="#" onclick="openPopup('loginPopup')"><?= t('nav_login') ?></a></li>
                     <li><a href="#" onclick="openPopup('registerPopup')"><?= t('nav_register') ?></a></li>
                 <?php endif; ?>
+
+                <li style="margin-left: 15px; display: flex; align-items: center;">
+                    <button id="theme-toggle" class="theme-toggle-btn" title="Schimbă Tema">
+                        <span id="theme-icon">☀️</span>
+                    </button>
+                </li>
+
             </ul>
         </nav>
     </div>
 </header>
 
-<!-- ====== SCRIPT PENTRU VREME ȘI ORĂ ====== -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Script pentru Tema Dark/Light
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    function updateThemeIcon(theme) {
+        themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙'; // Soare pentru a trece la Light, Lună pentru Dark
+    }
+
+    // Setăm iconița la încărcare
+    updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+
+    themeToggle.addEventListener('click', () => {
+        let currentTheme = document.documentElement.getAttribute('data-theme');
+        let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('site_theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
+
+    // 2. Script pentru Ceas
     function updateTime() {
         const acum = new Date();
         const ora = acum.getHours().toString().padStart(2, '0');
@@ -106,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateTime, 1000);
     updateTime();
 
+    // 3. Script pentru Vreme
     async function fetchWeather() {
         try {
             const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=45.2692&longitude=27.9575&current_weather=true');
@@ -127,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     fetchWeather();
-    
     setInterval(fetchWeather, 1800000);
 });
 </script>
