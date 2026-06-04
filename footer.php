@@ -1,135 +1,196 @@
 <?php
-require_once 'db_connect.php'; 
-
-$current_lang = getCurrentLanguage();
-$page_title = isset($page_title) ? $page_title : t('page_title');
-$current_page = basename($_SERVER['PHP_SELF']);
+// Verificăm dacă suntem pe prima pagină pentru a ascunde zona de copyright
+$is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
 ?>
-<!DOCTYPE html>
-<html lang="<?= $current_lang ?>">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $page_title ?></title>
 
-    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
-    
-    <?php if(isset($needs_calendar) && $needs_calendar): ?>
-        <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
-    <?php endif; ?>
-</head>
-<body>
+<?php if (!$is_home): ?>
+<footer style="background: var(--bg-section); color: var(--text-light); text-align: center; padding: 40px 20px; border-top: 1px solid var(--border-color); font-size: 14px; margin-top: auto;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto;">
+        <p>&copy; <?= date('Y') ?> Descoperă Brăila. Proiect pentru Licență.</p>
+        <p style="margin-top: 10px; font-size: 13px;">Acesta este un proiect educațional dezvoltat cu pasiune.</p>
+    </div>
+</footer>
+<?php endif; ?>
 
-<header>
-    <div class="container">
-        <h1 class="logo">
-            <a href="acasa.php">
-                ⚓ <?= t('page_title') ?>
-                <span class="logo-tagline">descoperă orașul tău</span>
-            </a>
-        </h1>
+<!-- ================= POPUP AUTENTIFICARE ================= -->
+<div class="popup-overlay" id="loginPopup">
+    <div class="popup-box modern-popup">
+        <span class="close-btn" onclick="closePopup('loginPopup')">&times;</span>
+        <h2><?= t('nav_login') ?></h2>
+        <p class="popup-subtitle">Bine ai revenit!</p>
+
+        <form method="POST" action="login.php" class="modern-form">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            
+            <div class="form-group-modern">
+                <input type="email" name="email" id="login_email" placeholder=" " required>
+                <label for="login_email">✉️ <?= t('register_email') ?></label>
+            </div>
+            
+            <div class="form-group-modern password-group">
+                <input type="password" name="parola" id="login_parola" placeholder=" " required>
+                <label for="login_parola">🔒 Parola</label>
+                <span class="toggle-password" onclick="togglePasswordVisibility('login_parola')">👁️</span>
+            </div>
+
+            <button type="submit" class="btn-submit-modern">Intră în cont</button>
+        </form>
+
+        <div class="popup-footer-text">
+            Nu ai cont? <a href="#" onclick="closePopup('loginPopup'); openPopup('registerPopup');">Creează unul aici</a>
+        </div>
+    </div>
+</div>
+
+<!-- ================= POPUP ÎNREGISTRARE ================= -->
+<div class="popup-overlay" id="registerPopup">
+    <div class="popup-box modern-popup">
+        <span class="close-btn" onclick="closePopup('registerPopup')">&times;</span>
+        <h2><?= t('nav_register') ?></h2>
+        <p class="popup-subtitle">Alătură-te comunității Brăila!</p>
+
+        <form method="POST" action="register.php" class="modern-form">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+            <div class="form-group-modern">
+                <input type="text" name="nume" id="reg_nume" placeholder=" " required>
+                <label for="reg_nume">👤 <?= t('register_name') ?></label>
+            </div>
+
+            <div class="form-group-modern">
+                <input type="email" name="email" id="reg_email" placeholder=" " required>
+                <label for="reg_email">✉️ <?= t('register_email') ?></label>
+            </div>
+
+            <div class="form-group-modern password-group">
+                <input type="password" name="parola" id="reg_parola" placeholder=" " required>
+                <label for="reg_parola">🔒 Parola</label>
+                <span class="toggle-password" onclick="togglePasswordVisibility('reg_parola')">👁️</span>
+            </div>
+
+            <label class="checkbox-modern">
+                <input type="checkbox" name="newsletter">
+                <span>Vreau să primesc oferte pe email.</span>
+            </label>
+
+            <button type="submit" class="btn-submit-modern">Creează Contul</button>
+        </form>
+
+        <div class="popup-footer-text">
+            Ai deja cont? <a href="#" onclick="closePopup('registerPopup'); openPopup('loginPopup');">Autentifică-te</a>
+        </div>
+    </div>
+</div>
+
+<!-- ================= POPUP CONTACT ================= -->
+<div class="popup-overlay" id="contactPopup">
+    <div class="popup-box modern-popup">
+        <span class="close-btn" onclick="closePopup('contactPopup')">&times;</span>
+        <h2><?= t('nav_contact') ?></h2>
+        <p class="popup-subtitle" style="margin-bottom: 25px;">Suntem aici! Scrie-ne pe platforma ta preferată.</p>
         
-        <div class="header-weather-time">
-            <span id="live-time">--:--</span>
-            <span style="color: rgba(255,255,255,0.2); font-weight: 300;">|</span>
-            <span id="live-weather">⏳</span>
+        <ul class="contact-social-list">
+            <li><a href="mailto:contact@braila.ro" class="x-link"><i>✉️</i> contact@braila.ro</a></li>
+            <li><a href="https://facebook.com/PrimariaBraila" target="_blank" class="fb-link"><i>📘</i> Primăria Brăila</a></li>
+            <li><a href="https://instagram.com/descopera.braila" target="_blank" class="insta-link"><i>📸</i> @descopera.braila</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- ================= POPUP EVENIMENT (DIN CALENDAR) ================= -->
+<div class="popup-overlay" id="eventPopup">
+    <div class="popup-box" style="max-width: 500px;">
+        <span class="close-btn" onclick="closePopup('eventPopup')">&times;</span>
+        <h2 id="popupEventTitle" style="color: var(--accent-primary); margin-bottom: 10px;">Titlu</h2>
+        
+        <div style="background: var(--bg-section); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <p style="margin-bottom: 8px;"><strong>📅 Dată:</strong> <span id="popupEventDate"></span></p>
+            <p><strong>📍 Locație:</strong> <span id="popupEventLocation"></span></p>
+        </div>
+        
+        <p id="popupEventDesc" style="color: var(--text-light); margin-bottom: 20px; line-height: 1.6;"></p>
+        
+        <div id="adminEventControls" style="display: none; justify-content: center; gap: 15px; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <!-- Link-urile de editare/stergere vor fi injectate aici prin JS -->
         </div>
 
-        <nav>
-           <ul>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="acasa.php" <?= $current_page==='acasa.php'?'class="nav-active"':'' ?>><?= t('nav_home') ?></a></li>
-                    <li><a href="evenimente.php" <?= $current_page==='evenimente.php'||$current_page==='evenimentextins.php'?'class="nav-active"':'' ?>><?= t('nav_events') ?></a></li>
-                    <li><a href="ghid.php" <?= $current_page==='ghid.php'?'class="nav-active"':'' ?>><?= t('nav_guide') ?></a></li>
-                    <li><a href="trafic.php" class="nav-warning<?= $current_page==='trafic.php'?' nav-active':'' ?>">🚦 Info Trafic</a></li>
-                    <li><a href="transport.php" class="nav-success<?= $current_page==='transport.php'?' nav-active':'' ?>"><?= t('nav_transport') ?></a></li>
-                    
-                    <li class="dropdown-profil">
-                        <a href="#" class="dropbtn<?= in_array($current_page,['stiri.php','articole.php','articol.php','admin_articol.php'])?' nav-active':'' ?>"><?= t('nav_blog') ?> ▼</a>
-                        <div class="dropdown-content">
-                            <a href="stiri.php">📰 Știri Locale</a>
-                            <a href="articole.php">📝 Articole Originale</a>
-                        </div>
-                    </li>
-
-                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-                        <li><a href="statistici.php" class="nav-warning<?= $current_page==='statistici.php'?' nav-active':'' ?>"><?= t('nav_statistics') ?></a></li>
-                    <?php endif; ?>
-
-                    <li><a href="#" onclick="openPopup('contactPopup')"><?= t('nav_contact') ?></a></li>
-
-                    <li class="dropdown-language" style="position: relative;">
-                        <a href="#" class="dropbtn" style="font-weight: 600;">
-                            <?= $current_lang === 'ro' ? '🇷🇴 RO' : '🇬🇧 EN' ?> ▼
-                        </a>
-                        <div class="dropdown-content" style="width: 150px;">
-                            <?php if ($current_lang !== 'ro'): ?>
-                                <form method="POST" style="padding: 0;">
-                                    <input type="hidden" name="change_language" value="1">
-                                    <input type="hidden" name="language" value="ro">
-                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                                    <button type="submit" style="width:100%;text-align:left;padding:9px 14px;border:none;background:none;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.7);">🇷🇴 Română</button>
-                                </form>
-                            <?php endif; ?>
-                            <?php if ($current_lang !== 'en'): ?>
-                                <form method="POST" style="padding: 0;">
-                                    <input type="hidden" name="change_language" value="1">
-                                    <input type="hidden" name="language" value="en">
-                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                                    <button type="submit" style="width:100%;text-align:left;padding:9px 14px;border:none;background:none;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.7);">🇬🇧 English</button>
-                                </form>
-                            <?php endif; ?>
-                        </div>
-                    </li>
-
-                    <li class="dropdown-profil">
-                        <a href="#" class="dropbtn<?= in_array($current_page,['profil.php','setari.php'])?' nav-active':'' ?>">👤 <?= htmlspecialchars($_SESSION['nume']) ?> ▼</a>
-                        <div class="dropdown-content">
-                            <a href="profil.php"><?= t('nav_tickets') ?></a>
-                            <a href="setari.php"><?= t('nav_settings') ?></a>
-                            <a href="logout.php" style="color:var(--accent-delete)!important"><?= t('nav_logout') ?></a>
-                        </div>
-                    </li>
-
-                <?php else: ?>
-                    <li><a href="#" onclick="openPopup('loginPopup')"><?= t('nav_login') ?></a></li>
-                    <li><a href="#" onclick="openPopup('registerPopup')"><?= t('nav_register') ?></a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="#" id="btnVeziMaiMulte" class="btn" style="display: inline-block; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; background: var(--link-color); color: #fff;">ℹ️ Vezi detaliile complete</a>
+        </div>
     </div>
-</header>
+</div>
 
+<!-- ================= SCRIPTURI PRINCIPALE ================= -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    function updateTime() {
-        const acum = new Date();
-        const ora = acum.getHours().toString().padStart(2, '0');
-        const min = acum.getMinutes().toString().padStart(2, '0');
-        document.getElementById('live-time').textContent = ora + ':' + min;
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
-
-    async function fetchWeather() {
-        try {
-            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=45.2692&longitude=27.9575&current_weather=true');
-            const data = await response.json();
-            const temp = Math.round(data.current_weather.temperature);
-            const isDay = data.current_weather.is_day;
-            const code = data.current_weather.weathercode;
-            let icon = isDay ? '☀️' : '🌙';
-            if (code >= 1 && code <= 3) icon = isDay ? '⛅' : '☁️';
-            if (code >= 45 && code <= 67) icon = '🌧️';
-            if (code >= 71 && code <= 82) icon = '❄️';
-            if (code >= 95) icon = '⛈️';
-            document.getElementById('live-weather').textContent = `${icon} ${temp}°C`;
-        } catch (error) {
-            document.getElementById('live-weather').textContent = '☁️ --°C';
+    function openPopup(id) {
+        var popup = document.getElementById(id);
+        if (popup) {
+            popup.style.display = 'flex';
+            setTimeout(function() {
+                popup.classList.add('active');
+            }, 10);
         }
     }
-    fetchWeather();
-    setInterval(fetchWeather, 1800000);
-});
+
+    function closePopup(id) {
+        var popup = document.getElementById(id);
+        if (popup) {
+            popup.classList.remove('active');
+            setTimeout(function() {
+                popup.style.display = 'none';
+            }, 300);
+        }
+    }
+
+    function togglePasswordVisibility(inputId) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+        } else {
+            input.type = "password";
+        }
+    }
+
+    window.onclick = function(event) {
+        const overlays = document.getElementsByClassName('popup-overlay');
+        for (let i = 0; i < overlays.length; i++) {
+            if (event.target === overlays[i]) {
+                closePopup(overlays[i].id);
+            }
+        }
+    }
+
+    // Funcția care afișează pop-up-ul cu detaliile evenimentului cerut de calendar.php
+    function openEventPopup(id, title, date, location, desc) {
+        document.getElementById('popupEventTitle').innerText = title;
+        document.getElementById('popupEventDate').innerText = date;
+        document.getElementById('popupEventLocation').innerText = location;
+        document.getElementById('popupEventDesc').innerText = desc;
+        
+        // Setează link-ul pentru pagina detaliată
+        if(id) {
+            document.getElementById('btnVeziMaiMulte').href = 'evenimentextins.php?id=' + id;
+        } else {
+            document.getElementById('btnVeziMaiMulte').href = '#';
+        }
+
+        // Dacă utilizatorul e admin, injectăm butoanele de edit/delete
+        const adminControls = document.getElementById('adminEventControls');
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+            if(id) {
+                adminControls.style.display = 'flex';
+                adminControls.innerHTML = `
+                    <a href="editeaza_eveniment.php?id=${id}" class="btn" style="background: var(--accent-edit); color: #111; padding: 8px 15px; border-radius: 6px; font-size: 13px; text-decoration: none;">✏️ Editează</a>
+                    <a href="sterge_eveniment.php?id=${id}" class="btn" style="background: var(--accent-delete); color: white; padding: 8px 15px; border-radius: 6px; font-size: 13px; text-decoration: none;" onclick="return confirm('Ești sigur că vrei să ștergi acest eveniment?');">🗑️ Șterge</a>
+                `;
+            } else {
+                adminControls.style.display = 'none';
+            }
+        <?php endif; ?>
+
+        openPopup('eventPopup');
+    }
 </script>
+
+</body>
+</html>

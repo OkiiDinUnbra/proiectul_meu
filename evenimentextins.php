@@ -2,7 +2,6 @@
 session_start();
 require_once 'db_connect.php';
 
-// Verificăm dacă am primit un ID valid în URL
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: evenimente.php");
     exit();
@@ -10,7 +9,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $id_eveniment = intval($_GET['id']);
 
-// 1. PRELUĂM DETALIILE EVENIMENTULUI
 $stmt = $conn->prepare("SELECT * FROM evenimente WHERE id = ?");
 $stmt->bind_param("i", $id_eveniment);
 $stmt->execute();
@@ -26,30 +24,23 @@ $show_free_ticket_popup = false;
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     
-    // Verificăm dacă există bilete gratuite setate și dacă mai sunt disponibile
     if (isset($eveniment['bilete_gratuite_total']) && isset($eveniment['bilete_gratuite_date']) && 
         $eveniment['bilete_gratuite_total'] > $eveniment['bilete_gratuite_date']) {
         
-        // Verificăm dacă utilizatorul a primit DEJA un bilet la acest eveniment (să nu ia infinite dacă dă refresh)
         $stmt_check = $conn->prepare("SELECT id FROM bilete_achizitionate WHERE user_id = ? AND id_eveniment = ?");
         $stmt_check->bind_param("ii", $user_id, $id_eveniment);
         $stmt_check->execute();
         
         if ($stmt_check->get_result()->num_rows === 0) {
-            // Nu are bilet, îi generăm unul GRATUIT pe loc!
             $cod_unic = "BR-EV-FREE-" . strtoupper(substr(uniqid(), -4)) . rand(10,99);
             $data_achizitie = date('Y-m-d H:i:s');
-            $tip = 'eveniment'; // Rămâne tip 'eveniment' ca să fie citit corect în pagina Profil
+            $tip = 'eveniment';
             
-            // Inserăm biletul direct în contul lui
             $stmt_ins = $conn->prepare("INSERT INTO bilete_achizitionate (user_id, cod_qr_unic, data_achizitie, data_expirare, status, tip_bilet, id_eveniment) VALUES (?, ?, ?, NULL, 'activ', ?, ?)");
             $stmt_ins->bind_param("isssi", $user_id, $cod_unic, $data_achizitie, $tip, $id_eveniment);
             
             if ($stmt_ins->execute()) {
-                // Actualizăm contorul: am mai dat un bilet gratuit
                 $conn->query("UPDATE evenimente SET bilete_gratuite_date = bilete_gratuite_date + 1 WHERE id = " . $id_eveniment);
-                
-                // Setăm pe true ca să îi apară mesajul frumos pe ecran
                 $show_free_ticket_popup = true;
             }
             $stmt_ins->close();
@@ -58,7 +49,6 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-// 2. ADĂUGARE RECENZIE
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adauga_recenzie'])) {
     if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
@@ -76,7 +66,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adauga_recenzie'])) {
     }
 }
 
-// 3. PRELUARE RECENZII
 $recenzii = [];
 $medie_rating = 0;
 $total_recenzii = 0;
@@ -103,40 +92,43 @@ include 'header.php';
 <style>
     .event-detail-container { max-width: 1000px; margin: 120px auto 60px auto; padding: 0 20px; }
     
-    .event-hero { display: flex; flex-wrap: wrap; gap: 30px; background: #fff; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 40px;}
+    .event-hero { display: flex; flex-wrap: wrap; gap: 30px; background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 40px; border: 1px solid var(--border-color); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);}
     .event-image { flex: 1; min-width: 300px; border-radius: 15px; overflow: hidden; }
     .event-image img { width: 100%; height: 100%; object-fit: cover; }
     .event-info { flex: 1.5; min-width: 300px; display: flex; flex-direction: column; justify-content: center;}
     
-    .event-title { font-size: 32px; color: #111; margin-bottom: 15px; margin-top: 0;}
-    .event-meta { font-size: 16px; color: #555; margin-bottom: 20px; line-height: 1.6;}
-    .event-meta strong { color: #0056b3; }
-    .event-desc { font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 30px; }
+    .event-title { font-size: 32px; color: var(--text-main); margin-bottom: 15px; margin-top: 0;}
+    .event-meta { font-size: 16px; color: var(--text-light); margin-bottom: 20px; line-height: 1.6;}
+    .event-meta strong { color: var(--link-color); }
+    .event-desc { font-size: 16px; color: var(--text-main); line-height: 1.8; margin-bottom: 30px; }
     
-    .btn-cumpara { display: inline-block; background: #28a745; color: white; padding: 15px 30px; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 18px; text-align: center; transition: all 0.3s; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);}
-    .btn-cumpara:hover { background: #218838; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);}
+    .btn-cumpara { display: inline-block; background: var(--accent-success); color: #000; padding: 15px 30px; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 18px; text-align: center; transition: all 0.3s; border: none; cursor: pointer;}
+    .btn-cumpara:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);}
     
-    /* Sectiune Recenzii */
-    .reviews-section { background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-    .reviews-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 30px; }
-    .reviews-header h3 { margin: 0; font-size: 24px; color: #333; }
-    .average-rating { font-size: 20px; font-weight: bold; color: #f39c12; }
+    .reviews-section { background: var(--card-bg); border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid var(--border-color); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--text-main);}
+    .reviews-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; }
+    .reviews-header h3 { margin: 0; font-size: 24px; color: var(--text-main); }
+    .average-rating { font-size: 20px; font-weight: bold; color: #ffd700; }
     
-    .add-review-box { background: #f8fafd; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #e1e5eb;}
+    .add-review-box { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 1px solid var(--border-color);}
     .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 5px; font-size: 24px; cursor: pointer; }
     .star-rating input { display: none; }
-    .star-rating label { color: #ccc; transition: color 0.2s; }
-    .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #f39c12; }
+    .star-rating label { color: var(--border-color); transition: color 0.2s; }
+    .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #ffd700; }
     
-    .review-textarea { width: 100%; padding: 15px; border: 2px solid #e1e5eb; border-radius: 12px; font-family: inherit; font-size: 15px; margin-top: 15px; resize: vertical; min-height: 100px; outline: none; transition: border-color 0.3s; }
-    .review-textarea:focus { border-color: #0056b3; }
+    .review-textarea { width: 100%; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; font-family: inherit; font-size: 15px; margin-top: 15px; resize: vertical; min-height: 100px; outline: none; transition: border-color 0.3s; background: var(--input-bg); color: var(--text-main);}
+    .review-textarea:focus { border-color: var(--link-color); }
     
-    .review-card { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
+    .review-card { border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px; }
     .review-card:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .review-user { font-weight: bold; color: #111; font-size: 16px; margin-bottom: 5px; display: flex; justify-content: space-between;}
-    .review-date { font-size: 12px; color: #999; font-weight: normal;}
-    .review-stars { color: #f39c12; font-size: 14px; margin-bottom: 10px; }
-    .review-text { color: #555; font-size: 15px; line-height: 1.6; margin: 0; }
+    .review-user { font-weight: bold; color: var(--text-main); font-size: 16px; margin-bottom: 5px; display: flex; justify-content: space-between;}
+    .review-date { font-size: 12px; color: var(--text-light); font-weight: normal;}
+    .review-stars { color: #ffd700; font-size: 14px; margin-bottom: 10px; }
+    .review-text { color: var(--text-light); font-size: 15px; line-height: 1.6; margin: 0; }
+
+    .login-prompt { text-align: center; padding: 30px; background: rgba(0, 123, 255, 0.1); border-radius: 12px; border: 1px solid rgba(0, 123, 255, 0.3); margin-bottom: 30px; }
+    .login-prompt a { color: var(--link-color); font-weight: bold; text-decoration: none; }
+    .login-prompt a:hover { text-decoration: underline; }
 </style>
 
 <div class="event-detail-container">
@@ -164,19 +156,22 @@ include 'header.php';
             </div>
             
             <?php if(isset($eveniment['pret']) && $eveniment['pret'] > 0): ?>
-                <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>" class="btn-cumpara">💳 Cumpără Bilet Acum</a>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>" class="btn-cumpara">💳 Cumpără Bilet Acum</a>
+                <?php else: ?>
+                    <a href="#" onclick="openPopup('loginPopup'); return false;" class="btn-cumpara" style="background: var(--link-color); color: #fff;">Autentifică-te pentru a cumpăra</a>
+                <?php endif; ?>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-                <div class="admin-controls">
-                    <a href="editeaza_eveniment.php?id=<?= $eveniment['id'] ?>" class="admin-btn btn-edit">✏️ Editează</a>
-                    <a href="sterge_eveniment.php?id=<?= $eveniment['id'] ?>" class="admin-btn btn-delete" onclick="return confirm('Ștergi definitiv acest eveniment?');">🗑️ Șterge</a>
+                <div class="admin-controls" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <a href="editeaza_eveniment.php?id=<?= $eveniment['id'] ?>" class="btn-cumpara" style="background: var(--accent-edit); padding: 10px 20px; font-size: 14px;">✏️ Editează</a>
+                    <a href="sterge_eveniment.php?id=<?= $eveniment['id'] ?>" class="btn-cumpara" style="background: var(--accent-delete); color: #fff; padding: 10px 20px; font-size: 14px;" onclick="return confirm('Ștergi definitiv acest eveniment?');">🗑️ Șterge</a>
                 </div>
             <?php endif; ?>
         </div>
     </div>
 
-    <!-- Reviews Section -->
     <div class="reviews-section">
         <div class="reviews-header">
             <h3>⭐ Recenzii & Evaluări</h3>
@@ -189,13 +184,12 @@ include 'header.php';
             </div>
         </div>
 
-        <!-- Add Review Form -->
         <?php if (isset($_SESSION['user_id'])): ?>
             <div class="add-review-box">
-                <h4 style="margin-top: 0; margin-bottom: 15px;">Lasă o recenzie:</h4>
+                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--text-main);">Lasă o recenzie:</h4>
                 <form method="POST" action="evenimentextins.php?id=<?= $id_eveniment ?>">
                     <div style="margin-bottom: 15px;">
-                        <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">Evaluare (1-5 stele):</label>
+                        <label style="font-weight: 600; color: var(--text-light); display: block; margin-bottom: 8px;">Evaluare (1-5 stele):</label>
                         <div class="star-rating">
                             <input type="radio" id="star5" name="rating" value="5" required>
                             <label for="star5">★</label>
@@ -210,18 +204,17 @@ include 'header.php';
                         </div>
                     </div>
                     <textarea name="comentariu" class="review-textarea" placeholder="Spune-ne cum ți s-a părut evenimentul..." required></textarea>
-                    <button type="submit" name="adauga_recenzie" class="btn-cumpara" style="margin-top: 15px; display: inline-block;">Postează Recenzia</button>
+                    <button type="submit" name="adauga_recenzie" class="btn-cumpara" style="margin-top: 15px; display: inline-block; font-size: 15px; padding: 12px 25px;">Postează Recenzia</button>
                 </form>
             </div>
         <?php else: ?>
-            <div style="text-align: center; padding: 20px; background: #f9f9f9; border-radius: 12px; margin-bottom: 30px;">
-                <p style="color: #666; margin: 0;">Trebuie să fii <a href="#" onclick="openPopup('loginPopup'); return false;" style="color: #0056b3; font-weight: 600;">autentificat</a> pentru a lăsa o recenzie.</p>
+            <div class="login-prompt">
+                <p style="margin: 0;">Trebuie să fii <a href="#" onclick="openPopup('loginPopup'); return false;">autentificat</a> pentru a lăsa o recenzie.</p>
             </div>
         <?php endif; ?>
 
-        <!-- Reviews Display -->
         <?php if (!empty($recenzii)): ?>
-            <div style="margin-top: 30px;">O
+            <div style="margin-top: 30px;">
                 <?php foreach ($recenzii as $recenzie): ?>
                     <div class="review-card">
                         <div class="review-user">
@@ -236,22 +229,22 @@ include 'header.php';
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <p style="text-align: center; color: #999; padding: 30px 0;">Nicio recenzie încă. Fii primul care evaluează!</p>
+            <p style="text-align: center; color: var(--text-light); padding: 30px 0;">Nicio recenzie încă. Fii primul care evaluează!</p>
         <?php endif; ?>
     </div>
 </div>
 
 <?php if ($show_free_ticket_popup): ?>
 <div id="freeTicketModal" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; backdrop-filter: blur(5px);">
-    <div style="background: white; padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; box-shadow: 0 10px 40px rgba(255, 215, 0, 0.5); border: 4px solid #ffd700; animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);">
+    <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; box-shadow: 0 10px 40px rgba(255, 215, 0, 0.5); border: 2px solid #ffd700; animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); color: var(--text-main);">
         <h1 style="font-size: 60px; margin:0;">🎉</h1>
-        <h2 style="color: #28a745; margin-top: 10px; font-weight: 800; font-size: 30px;">FELICITĂRI!</h2>
-        <p style="font-size: 18px; color: #333;">Ai fost printre primii vizitatori și ai câștigat un bilet <strong style="color: #e74c3c;">GRATUIT</strong> la evenimentul:<br>
-        <span style="font-size: 24px; color: #0056b3; font-weight: bold; margin-top: 15px; display: block;"><?= htmlspecialchars($eveniment['titlu']) ?></span></p>
-        <div style="background: #f8f9fa; border-left: 4px solid #28a745; padding: 10px; margin-top: 20px; font-size: 14px; color: #555; text-align: left;">
+        <h2 style="color: var(--accent-success); margin-top: 10px; font-weight: 800; font-size: 30px;">FELICITĂRI!</h2>
+        <p style="font-size: 18px;">Ai fost printre primii vizitatori și ai câștigat un bilet <strong style="color: var(--accent-delete);">GRATUIT</strong> la evenimentul:<br>
+        <span style="font-size: 24px; color: var(--link-color); font-weight: bold; margin-top: 15px; display: block;"><?= htmlspecialchars($eveniment['titlu']) ?></span></p>
+        <div style="background: rgba(40,167,69,0.1); border-left: 4px solid var(--accent-success); padding: 10px; margin-top: 20px; font-size: 14px; text-align: left;">
             Biletul tău a fost generat și adăugat automat în contul tău la secțiunea <strong>"Biletele Mele"</strong>.
         </div>
-        <button onclick="document.getElementById('freeTicketModal').style.display='none'" class="btn-cumpara" style="margin-top: 25px; background: #ffd700; color: #111; border: none; cursor: pointer; width: 100%; font-size: 18px;">Super! Mergi mai departe</button>
+        <button onclick="document.getElementById('freeTicketModal').style.display='none'" class="btn-cumpara" style="margin-top: 25px; background: #ffd700; color: #111; width: 100%;">Super! Mergi mai departe</button>
     </div>
 </div>
 <style>

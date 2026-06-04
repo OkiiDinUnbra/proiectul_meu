@@ -2,5 +2,7 @@
 session_start();
 session_unset();
 session_destroy();
-header("Location: index.php");
-exit;
+// Redirecționează utilizatorul către pagina principală publică
+header("Location: acasa.php");
+exit();
+?>

@@ -32,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salveaza_articol'])) 
         
         // Formate permise
         $formate_suportate = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-        
         if (in_array($extensie, $formate_suportate)) {
             // Generăm un nume unic pentru a nu suprascrie alte poze (Ex: articol_64a2b3.jpg)
             $nume_imagine = uniqid('articol_') . '.' . $extensie;
@@ -64,16 +63,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salveaza_articol'])) 
             
             if ($conn->query($sql) === TRUE) {
                 $tip_mesaj = "success";
+                
+                // === AICI ESTE NOUA LOGICĂ DE NOTIFICĂRI ===
                 if($edit_id == 0) {
+                    
+                    // Includem scriptul motorului de emailuri
+                    require_once 'notificari.php';
+
+                    // Setăm subiectul și mesajul HTML folosind titlul noului articol
+                    $subiect = "📰 Articol Nou: " . $titlu;
+                    $mesaj_html = "
+                        <h3 style='color: #ffd700;'>Am publicat un articol nou pentru tine!</h3>
+                        <p>Titlu: <strong>{$titlu}</strong></p>
+                        <p>Intră acum pe blogul Descoperă Brăila pentru a citi materialul complet, exclusiv pe platforma noastră.</p>
+                        <br>
+                        <a href='https://braila.ro/articole.php' style='background: #3399ff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Citește Articolul</a>
+                    ";
+
+                    // Declanșăm trimiterea emailurilor
+                    trimiteNotificareNewsletter($conn, $subiect, $mesaj_html);
+
                     // Golim câmpurile după ce s-a publicat un articol nou cu succes
                     $articol_curent = ['titlu' => '', 'imagine' => '', 'continut' => '', 'sursa' => ''];
                 }
+                // === FINAL LOGICĂ NOTIFICĂRI ===
+
             } else {
                 $mesaj = "Eroare la salvare: " . $conn->error; 
                 $tip_mesaj = "error";
             }
         } else {
-            $mesaj = "Titlul, Autorul și Conținutul sunt obligatorii!"; 
+            $mesaj = "Titlul, Autorul și Conținutul sunt obligatorii!";
             $tip_mesaj = "error";
         }
     }
@@ -89,14 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salveaza_articol'])) 
     .admin-group label { margin-bottom: 8px; color: var(--accent-primary); font-weight: 600; font-size: 15px; }
     .admin-group input, .admin-group textarea {
         width: 100%; padding: 15px; font-size: 15px; border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px; outline: none; background: rgba(0, 0, 0, 0.5); color: white;
-        font-family: 'Poppins', sans-serif;
+        border-radius: 12px; outline: none; background: rgba(0, 0, 0, 0.5); color: white; font-family: 'Poppins', sans-serif;
     }
     
     /* Design special pentru input-ul de fișier */
     .admin-group input[type="file"] {
-        padding: 10px;
-        background: rgba(255, 255, 255, 0.05);
+        padding: 10px; background: rgba(255, 255, 255, 0.05);
         color: var(--text-light);
         border: 1px dashed rgba(255, 215, 0, 0.5);
         cursor: pointer;

@@ -7,34 +7,56 @@ if (!isset($_SESSION['confirmate'])) {
 
 $mesaj_raport = '';
 
-// 1. Logica pentru adăugarea unui raport nou
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adauga_raport'])) {
-    $autor = isset($_SESSION['nume']) ? $_SESSION['nume'] : 'Vizitator';
-    $tip = mysqli_real_escape_string($conn, $_POST['tip_problema']);
-    $locatie = mysqli_real_escape_string($conn, $_POST['locatie']);
-    $descriere = mysqli_real_escape_string($conn, $_POST['descriere']);
-    
-    if(!empty($locatie)) {
-        $sql = "INSERT INTO rapoarte_trafic (autor, tip_problema, locatie, descriere) VALUES ('$autor', '$tip', '$locatie', '$descriere')";
-        $conn->query($sql);
-        $mesaj_raport = "Raportul a fost trimis și apare pe radar.";
+    // Verificăm dacă utilizatorul are cont înainte să procesăm formularul
+    if (isset($_SESSION['user_id'])) {
+        $autor = isset($_SESSION['nume']) ? $_SESSION['nume'] : 'Vizitator';
+        $tip = mysqli_real_escape_string($conn, $_POST['tip_problema']);
+        $locatie = mysqli_real_escape_string($conn, $_POST['locatie']);
+        $descriere = mysqli_real_escape_string($conn, $_POST['descriere']);
+        
+        if(!empty($locatie)) {
+            $sql = "INSERT INTO rapoarte_trafic (autor, tip_problema, locatie, descriere) VALUES ('$autor', '$tip', '$locatie', '$descriere')";
+            $conn->query($sql);
+            $mesaj_raport = "Raportul a fost trimis și apare pe radar.";
+        }
     }
 }
 
-// 2. Logica pentru confirmarea unui incident
-if (isset($_GET['confirma_id'])) {
+if (isset($_GET['confirma_id']) && isset($_SESSION['user_id'])) {
     $id_raport = (int)$_GET['confirma_id'];
     
     if (!in_array($id_raport, $_SESSION['confirmate'])) {
+        // Incrementăm confirmarea
         $conn->query("UPDATE rapoarte_trafic SET confirmari = confirmari + 1 WHERE id = $id_raport");
         $_SESSION['confirmate'][] = $id_raport;
+
+        // Verificăm dacă a ajuns fix la 5 confirmări pentru a trimite notificare
+        $res_check = $conn->query("SELECT tip_problema, locatie, confirmari FROM rapoarte_trafic WHERE id = $id_raport");
+        if ($res_check && $row = $res_check->fetch_assoc()) {
+            if ($row['confirmari'] == 5) {
+                require_once 'notificari.php';
+                
+                $subiect = "🚨 Alertă Trafic: " . $row['tip_problema'] . " în Brăila";
+                $mesaj_html = "
+                    <h3 style='color: #ff4d4d;'>Atenție în trafic!</h3>
+                    <p>Comunitatea a confirmat un incident major:</p>
+                    <ul>
+                        <li><strong>Tip:</strong> {$row['tip_problema']}</li>
+                        <li><strong>Locație:</strong> {$row['locatie']}</li>
+                    </ul>
+                    <p>Accesează harta live pe site pentru a vedea rute ocolitoare!</p>
+                ";
+                
+                trimiteNotificareNewsletter($conn, $subiect, $mesaj_html);
+            }
+        }
     }
     
     header("Location: trafic.php"); 
     exit();
 }
 
-// 3. Preluăm toate rapoartele
 $rapoarte = [];
 $alerte_majore = [];
 $res = $conn->query("SELECT * FROM rapoarte_trafic WHERE status = 'activ' ORDER BY confirmari DESC, data_raport DESC");
@@ -63,13 +85,15 @@ include 'header.php';
     .btn-toggle-raport { background: var(--accent-delete); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(220,53,69,0.3); }
     .btn-toggle-raport:hover { opacity: 0.9; transform: translateY(-2px); }
     
+    .btn-login-raport { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 14px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 20px; }
+    .btn-login-raport:hover { background: rgba(255,255,255,0.1); }
+
     .form-raport-box { display: none; background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid var(--accent-delete); color: var(--text-main); backdrop-filter: blur(10px); }
     .form-raport-box.active { display: block; animation: fadeInDown 0.3s; }
     
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); margin-bottom: 15px; outline: none; }
     .btn-trimite { background: var(--accent-success); color: #000; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-    /* Redesign Carduri Trafic conform Mockup */
     .raport-card-modern { 
         background: var(--card-bg); 
         border: 1px solid var(--border-color); 
@@ -135,33 +159,36 @@ include 'header.php';
         <div class="reports-container">
             <?php if($mesaj_raport) echo "<div style='background:rgba(40,167,69,0.15); color:var(--accent-success); border: 1px solid var(--accent-success); padding:10px; border-radius:8px; margin-bottom:15px; text-align:center; font-weight:bold;'>$mesaj_raport</div>"; ?>
             
-            <button class="btn-toggle-raport" onclick="toggleForm()">🚨 Raportează un incident</button>
-            
-            <div class="form-raport-box" id="boxRaportare">
-                <h3 style="margin-bottom: 15px; font-size: 18px;">Adaugă o alertă nouă</h3>
-                <form method="POST" action="">
-                    <div class="form-group">
-                        <select name="tip_problema" required>
-                            <option value="" disabled selected>Alege tipul incidentului...</option>
-                            <option value="Accident">Accident Rutier</option>
-                            <option value="Trafic Blocat">Trafic Blocat / Aglomerație</option>
-                            <option value="Groapă Periculoasă">Groapă Periculoasă</option>
-                            <option value="Semafor Defect">Semafor Defect</option>
-                            <option value="Filtru Poliție">Filtru Poliție</option>
-                        </select>
-                        <input type="text" name="locatie" placeholder="Ex: Intersecția Călărașilor cu Bariera" required>
-                        <textarea name="descriere" rows="2" placeholder="Detalii scurte (opțional)..."></textarea>
-                        <button type="submit" name="adauga_raport" class="btn-trimite">Trimite Alerta</button>
-                    </div>
-                </form>
-            </div>
+            <?php if(isset($_SESSION['user_id'])): ?>
+                <button class="btn-toggle-raport" onclick="toggleForm()">🚨 Raportează un incident</button>
+                
+                <div class="form-raport-box" id="boxRaportare">
+                    <h3 style="margin-bottom: 15px; font-size: 18px;">Adaugă o alertă nouă</h3>
+                    <form method="POST" action="">
+                        <div class="form-group">
+                            <select name="tip_problema" required>
+                                <option value="" disabled selected>Alege tipul incidentului...</option>
+                                <option value="Accident">Accident Rutier</option>
+                                <option value="Trafic Blocat">Trafic Blocat / Aglomerație</option>
+                                <option value="Groapă Periculoasă">Groapă Periculoasă</option>
+                                <option value="Semafor Defect">Semafor Defect</option>
+                                <option value="Filtru Poliție">Filtru Poliție</option>
+                            </select>
+                            <input type="text" name="locatie" placeholder="Ex: Intersecția Călărașilor cu Bariera" required>
+                            <textarea name="descriere" rows="2" placeholder="Detalii scurte (opțional)..."></textarea>
+                            <button type="submit" name="adauga_raport" class="btn-trimite">Trimite Alerta</button>
+                        </div>
+                    </form>
+                </div>
+            <?php else: ?>
+                <button class="btn-login-raport" onclick="openPopup('loginPopup')">🔒 Autentifică-te pentru a raporta</button>
+            <?php endif; ?>
 
             <div style="max-height: 480px; overflow-y: auto; padding-right: 5px;">
                 <?php if(empty($rapoarte)): ?>
                     <p style="color: var(--text-light); text-align: center; margin-top: 20px;">Niciun incident raportat recent.</p>
                 <?php else: ?>
                     <?php foreach($rapoarte as $r): 
-                        // Logica de mapare a culorilor
                         $tip = $r['tip_problema'];
                         $class_urgenta = 'urgenta-mica';
                         $badge_urgenta = 'mica';
@@ -178,6 +205,8 @@ include 'header.php';
                         }
                         
                         $dejaConfirmat = in_array($r['id'], $_SESSION['confirmate']);
+                        $esteAutorul = (isset($_SESSION['nume']) && $r['autor'] === $_SESSION['nume']);
+                        $esteLogat = isset($_SESSION['user_id']);
                     ?>
                         <div class="raport-card-modern <?= $class_urgenta ?>">
                             <div class="raport-left">
@@ -188,10 +217,15 @@ include 'header.php';
                             
                             <div class="raport-right">
                                 <div class="confirmari-badge <?= $badge_urgenta ?>"><?= $r['confirmari'] ?> confirmări</div>
-                                <?php if ($dejaConfirmat): ?>
-                                    <span class="btn-confirma disabled">Confirmat</span>
-                                <?php else: ?>
-                                    <a href="trafic.php?confirma_id=<?= $r['id'] ?>" class="btn-confirma">+ Confirmă</a>
+                                
+                                <?php if ($esteLogat): ?>
+                                    <?php if ($esteAutorul): ?>
+                                        <span class="btn-confirma disabled">Raportul tău</span>
+                                    <?php elseif ($dejaConfirmat): ?>
+                                        <span class="btn-confirma disabled">Confirmat</span>
+                                    <?php else: ?>
+                                        <a href="trafic.php?confirma_id=<?= $r['id'] ?>" class="btn-confirma">+ Confirmă</a>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </div>
