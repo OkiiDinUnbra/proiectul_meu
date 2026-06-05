@@ -15,12 +15,21 @@ $user_id = $_SESSION['user_id'];
 $nume_utilizator = $_SESSION['nume'];
 
 // 2. DETERMINĂM TIPUL DE BILET
-$tip_bilet = 'bus'; // default
+$tip_bilet_vehicul = 'bus'; // default pentru transport
+$tip_bilet_achizitie = 'fizic'; // NOU: 'fizic' sau 'online' pentru evenimente
 $id_eveniment = null;
 $pret_bilet = 2.50;
 $titlu_bilet = "Bilet Braicar (60 Min)";
 $descriere_bilet = "Bilet pentru transport public 60 minute";
 $url_inapoi = 'transport.php';
+
+// NOU: Prelucrăm parametrul `tip` venit din URL
+if (isset($_GET['tip']) && in_array($_GET['tip'], ['fizic', 'online'])) {
+    $tip_bilet_achizitie = $_GET['tip'];
+} elseif (isset($_POST['tip_bilet_achizitie'])) {
+     $tip_bilet_achizitie = $_POST['tip_bilet_achizitie'];
+}
+
 
 if (isset($_GET['id_eveniment']) || isset($_POST['id_eveniment'])) {
     $id_eveniment = intval(isset($_GET['id_eveniment']) ? $_GET['id_eveniment'] : $_POST['id_eveniment']);
@@ -33,19 +42,28 @@ if (isset($_GET['id_eveniment']) || isset($_POST['id_eveniment'])) {
     
     if ($result->num_rows > 0) {
         $eveniment = $result->fetch_assoc();
-        $tip_bilet = 'eveniment';
+        $tip_bilet_vehicul = 'eveniment';
         $pret_bilet = floatval($eveniment['pret']);
-        $titlu_bilet = htmlspecialchars($eveniment['titlu']);
-        $descriere_bilet = "Bilet pentru evenimentul: " . htmlspecialchars($eveniment['titlu']);
+        
+        // NOU: Adăugăm 15 RON dacă a selectat biletul online
+        if ($tip_bilet_achizitie === 'online') {
+            $pret_bilet += 15;
+            $titlu_bilet = htmlspecialchars($eveniment['titlu']) . " [LIVE ONLINE]";
+            $descriere_bilet = "Acces Live Online: " . htmlspecialchars($eveniment['titlu']);
+        } else {
+            $titlu_bilet = htmlspecialchars($eveniment['titlu']) . " [ACCES SALĂ]";
+            $descriere_bilet = "Acces Fizic Eveniment: " . htmlspecialchars($eveniment['titlu']);
+        }
+
         $url_inapoi = 'evenimentextins.php?id=' . $id_eveniment;
     }
     $stmt->close();
 }
 
-$page_title = 'Cumpără ' . ($tip_bilet === 'eveniment' ? 'Bilet Eveniment' : 'Bilet Transport') . ' | Descoperă Brăila';
+$page_title = 'Cumpără ' . ($tip_bilet_vehicul === 'eveniment' ? 'Bilet Eveniment' : 'Bilet Transport') . ' | Descoperă Brăila';
 include 'header.php';
 
-$pas = 0; // 0 = eroare/redirecționare, 1 = formular card, 2 = bilet generat
+$pas = 0; 
 $mesaj_succes = false;
 $cod_unic = '';
 $data_achizitie = '';
@@ -62,10 +80,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (isset($_POST['finalizeaza_plata'])) {
-        // PASUL 2: Utilizatorul a introdus datele cardului și a apăsat pe plată
-        
         // Generăm datele reale pentru bilet
-        if ($tip_bilet === 'eveniment') {
+        if ($tip_bilet_vehicul === 'eveniment') {
             $cod_unic = "BR-EV-" . strtoupper(substr(uniqid(), -5)) . rand(10,99);
             $data_expirare = null; // Valabil până la scanare
         } else {
@@ -75,36 +91,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         $data_achizitie = date('Y-m-d H:i:s');
 
-        // Salvăm în baza de date - extindem tabelul bilete_achizitionate cu tipul de bilet și id_eveniment
-        if ($tip_bilet === 'eveniment') {
+        // Salvăm în baza de date
+        if ($tip_bilet_vehicul === 'eveniment') {
+            // NOU: Salvăm tip_bilet ('fizic' sau 'online') direct în tabel
             $stmt = $conn->prepare("INSERT INTO bilete_achizitionate (user_id, cod_qr_unic, data_achizitie, data_expirare, status, tip_bilet, id_eveniment) VALUES (?, ?, ?, NULL, 'activ', ?, ?)");
-            $stmt->bind_param("isssi", $user_id, $cod_unic, $data_achizitie, $tip_bilet, $id_eveniment);
+            $stmt->bind_param("isssi", $user_id, $cod_unic, $data_achizitie, $tip_bilet_achizitie, $id_eveniment);
         } else {
             $stmt = $conn->prepare("INSERT INTO bilete_achizitionate (user_id, cod_qr_unic, data_achizitie, data_expirare, status, tip_bilet) VALUES (?, ?, ?, ?, 'activ', ?)");
-            $stmt->bind_param("issss", $user_id, $cod_unic, $data_achizitie, $data_expirare, $tip_bilet);
+            $stmt->bind_param("issss", $user_id, $cod_unic, $data_achizitie, $data_expirare, $tip_bilet_vehicul);
         }
         
         if ($stmt->execute()) {
             $mesaj_succes = true;
             $qr_image_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($cod_unic);
             $pas = 2;
-            unset($_SESSION['payment_token']); // Invalidăm token-ul pentru a preveni dubla cumpărare
+            unset($_SESSION['payment_token']); 
         } else {
             error_log("Eroare la inserare bilet: " . $stmt->error);
         }
         $stmt->close();
 
     } else {
-        // PASUL 1: Utilizatorul vine din evenimentextins.php sau transport.php. Îi afișăm formularul de card.
         $_SESSION['payment_token'] = bin2hex(random_bytes(16));
         $pas = 1;
     }
-} else if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_eveniment'])) {
-    // Primim GET de la evenimentextins.php
+} else if ($_SERVER["REQUEST_METHOD"] == "GET" && (isset($_GET['id_eveniment']) || isset($_GET['bus']))) {
+     // Dacă e GET de la autobuz, avem nevoie de bypass
     $_SESSION['payment_token'] = bin2hex(random_bytes(16));
     $pas = 1;
 } else if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    // Dacă accesează pagina direct din URL (GET) fără parametri, îl trimitem înapoi
     header("Location: transport.php");
     exit;
 }
@@ -135,51 +150,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <section class="bilet-container">
 
-    <?php if ($pas === 1): ?>
+   <?php if ($pas === 1): ?>
         <div class="modern-popup" style="background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 20px; padding: 40px; text-align: left;">
             <h2 style="text-align: center; margin-bottom: 10px;">
-                <?= ($tip_bilet === 'eveniment' ? t('payment_title_event') : t('payment_title_bus')) ?>
+                <?= ($tip_bilet_vehicul === 'eveniment' ? 'Securizare Plată Eveniment' : 'Securizare Plată Transport') ?>
             </h2>
-            <p class="popup-subtitle"><?= t('payment_total_price') ?> <strong><?= number_format($pret_bilet, 2) ?> RON</strong>.</p>
+            <p class="popup-subtitle" style="text-align: center;">Tip Bilet: <strong><?= strtoupper($tip_bilet_achizitie) ?></strong></p>
+            <p class="popup-subtitle" style="text-align: center;">Total de plată: <strong style="color:var(--accent-success); font-size:20px;"><?= number_format($pret_bilet, 2) ?> RON</strong></p>
             
             <form method="POST" action="genereaza_bilet.php" class="modern-form">
                 <input type="hidden" name="payment_token" value="<?= $_SESSION['payment_token'] ?>">
-                <?php if ($tip_bilet === 'eveniment'): ?>
+                <input type="hidden" name="tip_bilet_achizitie" value="<?= $tip_bilet_achizitie ?>">
+                
+                <?php if ($tip_bilet_vehicul === 'eveniment'): ?>
                     <input type="hidden" name="id_eveniment" value="<?= $id_eveniment ?>">
                 <?php endif; ?>
                 
                 <div class="form-group-modern">
                     <input type="text" name="nume_card" id="nume_card" required placeholder=" " autocomplete="cc-name">
-                    <label for="nume_card"><?= t('payment_card_name') ?></label>
+                    <label for="nume_card">👤 Numele de pe card</label>
                 </div>
                 
                 <div class="form-group-modern">
                     <input type="text" name="numar_card" id="numar_card" required placeholder=" " maxlength="19" autocomplete="cc-number">
-                    <label for="numar_card"><?= t('payment_card_number') ?></label>
+                    <label for="numar_card">💳 Numărul cardului</label>
                 </div>
                 
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group-modern" style="flex: 1;">
                         <input type="text" name="expirare" id="expirare" required placeholder=" " maxlength="5" autocomplete="cc-exp">
-                        <label for="expirare"><?= t('payment_expiry') ?></label>
+                        <label for="expirare">📅 Expirare (LL/AA)</label>
                     </div>
                     
                     <div class="form-group-modern" style="flex: 1;">
                         <input type="text" name="cvv" id="cvv" required placeholder=" " maxlength="3" autocomplete="cc-csc">
-                        <label for="cvv"><?= t('payment_cvv') ?></label>
+                        <label for="cvv">🔒 CVV</label>
                     </div>
                 </div>
 
                 <div class="form-options" style="justify-content: center; margin-top: 10px;">
-                    <small style="color: #28a745; font-weight: 600;"><?= t('payment_secure') ?></small>
+                    <small style="color: #28a745; font-weight: 600;">🔒 Plată 100% Securizată</small>
                 </div>
                 
                 <button type="submit" name="finalizeaza_plata" class="btn-submit-modern" style="background: #28a745; margin-top: 20px;">
-                    <?= t('payment_pay_button') ?> <?= number_format($pret_bilet, 2) ?> RON
+                    Plătește <?= number_format($pret_bilet, 2) ?> RON
                 </button>
             </form>
         </div>
-
     <?php elseif ($pas === 2 && $mesaj_succes): ?>
         <div id="loadingSec" class="loading-plata" style="display: block;">
             <div class="spinner"></div>
@@ -192,8 +209,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <div class="bilet-fizic">
                 <div class="bilet-header">
-                    <?php if ($tip_bilet === 'eveniment'): ?>
-                        🎫 Bilet Eveniment: <?= $titlu_bilet ?>
+                    <?php if ($tip_bilet_vehicul === 'eveniment'): ?>
+                        🎫 Bilet <?= ucfirst($tip_bilet_achizitie) ?>: <br> <span style="font-size:16px; font-weight:normal;"><?= $titlu_bilet ?></span>
                     <?php else: ?>
                         🚌 Bilet Braicar (60 Min)
                     <?php endif; ?>
@@ -207,34 +224,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     <h3 style="margin-bottom: 10px; font-family: monospace; color: #333; letter-spacing: 2px;"><?= $cod_unic ?></h3>
                     
-                    <?php if ($tip_bilet === 'bus'): ?>
+                    <?php if ($tip_bilet_vehicul === 'bus'): ?>
                         <div class="timer">
                             Expiră în: <span id="countdown">60:00</span>
                         </div>
                     <?php endif; ?>
 
                     <div class="detalii-bilet">
-                        <p><strong>Călător/Cumpărător:</strong> <?= htmlspecialchars($nume_utilizator) ?></p>
+                        <p><strong>Călător:</strong> <?= htmlspecialchars($nume_utilizator) ?></p>
                         <p><strong>Emis la:</strong> <?= date('d/m/Y H:i', strtotime($data_achizitie)) ?></p>
-                        <?php if ($tip_bilet === 'bus'): ?>
+                        <?php if ($tip_bilet_vehicul === 'bus'): ?>
                             <p><strong>Valabil până la:</strong> <?= date('d/m/Y H:i', strtotime($data_expirare)) ?></p>
                         <?php else: ?>
                             <p><strong>Eveniment:</strong> <?= $titlu_bilet ?></p>
                         <?php endif; ?>
-                        <p><strong>Preț:</strong> <?= number_format($pret_bilet, 2) ?> RON (Achitat Card)</p>
+                        <p><strong>Preț Achitat:</strong> <?= number_format($pret_bilet, 2) ?> RON</p>
                     </div>
                 </div>
             </div>
             
-            <a href="<?= $url_inapoi ?>" class="btn-submit-modern" style="margin-top: 30px; display: inline-block; text-decoration: none; background: #6c757d;">Înapoi</a>
+            <a href="<?= $url_inapoi ?>" class="btn-submit-modern" style="margin-top: 30px; display: inline-block; text-decoration: none; background: #6c757d;">Înapoi la Eveniment</a>
         </div>
 
         <script>
-            // Simulăm timpul de procesare bancară de 2 secunde
             setTimeout(function() {
                 document.getElementById('loadingSec').style.display = 'none';
                 document.getElementById('biletSec').style.display = 'block';
-                <?php if ($tip_bilet === 'bus'): ?>
+                <?php if ($tip_bilet_vehicul === 'bus'): ?>
                     startTimer();
                 <?php endif; ?>
             }, 2000);
@@ -304,7 +320,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // NOU: Validare la trimiterea formularului
     const formPlata = document.querySelector('.modern-form');
     if (formPlata) {
         formPlata.addEventListener('submit', function(e) {

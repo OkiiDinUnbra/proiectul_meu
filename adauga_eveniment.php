@@ -11,6 +11,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
 $mesaj = '';
 $categorie_preselectata = isset($_GET['categorie']) ? $_GET['categorie'] : 'cultural';
 $categorii_valide = ['cultural', 'sportiv'];
+
 if (!in_array($categorie_preselectata, $categorii_valide)) {
     $categorie_preselectata = 'cultural';
 }
@@ -22,6 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $locatie        = trim($_POST['locatie']);
     $categorie      = isset($_POST['categorie']) ? $_POST['categorie'] : $categorie_preselectata;
     $pret           = isset($_POST['pret']) && is_numeric($_POST['pret']) ? floatval($_POST['pret']) : 0.00;
+
+    // Preluăm link-ul live doar dacă bifa este pusă
+    $link_live      = isset($_POST['este_live']) && !empty(trim($_POST['link_live'])) ? trim($_POST['link_live']) : NULL;
 
     if (!in_array($categorie, $categorii_valide)) {
         $categorie = 'cultural';
@@ -50,10 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Inserăm în baza de date INCLUSIV imaginea
+    // Inserăm în baza de date INCLUSIV imaginea și link-ul live
     if (empty($mesaj)) {
-        $stmt = $conn->prepare('INSERT INTO evenimente (titlu, descriere, data_eveniment, locatie, categorie, pret, imagine) VALUES (?, ?, ?, ?, ?, ?, ?)');
-        $stmt->bind_param('sssssds', $titlu, $descriere, $data_eveniment, $locatie, $categorie, $pret, $cale_imagine);
+        $stmt = $conn->prepare('INSERT INTO evenimente (titlu, descriere, data_eveniment, locatie, categorie, pret, imagine, link_live) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->bind_param('sssssdss', $titlu, $descriere, $data_eveniment, $locatie, $categorie, $pret, $cale_imagine, $link_live);
 
         if ($stmt->execute()) {
             $mesaj = "<div style='color: #155724; background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin-bottom: 25px;'>✅ Evenimentul a fost adăugat cu succes!</div>";
@@ -81,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div style="display: flex; gap: 20px; margin-bottom: 25px;">
             <div style="flex: 1;">
                 <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Data Evenimentului:</label>
-                <input type="date" name="data_eveniment" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+               <input type="datetime-local" name="data_eveniment" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
             </div>
 
             <div style="flex: 1;">
@@ -94,13 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div style="display: flex; gap: 20px; margin-bottom: 25px;">
             <div style="flex: 1;">
                 <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Categorie:</label>
-                <select name="categorie" <?= (isset($_GET['categorie']) && in_array($_GET['categorie'], $categorii_valide)) ? 'disabled' : '' ?> style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; outline: none; background: var(--bg-main); color: var(--text-main);">
-                    <option value="cultural"  <?= $categorie_preselectata === 'cultural'  ? 'selected' : '' ?>>Cultural</option>
-                    <option value="sportiv"   <?= $categorie_preselectata === 'sportiv'   ? 'selected' : '' ?>>Sportiv</option>
+                <select name="categorie" style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; outline: none; background: var(--bg-main); color: var(--text-main);">
+                    <option value="cultural" <?= $categorie_preselectata === 'cultural' ? 'selected' : '' ?>>Cultural</option>
+                    <option value="sportiv" <?= $categorie_preselectata === 'sportiv' ? 'selected' : '' ?>>Sportiv</option>
                 </select>
-                <?php if (isset($_GET['categorie']) && in_array($_GET['categorie'], $categorii_valide)): ?>
-                    <input type="hidden" name="categorie" value="<?= htmlspecialchars($categorie_preselectata) ?>">
-                <?php endif; ?>
             </div>
             
             <div style="flex: 1;">
@@ -113,6 +114,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Locație:</label>
             <input type="text" name="locatie" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
         </div>
+
+        <div style="margin-bottom: 25px; padding: 15px; border: 2px dashed var(--accent-delete); border-radius: 10px; background: rgba(255,0,0,0.03);">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-main); font-weight: 700; font-size: 16px;">
+                <input type="checkbox" name="este_live" id="checkLive" onchange="toggleLiveField()" style="width: 20px; height: 20px; cursor: pointer;">
+                🔴 Acest eveniment are o componentă LIVE (Bilet Online)
+            </label>
+            
+            <div id="divLinkLive" style="display: none; margin-top: 15px;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 8px;">Link YouTube Live:</label>
+                <input type="url" name="link_live" placeholder="Ex: https://youtube.com/watch?v=..." style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+                <small style="color: var(--text-main); opacity: 0.7; display: block; margin-top: 5px;">* Vizitatorii vor putea achiziționa bilet online pentru a vedea acest link.</small>
+            </div>
+        </div>
+        <script>
+            function toggleLiveField() {
+                var checkBox = document.getElementById("checkLive");
+                var divLive = document.getElementById("divLinkLive");
+                if (checkBox.checked == true) {
+                    divLive.style.display = "block";
+                } else {
+                    divLive.style.display = "none";
+                }
+            }
+        </script>
 
         <div style="margin-bottom: 30px;">
             <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Descriere Detaliată:</label>

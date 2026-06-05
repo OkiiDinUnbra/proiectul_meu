@@ -2,6 +2,7 @@
 session_start();
 $page_title = "Editează Eveniment";
 include 'header.php';
+require_once 'db_connect.php';
 
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     die("<div style='text-align:center; padding: 120px 20px; min-height: 60vh;'><h2 style='color: var(--text-main);'>Acces interzis!</h2></div>");
@@ -16,7 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
     $descriere = trim($_POST['descriere']);
     $data_eveniment = $_POST['data_eveniment'];
     $locatie = trim($_POST['locatie']);
+    $categorie = isset($_POST['categorie']) ? $_POST['categorie'] : 'cultural';
     $pret = isset($_POST['pret']) && is_numeric($_POST['pret']) ? floatval($_POST['pret']) : 0; 
+    
+    // Preluăm link-ul live
+    $link_live = isset($_POST['este_live']) && !empty(trim($_POST['link_live'])) ? trim($_POST['link_live']) : NULL;
 
     // --- LOGICA PENTRU UPLOAD IMAGINE ---
     $cale_imagine_noua = null;
@@ -36,13 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
 
     // Actualizăm baza de date
     if ($cale_imagine_noua !== null) {
-        // Dacă a pus poză nouă, actualizăm și coloana imagine
-        $stmt_update = $conn->prepare("UPDATE evenimente SET titlu = ?, descriere = ?, data_eveniment = ?, locatie = ?, pret = ?, imagine = ? WHERE id = ?");
-        $stmt_update->bind_param("ssssdsi", $titlu, $descriere, $data_eveniment, $locatie, $pret, $cale_imagine_noua, $id);
+        // Dacă a pus poză nouă
+        $stmt_update = $conn->prepare("UPDATE evenimente SET titlu = ?, descriere = ?, data_eveniment = ?, locatie = ?, pret = ?, categorie = ?, imagine = ?, link_live = ? WHERE id = ?");
+        $stmt_update->bind_param("ssssdsssi", $titlu, $descriere, $data_eveniment, $locatie, $pret, $categorie, $cale_imagine_noua, $link_live, $id);
     } else {
-        // Dacă nu a pus poză nouă, actualizăm doar restul (imaginea veche rămâne)
-        $stmt_update = $conn->prepare("UPDATE evenimente SET titlu = ?, descriere = ?, data_eveniment = ?, locatie = ?, pret = ? WHERE id = ?");
-        $stmt_update->bind_param("ssssdi", $titlu, $descriere, $data_eveniment, $locatie, $pret, $id);
+        // Dacă nu a pus poză nouă
+        $stmt_update = $conn->prepare("UPDATE evenimente SET titlu = ?, descriere = ?, data_eveniment = ?, locatie = ?, pret = ?, categorie = ?, link_live = ? WHERE id = ?");
+        $stmt_update->bind_param("ssssdssi", $titlu, $descriere, $data_eveniment, $locatie, $pret, $categorie, $link_live, $id);
     }
     
     if ($stmt_update->execute()) {
@@ -102,7 +107,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id']) || isset($id)) {
         <div style="display: flex; gap: 20px; margin-bottom: 25px;">
             <div style="flex: 1;">
                 <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Data Evenimentului:</label>
-                <input type="date" name="data_eveniment" value="<?= htmlspecialchars(date('Y-m-d', strtotime($eveniment['data_eveniment']))) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+                <input type="datetime-local" name="data_eveniment" value="<?= htmlspecialchars(date('Y-m-d\TH:i', strtotime($eveniment['data_eveniment']))) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
             </div>
 
             <div style="flex: 1;">
@@ -112,10 +117,44 @@ if (isset($_GET['id']) && is_numeric($_GET['id']) || isset($id)) {
             </div>
         </div>
 
-        <div style="margin-bottom: 25px;">
-            <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Locație:</label>
-            <input type="text" name="locatie" value="<?= htmlspecialchars($eveniment['locatie']) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+        <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+            <div style="flex: 1;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Categorie:</label>
+                <select name="categorie" style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; outline: none; background: var(--bg-main); color: var(--text-main);">
+                    <option value="cultural" <?= ($eveniment['categorie'] == 'cultural') ? 'selected' : '' ?>>Cultural</option>
+                    <option value="sportiv" <?= ($eveniment['categorie'] == 'sportiv') ? 'selected' : '' ?>>Sportiv</option>
+                </select>
+            </div>
+            
+            <div style="flex: 1;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Locație:</label>
+                <input type="text" name="locatie" value="<?= htmlspecialchars($eveniment['locatie']) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+            </div>
         </div>
+
+        <div style="margin-bottom: 25px; padding: 15px; border: 2px dashed var(--accent-delete); border-radius: 10px; background: rgba(255,0,0,0.03);">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-main); font-weight: 700; font-size: 16px;">
+                <input type="checkbox" name="este_live" id="checkLiveEdit" onchange="toggleLiveFieldEdit()" <?= !empty($eveniment['link_live']) ? 'checked' : '' ?> style="width: 20px; height: 20px; cursor: pointer;">
+                🔴 Acest eveniment are o componentă LIVE (Bilet Online)
+            </label>
+            
+            <div id="divLinkLiveEdit" style="display: <?= !empty($eveniment['link_live']) ? 'block' : 'none' ?>; margin-top: 15px;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 8px;">Link YouTube Live:</label>
+                <input type="url" name="link_live" value="<?= htmlspecialchars($eveniment['link_live'] ?? '') ?>" placeholder="Ex: https://youtube.com/watch?v=..." style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+                <small style="color: var(--text-main); opacity: 0.7; display: block; margin-top: 5px;">* Vizitatorii vor putea achiziționa bilet online pentru a vedea acest link.</small>
+            </div>
+        </div>
+        <script>
+            function toggleLiveFieldEdit() {
+                var checkBox = document.getElementById("checkLiveEdit");
+                var divLive = document.getElementById("divLinkLiveEdit");
+                if (checkBox.checked == true) {
+                    divLive.style.display = "block";
+                } else {
+                    divLive.style.display = "none";
+                }
+            }
+        </script>
 
         <div style="margin-bottom: 30px;">
             <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Descriere Detaliată:</label>
