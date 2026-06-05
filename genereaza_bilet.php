@@ -15,26 +15,24 @@ $user_id = $_SESSION['user_id'];
 $nume_utilizator = $_SESSION['nume'];
 
 // 2. DETERMINĂM TIPUL DE BILET
-$tip_bilet_vehicul = 'bus'; // default pentru transport
-$tip_bilet_achizitie = 'fizic'; // NOU: 'fizic' sau 'online' pentru evenimente
+$tip_bilet_vehicul = 'bus'; 
+$tip_bilet_achizitie = 'fizic'; 
 $id_eveniment = null;
 $pret_bilet = 2.50;
 $titlu_bilet = "Bilet Braicar (60 Min)";
 $descriere_bilet = "Bilet pentru transport public 60 minute";
 $url_inapoi = 'transport.php';
 
-// NOU: Prelucrăm parametrul `tip` venit din URL
+// Prelucrăm parametrul `tip`
 if (isset($_GET['tip']) && in_array($_GET['tip'], ['fizic', 'online'])) {
     $tip_bilet_achizitie = $_GET['tip'];
 } elseif (isset($_POST['tip_bilet_achizitie'])) {
      $tip_bilet_achizitie = $_POST['tip_bilet_achizitie'];
 }
 
-
 if (isset($_GET['id_eveniment']) || isset($_POST['id_eveniment'])) {
     $id_eveniment = intval(isset($_GET['id_eveniment']) ? $_GET['id_eveniment'] : $_POST['id_eveniment']);
     
-    // Preluam detaliile evenimentului
     $stmt = $conn->prepare("SELECT titlu, pret FROM evenimente WHERE id = ?");
     $stmt->bind_param("i", $id_eveniment);
     $stmt->execute();
@@ -45,7 +43,6 @@ if (isset($_GET['id_eveniment']) || isset($_POST['id_eveniment'])) {
         $tip_bilet_vehicul = 'eveniment';
         $pret_bilet = floatval($eveniment['pret']);
         
-        // NOU: Adăugăm 15 RON dacă a selectat biletul online
         if ($tip_bilet_achizitie === 'online') {
             $pret_bilet += 15;
             $titlu_bilet = htmlspecialchars($eveniment['titlu']) . " [LIVE ONLINE]";
@@ -73,27 +70,23 @@ $qr_image_url = '';
 // 3. Gestionăm fluxul cererilor POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // Verificăm mereu validitatea token-ului pentru securitate
     if (!isset($_POST['payment_token']) || !isset($_SESSION['payment_token']) || $_POST['payment_token'] !== $_SESSION['payment_token']) {
         header("Location: " . $url_inapoi);
         exit;
     }
 
     if (isset($_POST['finalizeaza_plata'])) {
-        // Generăm datele reale pentru bilet
         if ($tip_bilet_vehicul === 'eveniment') {
             $cod_unic = "BR-EV-" . strtoupper(substr(uniqid(), -5)) . rand(10,99);
-            $data_expirare = null; // Valabil până la scanare
+            $data_expirare = null; 
         } else {
             $cod_unic = "BR-BUS-" . strtoupper(substr(uniqid(), -5)) . rand(10,99);
-            $data_expirare = date('Y-m-d H:i:s', strtotime('+60 minutes')); // Valabil 60 min
+            $data_expirare = date('Y-m-d H:i:s', strtotime('+60 minutes')); 
         }
         
         $data_achizitie = date('Y-m-d H:i:s');
 
-        // Salvăm în baza de date
         if ($tip_bilet_vehicul === 'eveniment') {
-            // NOU: Salvăm tip_bilet ('fizic' sau 'online') direct în tabel
             $stmt = $conn->prepare("INSERT INTO bilete_achizitionate (user_id, cod_qr_unic, data_achizitie, data_expirare, status, tip_bilet, id_eveniment) VALUES (?, ?, ?, NULL, 'activ', ?, ?)");
             $stmt->bind_param("isssi", $user_id, $cod_unic, $data_achizitie, $tip_bilet_achizitie, $id_eveniment);
         } else {
@@ -103,11 +96,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         if ($stmt->execute()) {
             $mesaj_succes = true;
-            $qr_image_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($cod_unic);
+            // Generăm codul QR doar dacă biletul NU este online
+            if ($tip_bilet_achizitie !== 'online') {
+                $qr_image_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($cod_unic);
+            }
             $pas = 2;
             unset($_SESSION['payment_token']); 
-        } else {
-            error_log("Eroare la inserare bilet: " . $stmt->error);
         }
         $stmt->close();
 
@@ -116,7 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $pas = 1;
     }
 } else if ($_SERVER["REQUEST_METHOD"] == "GET" && (isset($_GET['id_eveniment']) || isset($_GET['bus']))) {
-     // Dacă e GET de la autobuz, avem nevoie de bypass
     $_SESSION['payment_token'] = bin2hex(random_bytes(16));
     $pas = 1;
 } else if ($_SERVER["REQUEST_METHOD"] != "POST") {
@@ -125,15 +118,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
     .bilet-container { padding: 120px 20px 60px; max-width: 600px; margin: auto; min-height: 70vh; text-align: center;}
     
-    /* Loading Spinner */
     .loading-plata { display: none; margin-top: 50px; }
     .spinner { border: 6px solid #f3f3f3; border-top: 6px solid #28a745; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* Design Bilet Fizic */
     .bilet-fizic { 
         background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
         padding: 0; margin-top: 30px; overflow: hidden; border: 2px solid #ddd;
@@ -141,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .bilet-header { background: #28a745; color: white; padding: 20px; font-size: 22px; font-weight: bold; }
     .bilet-body { padding: 30px; }
     .qr-box { margin: 20px 0; padding: 10px; border: 4px dashed #eee; display: inline-block; }
-    .detalii-bilet { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; font-size: 15px; margin-top: 20px;}
+    .detalii-bilet { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; font-size: 15px; margin-top: 20px; color: #333;}
     .detalii-bilet p { margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
     .detalii-bilet p:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
     
@@ -150,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <section class="bilet-container">
 
-   <?php if ($pas === 1): ?>
+    <?php if ($pas === 1): ?>
         <div class="modern-popup" style="background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 20px; padding: 40px; text-align: left;">
             <h2 style="text-align: center; margin-bottom: 10px;">
                 <?= ($tip_bilet_vehicul === 'eveniment' ? 'Securizare Plată Eveniment' : 'Securizare Plată Transport') ?>
@@ -197,6 +190,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </button>
             </form>
         </div>
+
     <?php elseif ($pas === 2 && $mesaj_succes): ?>
         <div id="loadingSec" class="loading-plata" style="display: block;">
             <div class="spinner"></div>
@@ -205,9 +199,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div id="biletSec" style="display: none;">
-            <h2 style="color: #28a745;">✅ Plată acceptată! Biletul tău a fost emis.</h2>
+            <h2 style="color: #28a745; margin-bottom: 20px;">✅ Plată acceptată! Biletul tău a fost emis.</h2>
             
-            <div class="bilet-fizic">
+            <div class="bilet-fizic" id="bilet-de-printat">
                 <div class="bilet-header">
                     <?php if ($tip_bilet_vehicul === 'eveniment'): ?>
                         🎫 Bilet <?= ucfirst($tip_bilet_achizitie) ?>: <br> <span style="font-size:16px; font-weight:normal;"><?= $titlu_bilet ?></span>
@@ -215,12 +209,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         🚌 Bilet Braicar (60 Min)
                     <?php endif; ?>
                 </div>
+                
                 <div class="bilet-body">
-                    <p style="font-size: 16px; color: #555;">Arată acest cod:</p>
                     
-                    <div class="qr-box">
-                        <img src="<?= $qr_image_url ?>" alt="Cod QR Bilet">
-                    </div>
+                    <?php if ($tip_bilet_achizitie === 'online'): ?>
+                        <div style="margin: 15px 0; padding: 20px; background: rgba(0, 123, 255, 0.05); border: 2px dashed var(--link-color); border-radius: 12px;">
+                            <h3 style="color: var(--link-color); margin-top: 0;">🔴 Acces Live Stream</h3>
+                            <p style="font-size: 14px; color: #555; margin-bottom: 15px;">Acesta este biletul tău virtual. Nu este necesară nicio scanare la locație.</p>
+                            <a href="<?= $url_inapoi ?>" class="btn-submit-modern" style="display: inline-block; background: var(--link-color); color: white; text-decoration: none; padding: 12px 25px; border-radius: 8px; width: auto;">▶️ Intră în Sala Virtuală</a>
+                            <p style="font-size: 12px; color: #888; margin-top: 15px; margin-bottom: 0;">Player-ul video va deveni activ cu 15 minute înainte de ora de începere a spectacolului.</p>
+                        </div>
+                    <?php else: ?>
+                        <p style="font-size: 16px; color: #555;">Arată acest cod:</p>
+                        <div class="qr-box">
+                            <img src="<?= $qr_image_url ?>" alt="Cod QR Bilet">
+                        </div>
+                    <?php endif; ?>
                     
                     <h3 style="margin-bottom: 10px; font-family: monospace; color: #333; letter-spacing: 2px;"><?= $cod_unic ?></h3>
                     
@@ -243,7 +247,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </div>
             
-            <a href="<?= $url_inapoi ?>" class="btn-submit-modern" style="margin-top: 30px; display: inline-block; text-decoration: none; background: #6c757d;">Înapoi la Eveniment</a>
+            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button onclick="descarcaPDF()" class="btn-submit-modern" style="background: #dc3545; width: auto; margin: 0;">📄 Descarcă PDF</button>
+                <a href="<?= $url_inapoi ?>" class="btn-submit-modern" style="width: auto; margin: 0; background: #6c757d; text-decoration: none;">Înapoi la pagină</a>
+            </div>
         </div>
 
         <script>
@@ -255,9 +262,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php endif; ?>
             }, 2000);
 
-            function startTimer() {
-                var expireTime = new Date("<?= date('Y/m/d H:i:s', strtotime($data_expirare)) ?>").getTime();
+            // Funcția magică pentru generare PDF
+            function descarcaPDF() {
+                var element = document.getElementById('bilet-de-printat');
+                var opt = {
+                  margin:       10,
+                  filename:     'Bilet_Brăila_<?= $cod_unic ?>.pdf',
+                  image:        { type: 'jpeg', quality: 0.98 },
+                  html2canvas:  { scale: 2, useCORS: true },
+                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
                 
+                // Schimbăm puțin stilul temporar pentru un PDF mai curat (opțional)
+                element.style.boxShadow = 'none';
+                element.style.border = 'none';
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Refacem stilul la loc după ce se descarcă
+                    element.style.boxShadow = '0 10px 30px rgba(0,0,0,0.15)';
+                    element.style.border = '2px solid #ddd';
+                });
+            }
+
+            function startTimer() {
+                var expireTime = new Date("<?= date('Y/m/d H:i:s', strtotime($data_expirare ?? 'now')) ?>").getTime();
                 var x = setInterval(function() {
                     var now = new Date().getTime();
                     var distance = expireTime - now;
@@ -268,12 +296,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     minutes = minutes < 10 ? "0" + minutes : minutes;
                     seconds = seconds < 10 ? "0" + seconds : seconds;
 
-                    document.getElementById("countdown").innerHTML = minutes + ":" + seconds;
+                    if(document.getElementById("countdown")) {
+                        document.getElementById("countdown").innerHTML = minutes + ":" + seconds;
+                    }
 
                     if (distance < 0) {
                         clearInterval(x);
-                        document.getElementById("countdown").innerHTML = "EXPIRAT";
-                        document.getElementById("countdown").style.color = "gray";
+                        if(document.getElementById("countdown")) {
+                            document.getElementById("countdown").innerHTML = "EXPIRAT";
+                            document.getElementById("countdown").style.color = "gray";
+                        }
                     }
                 }, 1000);
             }

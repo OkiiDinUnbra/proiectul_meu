@@ -104,11 +104,10 @@ if (isset($_GET['id']) && is_numeric($_GET['id']) || isset($id)) {
             </div>
         </div>
 
-        <div style="display: flex; gap: 20px; margin-bottom: 25px;">
-            <div style="flex: 1;">
-                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Data Evenimentului:</label>
-                <input type="datetime-local" name="data_eveniment" value="<?= htmlspecialchars(date('Y-m-d\TH:i', strtotime($eveniment['data_eveniment']))) ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
-            </div>
+       <div style="flex: 1;">
+    <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Durată (minute):</label>
+    <input type="number" name="durata_minute" value="<?= isset($eveniment) ? $eveniment['durata_minute'] : '90' ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; background: var(--bg-main); color: var(--text-main);">
+</div>
 
             <div style="flex: 1;">
                 <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Preț Bilet (RON):</label>

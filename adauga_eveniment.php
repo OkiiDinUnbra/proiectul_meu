@@ -88,11 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                <input type="datetime-local" name="data_eveniment" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
             </div>
 
-            <div style="flex: 1;">
-                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Preț Bilet (RON):</label>
-                <input type="number" step="0.01" min="0" name="pret" value="0" style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
-                <small style="color: var(--text-main); opacity: 0.7; display: block; margin-top: 5px;">* Lasă 0 pentru Intrare Liberă</small>
-            </div>
+           <div style="flex: 1;">
+    <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Durată (minute):</label>
+    <input type="number" name="durata_minute" value="<?= isset($eveniment) ? $eveniment['durata_minute'] : '90' ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; background: var(--bg-main); color: var(--text-main);">
+</div>
         </div>
 
         <div style="display: flex; gap: 20px; margin-bottom: 25px;">
