@@ -23,10 +23,20 @@ $stmt->close();
 $show_free_ticket_popup = false;
 $are_bilet = false;
 $tip_bilet_cumparat = null;
+$is_favorite = false; // Variabilă pentru a verifica dacă e la favorite
 
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     
+    // Verificăm dacă are evenimentul la favorite
+    $stmt_fav = $conn->prepare("SELECT id FROM favorite WHERE user_id = ? AND tip_item = 'eveniment' AND item_id = ?");
+    $stmt_fav->bind_param("ii", $user_id, $id_eveniment);
+    $stmt_fav->execute();
+    if($stmt_fav->get_result()->num_rows > 0) {
+        $is_favorite = true;
+    }
+    $stmt_fav->close();
+
     // Verificăm dacă a cumpărat deja un bilet
     $stmt_check = $conn->prepare("SELECT id, tip_bilet FROM bilete_achizitionate WHERE user_id = ? AND id_eveniment = ?");
     $stmt_check->bind_param("ii", $user_id, $id_eveniment);
@@ -44,7 +54,7 @@ if (isset($_SESSION['user_id'])) {
             
             $cod_unic = "BR-EV-FREE-" . strtoupper(substr(uniqid(), -4)) . rand(10,99);
             $data_achizitie = date('Y-m-d H:i:s');
-            $tip = 'fizic'; // Am actualizat la fizic
+            $tip = 'fizic';
             
             $stmt_ins = $conn->prepare("INSERT INTO bilete_achizitionate (user_id, cod_qr_unic, data_achizitie, data_expirare, status, tip_bilet, id_eveniment) VALUES (?, ?, ?, NULL, 'activ', ?, ?)");
             $stmt_ins->bind_param("isssi", $user_id, $cod_unic, $data_achizitie, $tip, $id_eveniment);
@@ -61,10 +71,22 @@ if (isset($_SESSION['user_id'])) {
     $stmt_check->close();
 }
 
-// Calcule pentru sistemul Live
+// ==========================================
+// CALCULE PENTRU SISTEMUL LIVE ȘI DURATĂ
+// ==========================================
 $timp_curent = time();
 $timp_eveniment = strtotime($eveniment['data_eveniment']);
+
+// Dacă adminul a uitat să pună o durată, setăm 90 minute by default
+$durata_secunde = (isset($eveniment['durata_minute']) && $eveniment['durata_minute'] > 0 ? $eveniment['durata_minute'] : 90) * 60;
+$timp_final_eveniment = $timp_eveniment + $durata_secunde;
+
 $minute_ramase = floor(($timp_eveniment - $timp_curent) / 60);
+
+// Este în timpul evenimentului dacă ora curentă e între (Ora de start - 15 minute) și Ora de final
+$este_in_timpul_evenimentului = ($timp_curent >= ($timp_eveniment - 15 * 60) && $timp_curent <= $timp_final_eveniment);
+// Evenimentul s-a încheiat
+$eveniment_expirat = ($timp_curent > $timp_final_eveniment);
 
 $pret_online = $eveniment['pret'] + 15;
 $are_link_live = !empty($eveniment['link_live']);
@@ -114,8 +136,9 @@ include 'header.php';
     .event-detail-container { max-width: 1000px; margin: 120px auto 60px auto; padding: 0 20px; }
     
     .event-hero { display: flex; flex-wrap: wrap; gap: 30px; background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 40px; border: 1px solid var(--border-color); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);}
-    .event-image { flex: 1; min-width: 300px; border-radius: 15px; overflow: hidden; }
+    .event-image { flex: 1; min-width: 300px; border-radius: 15px; overflow: hidden; position: relative; }
     .event-image img { width: 100%; height: 100%; object-fit: cover; }
+    
     .event-info { flex: 1.5; min-width: 300px; display: flex; flex-direction: column; justify-content: center;}
     
     .event-title { font-size: 32px; color: var(--text-main); margin-bottom: 15px; margin-top: 0;}
@@ -150,12 +173,48 @@ include 'header.php';
     .login-prompt { text-align: center; padding: 30px; background: rgba(0, 123, 255, 0.1); border-radius: 12px; border: 1px solid rgba(0, 123, 255, 0.3); margin-bottom: 30px; }
     .login-prompt a { color: var(--link-color); font-weight: bold; text-decoration: none; }
     .login-prompt a:hover { text-decoration: underline; }
+
+    /* STILURI PENTRU BUTON FAVORITE */
+    .btn-favorite {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        font-size: 20px;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        text-decoration: none;
+    }
+    .btn-favorite:hover {
+        transform: scale(1.15);
+        background: rgba(0, 0, 0, 0.7);
+    }
+    .btn-favorite.active {
+        color: #ff4d4d;
+        border-color: rgba(255, 77, 77, 0.5);
+        background: rgba(255, 77, 77, 0.1);
+    }
 </style>
 
 <div class="event-detail-container">
     <div class="event-hero">
         <div class="event-image">
             <img src="<?= htmlspecialchars($eveniment['imagine'] ?? 'img/placeholder.jpg') ?>" alt="<?= htmlspecialchars($eveniment['titlu']) ?>">
+            
+            <a href="#" onclick="toggleFavorite(event, <?= $id_eveniment ?>, 'eveniment', this)" class="btn-favorite <?= $is_favorite ? 'active' : '' ?>">
+                <?= $is_favorite ? '❤️' : '🤍' ?>
+            </a>
         </div>
         
         <div class="event-info">
@@ -176,42 +235,44 @@ include 'header.php';
                 <?= nl2br(htmlspecialchars($eveniment['descriere'])) ?>
             </div>
             
-            <!-- SECȚIUNEA NOUĂ DE BILETE HIBRID -->
             <div class="bilete-container" style="display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
                 <?php if(isset($_SESSION['user_id'])): ?>
                     
                     <?php if(!$are_bilet): ?>
-                        <!-- Nu are bilet achiziționat -->
-                        <?php if($eveniment['pret'] > 0): ?>
-                            <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>&tip=fizic" class="btn-cumpara" style="background: var(--accent-success);">🎫 Bilet Fizic (<?= htmlspecialchars($eveniment['pret']) ?> RON)</a>
-                            
-                            <?php if($are_link_live): ?>
-                                <?php if($minute_ramase > 5): ?>
-                                    <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>&tip=online" class="btn-cumpara" style="background: var(--link-color); color: white;">💻 Bilet Online (<?= htmlspecialchars($pret_online) ?> RON)</a>
-                                <?php else: ?>
-                                    <div style="padding: 10px 15px; background: rgba(255,0,0,0.1); border: 1px solid var(--accent-delete); border-radius: 12px; color: var(--text-main); font-weight: 600;">
-                                        ⏳ Vânzarea biletelor online s-a închis.
-                                    </div>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
+                        <?php if($eveniment_expirat): ?>
+                            <div style="padding: 15px; background: rgba(255,0,0,0.1); border: 1px solid var(--accent-delete); border-radius: 12px; color: var(--text-main); font-weight: 600; width: 100%; text-align: center;">
+                                ⚠️ Acest eveniment s-a încheiat. Nu se mai pot achiziționa bilete.
+                            </div>
                         <?php else: ?>
-                            <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>&tip=fizic" class="btn-cumpara">🎟️ Rezervă Loc Gratuit</a>
+                            <?php if($eveniment['pret'] > 0): ?>
+                                <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>&tip=fizic" class="btn-cumpara" style="background: var(--accent-success);">🎫 Bilet Fizic (<?= htmlspecialchars($eveniment['pret']) ?> RON)</a>
+                                
+                                <?php if($are_link_live): ?>
+                                    <?php if($minute_ramase > 5): ?>
+                                        <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>&tip=online" class="btn-cumpara" style="background: var(--link-color); color: white;">💻 Bilet Online (<?= htmlspecialchars($pret_online) ?> RON)</a>
+                                    <?php else: ?>
+                                        <div style="padding: 10px 15px; background: rgba(255,0,0,0.1); border: 1px solid var(--accent-delete); border-radius: 12px; color: var(--text-main); font-weight: 600;">
+                                            ⏳ Vânzarea biletelor online s-a închis.
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                
+                            <?php else: ?>
+                                <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>&tip=fizic" class="btn-cumpara">🎟️ Rezervă Loc Gratuit</a>
+                            <?php endif; ?>
                         <?php endif; ?>
                         
                     <?php else: ?>
-                        <!-- Are deja bilet achiziționat -->
                         <div style="padding: 20px; background: rgba(40,167,69,0.1); border: 1px solid var(--accent-success); border-radius: 12px; width: 100%;">
                             <h4 style="color: var(--accent-success); margin-top: 0; margin-bottom: 5px;">✅ Ai achiziționat un bilet pentru acest eveniment!</h4>
                             <p style="margin-bottom: 0; color: var(--text-main);">Tip bilet: <strong><?= strtoupper($tip_bilet_cumparat) ?></strong></p>
                             
                             <?php if($tip_bilet_cumparat === 'online' && $are_link_live): ?>
-                                <?php if($minute_ramase <= 15): ?>
+                                <?php if($este_in_timpul_evenimentului): ?>
                                     <div style="margin-top: 20px;">
                                         <h3 style="color: var(--accent-delete); margin-bottom: 10px;">🔴 LIVE ACUM</h3>
                                         <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
                                             <?php 
-                                                // Extragem ID-ul YouTube din link
                                                 $url = $eveniment['link_live'];
                                                 preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i', $url, $matches);
                                                 $yt_id = isset($matches[1]) ? $matches[1] : '';
@@ -223,6 +284,11 @@ include 'header.php';
                                             <?php endif; ?>
                                         </div>
                                     </div>
+                                <?php elseif($eveniment_expirat): ?>
+                                    <div style="margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); border-radius: 12px; text-align: center;">
+                                        <h3 style="color: var(--text-main); margin-bottom: 10px;">Evenimentul s-a încheiat</h3>
+                                        <p style="color: var(--text-light); margin: 0;">Vă mulțumim pentru participare!</p>
+                                    </div>
                                 <?php else: ?>
                                     <p style="color: var(--text-light); margin-top: 15px; font-weight: bold;">⏳ Transmisiunea live va deveni disponibilă aici cu 15 minute înainte de începerea spectacolului.</p>
                                 <?php endif; ?>
@@ -231,7 +297,6 @@ include 'header.php';
                     <?php endif; ?>
                     
                 <?php else: ?>
-                    <!-- Utilizator Nelogat -->
                     <a href="#" onclick="openPopup('loginPopup'); return false;" class="btn-cumpara" style="background: var(--link-color); color: #fff;">Autentifică-te pentru a cumpăra bilet</a>
                 <?php endif; ?>
             </div>
@@ -245,7 +310,6 @@ include 'header.php';
         </div>
     </div>
 
-    <!-- Restul paginii: Recenziile -->
     <div class="reviews-section">
         <div class="reviews-header">
             <h3>⭐ Recenzii & Evaluări</h3>
@@ -325,5 +389,35 @@ include 'header.php';
     @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 </style>
 <?php endif; ?>
+
+<script>
+function toggleFavorite(event, itemId, tipItem, element) {
+    event.preventDefault(); 
+    event.stopPropagation(); 
+
+    fetch('toggle_favorite.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id: itemId, tip_item: tipItem })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'adaugat') {
+            element.classList.add('active');
+            element.innerHTML = '❤️';
+        } else if (data.status === 'sters') {
+            element.classList.remove('active');
+            element.innerHTML = '🤍';
+        } else if (data.status === 'neautorizat') {
+            if(typeof openPopup === 'function') {
+                openPopup('loginPopup');
+            } else {
+                alert('Trebuie să fii logat pentru a salva la favorite!');
+            }
+        }
+    })
+    .catch(error => console.error('Eroare AJAX Favorite:', error));
+}
+</script>
 
 <?php include 'footer.php'; ?>

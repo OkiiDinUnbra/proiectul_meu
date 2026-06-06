@@ -12,6 +12,9 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
 </footer>
 <?php endif; ?>
 
+<!-- ===================================== -->
+<!-- POP-UP-URI ȘI OVERLAY-URI EXISTENTE   -->
+<!-- ===================================== -->
 <div class="popup-overlay" id="loginPopup" style="z-index: 99999 !important;">
     <div class="popup-box modern-popup">
         <span class="close-btn" onclick="closePopup('loginPopup')">&times;</span>
@@ -115,8 +118,10 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
     </div>
 </div>
 
+<!-- ===================================== -->
+<!-- CHATBOT AI HTML & CSS                 -->
+<!-- ===================================== -->
 <style>
-    /* Stiluri Chatbot */
     #chatbot-toggle-btn {
         position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
         background: var(--link-color, #007bff); color: white; border-radius: 50%;
@@ -173,11 +178,15 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
         <span id="chatbot-close" onclick="toggleChatbot()">&times;</span>
     </div>
     <div id="chatbot-messages">
-        </div>
+    </div>
     <div class="typing-indicator" id="chatbot-typing">Asistentul tastează...</div>
 </div>
+
+<!-- ===================================== -->
+<!-- SCRIPT-URI GENERALE                   -->
+<!-- ===================================== -->
 <script>
-    // --- FUNCTII PENTRU POP-UP-URI EXISTENTE ---
+    // --- 1. POP-UP-URI ---
     function openPopup(id) {
         if(event) event.preventDefault();
         var popup = document.getElementById(id);
@@ -234,7 +243,7 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
         openPopup('eventPopup');
     }
 
-    // --- FUNCTII PENTRU CHATBOT AI ---
+    // --- 2. CHATBOT AI ---
     let chatInitialized = false;
 
     function toggleChatbot() {
@@ -244,7 +253,6 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
         } else {
             chatWindow.style.display = 'flex';
             if (!chatInitialized) {
-                // Dacă e prima dată când deschide chatul, pornim scenariul "start"
                 trimiteMesajChat('start', null, null);
                 chatInitialized = true;
             }
@@ -252,7 +260,6 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
     }
 
     function trimiteMesajChat(action, textUser, linkExtern) {
-        // Dacă opțiunea selectată este un link extern, direcționăm utilizatorul
         if (linkExtern) {
             window.location.href = linkExtern;
             return;
@@ -261,25 +268,19 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
         const containerMesaje = document.getElementById('chatbot-messages');
         const indicatorTyping = document.getElementById('chatbot-typing');
         
-        // 1. Afișăm pe ecran ce a ales utilizatorul (dacă nu e start)
         if (textUser) {
             const divUser = document.createElement('div');
             divUser.className = 'chat-bubble chat-user';
             divUser.innerText = textUser;
             containerMesaje.appendChild(divUser);
             
-            // Ștergem butoanele vechi ca să facem curat pe ecran
             const butoaneVechi = containerMesaje.querySelectorAll('.chat-options-container');
             butoaneVechi.forEach(b => b.remove());
         }
 
-        // Derulăm în jos
         containerMesaje.scrollTop = containerMesaje.scrollHeight;
-
-        // 2. Afișăm că bot-ul gândește
         indicatorTyping.style.display = 'block';
 
-        // 3. Trimitem comanda către PHP-ul din spate
         fetch('chatbot_api.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -287,18 +288,14 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
         })
         .then(response => response.json())
         .then(data => {
-            // Ascundem "Bot-ul scrie..."
             indicatorTyping.style.display = 'none';
 
-            // 4. Afișăm răspunsul bot-ului
             const divBot = document.createElement('div');
             divBot.className = 'chat-bubble chat-bot';
-            // Păstrăm bold-ul (**) din PHP înlocuindu-l cu tag-ul <strong> (opțional)
             let mesajFormatat = data.message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             divBot.innerHTML = mesajFormatat;
             containerMesaje.appendChild(divBot);
 
-            // 5. Creăm butoanele cu următoarele decizii posibile
             if (data.options && data.options.length > 0) {
                 const divOptiuni = document.createElement('div');
                 divOptiuni.className = 'chat-options-container';
@@ -313,8 +310,6 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
                 
                 containerMesaje.appendChild(divOptiuni);
             }
-
-            // Derulăm complet în jos
             containerMesaje.scrollTop = containerMesaje.scrollHeight;
         })
         .catch(error => {
@@ -322,6 +317,46 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
             indicatorTyping.style.display = 'none';
         });
     }
+
+    // --- 3. MAGICĂ: ANIMAȚII LA SCROLL (INTERSECTION OBSERVER) ---
+    document.addEventListener("DOMContentLoaded", function() {
+        // A. Căutăm automat cardurile/elementele din site și le aplicăm clasa "fade-up-element"
+        const selectorsToAnimate = [
+            '.eveniment-card', '.stire-card', '.ghid-card', '.card-bilet-wrapper', 
+            '.card-fav-wrapper', '.raport-card-modern', '.sectiune-info', '.feature-box'
+        ];
+        
+        selectorsToAnimate.forEach(selector => {
+            document.querySelectorAll(selector).forEach((el, index) => {
+                el.classList.add('fade-up-element');
+                // Adăugăm un mic delay progresiv pentru efect de "cascadă"
+                el.style.transitionDelay = `${index * 0.1}s`; 
+            });
+        });
+
+        // B. Creăm Observerul
+        const observerOptions = {
+            root: null, // Urmărește tot ecranul
+            rootMargin: '0px',
+            threshold: 0.15 // Animația pornește când 15% din card e vizibil
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Dacă a intrat pe ecran, îi adăugăm clasa care îl face vizibil
+                    entry.target.classList.add('is-visible');
+                    // Oprim urmărirea acestui element ca animația să nu se repete dacă dă scroll sus/jos
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // C. Îi spunem observerului să urmărească toate elementele pregătite
+        document.querySelectorAll('.fade-up-element').forEach(el => {
+            observer.observe(el);
+        });
+    });
 </script>
 
 </body>

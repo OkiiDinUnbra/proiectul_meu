@@ -19,7 +19,6 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
-    // Verificăm dacă este bilet de eveniment (vechi sau nou - fizic/online)
     if (in_array($row['tip_bilet'], ['eveniment', 'fizic', 'online']) && $row['id_eveniment']) {
         $stmt_ev = $conn->prepare("SELECT titlu FROM evenimente WHERE id = ?");
         $stmt_ev->bind_param("i", $row['id_eveniment']);
@@ -46,34 +45,17 @@ $stmt->close();
     .grid-bilete { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
     
     .card-bilet-wrapper {
-        background: var(--card-bg);
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        padding: 20px;
-        position: relative;
-        border-left: 5px solid #ccc;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.2s;
+        background: var(--card-bg); border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        padding: 20px; position: relative; border-left: 5px solid #ccc;
+        display: flex; flex-direction: column; transition: transform 0.2s;
     }
     .card-bilet-wrapper:hover { transform: translateY(-5px); }
     
     .bilet-activ { border-left-color: #28a745; }
     .bilet-expirat { border-left-color: #dc3545; opacity: 0.85;}
     
-    /* Zona care va fi exportată efectiv în PDF */
-    .bilet-print-area {
-        background: #fff; /* Fundal alb forțat pentru PDF */
-        padding: 15px;
-        border-radius: 8px;
-        color: #111; /* Text negru pentru claritate la print */
-    }
-
-    .badge-status {
-        position: absolute; top: 15px; right: 15px;
-        padding: 5px 12px; border-radius: 20px;
-        font-size: 11px; font-weight: bold; color: white; letter-spacing: 1px;
-    }
+    .bilet-print-area { background: #fff; padding: 15px; border-radius: 8px; color: #111; }
+    .badge-status { position: absolute; top: 15px; right: 15px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; letter-spacing: 1px;}
     .badge-activ { background: #28a745; }
     .badge-expirat { background: #dc3545; }
     
@@ -84,8 +66,10 @@ $stmt->close();
 
 <section class="profil-container">
     <div class="header-profil">
-        <h2 style="color: var(--text-main);">👋 Salut, <?= htmlspecialchars($_SESSION['nume']) ?>!</h2>
-        <p style="color: var(--text-light);">Aici este istoricul biletelor tale</p>
+        <div>
+            <h2 style="color: var(--text-main); margin-bottom: 5px;">👋 Salut, <?= htmlspecialchars($_SESSION['nume']) ?>!</h2>
+            <p style="color: var(--text-light); margin: 0;">Aici este istoricul biletelor tale.</p>
+        </div>
     </div>
 
     <?php if (empty($bilete)): ?>
@@ -115,7 +99,6 @@ $stmt->close();
                         <?= $este_activ ? 'ACTIV' : 'EXPIRAT' ?>
                     </span>
                     
-                    <!-- ZONA PENTRU PDF -->
                     <div id="bilet_export_<?= $bilet['cod_qr_unic'] ?>" class="bilet-print-area">
                         <?php if (in_array($tip_bilet, ['eveniment', 'fizic', 'online'])): ?>
                             <h4 style="margin: 0; color: #0056b3; font-size: 18px;">
@@ -129,8 +112,14 @@ $stmt->close();
                         <div class="bilet-cod"><?= $bilet['cod_qr_unic'] ?></div>
                         
                         <div class="bilet-detalii">
-                            <p><strong>Călător:</strong> <?= htmlspecialchars($_SESSION['nume']) ?></p>
+                            <?php if ($tip_bilet === 'bus'): ?>
+                                <p><strong>Călător:</strong> <?= htmlspecialchars($_SESSION['nume']) ?></p>
+                            <?php else: ?>
+                                <p><strong>Titular:</strong> <?= htmlspecialchars($_SESSION['nume']) ?></p>
+                            <?php endif; ?>
+                            
                             <p><strong>Achiziționat:</strong> <?= date('d/m/Y H:i', strtotime($bilet['data_achizitie'])) ?></p>
+                            
                             <?php if ($tip_bilet === 'bus'): ?>
                                 <p><strong>Expiră la:</strong> <?= date('d/m/Y H:i', $data_expirare) ?></p>
                             <?php else: ?>
@@ -141,7 +130,6 @@ $stmt->close();
                         <?php if ($tip_bilet === 'online'): ?>
                             <div style="margin-top: 15px; padding: 10px; background: rgba(0, 123, 255, 0.05); border: 2px dashed #0056b3; border-radius: 8px; text-align: center;">
                                 <p style="color: #0056b3; font-weight: bold; margin: 0; font-size: 13px;">🔴 Acces Exclusiv Virtual</p>
-                                <p style="color: #666; font-size: 11px; margin: 5px 0 0 0;">Nu necesită scanare QR.</p>
                             </div>
                         <?php else: ?>
                             <?php if ($este_activ): ?>
@@ -151,15 +139,11 @@ $stmt->close();
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
-                    <!-- END ZONA PDF -->
 
-                    <!-- BUTOANE DE ACȚIUNE (Nu apar în PDF) -->
                     <div style="margin-top: auto; padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                        
                         <?php if ($tip_bilet === 'online'): ?>
                             <a href="evenimentextins.php?id=<?= $bilet['id_eveniment'] ?>" class="btn-submit-modern" style="text-decoration: none; padding: 10px; font-size: 14px; text-align: center; margin: 0; background: var(--link-color);">▶️ Intră în Sala Virtuală</a>
                         <?php endif; ?>
-                        
                         <button onclick="descarcaBiletPDF('bilet_export_<?= $bilet['cod_qr_unic'] ?>', '<?= $bilet['cod_qr_unic'] ?>')" class="btn-submit-modern" style="background: #dc3545; padding: 10px; font-size: 14px; margin: 0; border: none;">📄 Descarcă PDF</button>
                     </div>
                 </div>
@@ -171,8 +155,6 @@ $stmt->close();
 <script>
 function descarcaBiletPDF(elementId, codUnic) {
     var element = document.getElementById(elementId);
-    
-    // Configurăm opțiunile pentru o calitate excelentă
     var opt = {
         margin:       10,
         filename:     'Bilet_DescoperaBraila_' + codUnic + '.pdf',
@@ -180,13 +162,8 @@ function descarcaBiletPDF(elementId, codUnic) {
         html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' } 
     };
-    
-    // Adăugăm un mic contur temporar doar pentru aspectul din interiorul PDF-ului
     element.style.border = '2px solid #ddd';
-    element.style.boxShadow = 'none';
-
     html2pdf().set(opt).from(element).save().then(() => {
-        // Restaurăm stilul după descărcare
         element.style.border = 'none';
     });
 }

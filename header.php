@@ -14,6 +14,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Înregistrare Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('PWA Service Worker înregistrat cu succes: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('Eroare la înregistrarea Service Worker-ului: ', err);
+                    });
+            });
+        }
+    </script>
+    
     <?php if(isset($needs_calendar) && $needs_calendar): ?>
         <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
@@ -189,11 +210,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     
                     <li class="dropdown-profil">
                         <a href="#" class="dropbtn <?= in_array($current_page, ['profil.php', 'setari.php']) ? 'nav-active' : '' ?>"><?= htmlspecialchars($_SESSION['nume']) ?> ▼</a>
-                        <div class="dropdown-content">
-                            <a href="profil.php">Biletele Mele</a>
-                            <a href="setari.php">Setări Profil</a>
-                            <a href="logout.php" style="color: var(--accent-delete); font-weight: 600;">Ieșire Cont</a>
-                        </div>
+                       <div class="dropdown-content">
+    <a href="profil.php">🎫 Biletele Mele</a>
+    <a href="favorite.php">❤️ Favoritele Mele</a>
+    <a href="setari.php">⚙️ Setări Profil</a>
+    <a href="logout.php" style="color: var(--accent-delete); font-weight: 600;">🚪 Ieșire Cont</a>
+</div>
                     </li>
                 <?php else: ?>
                     <li><a href="#" onclick="openPopup('loginPopup')">Autentificare</a></li>
