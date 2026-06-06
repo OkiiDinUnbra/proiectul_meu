@@ -11,16 +11,20 @@ if (isset($_SESSION['user_id'])) {
 $eroare = '';
 
 // Procesarea formularului de Login
+// Procesarea formularului de Login
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login_submit'])) {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $email = trim($_POST['email']);
     $parola = $_POST['parola'];
 
     if (!empty($email) && !empty($parola)) {
-        $sql = "SELECT id, nume, parola, rol FROM utilizatori WHERE email = '$email'";
-        $result = mysqli_query($conn, $sql);
+        // SQL INJECTION FIX: Folosim Prepared Statements
+        $stmt = $conn->prepare("SELECT id, nume, parola, rol FROM utilizatori WHERE email = ?");
+        $stmt->bind_param("s", $email); // 's' înseamnă string
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        if ($result && mysqli_num_rows($result) > 0) {
-            $user = mysqli_fetch_assoc($result);
+        if ($result && $result->num_rows > 0) {
+            $user = $result->fetch_assoc();
             if (password_verify($parola, $user['parola'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['nume'] = $user['nume'];
@@ -33,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login_submit'])) {
         } else {
             $eroare = "Utilizatorul nu există!";
         }
+        $stmt->close();
     } else {
         $eroare = "Te rugăm să completezi toate câmpurile!";
     }

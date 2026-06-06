@@ -213,6 +213,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                        <div class="dropdown-content">
     <a href="profil.php">🎫 Biletele Mele</a>
     <a href="favorite.php">❤️ Favoritele Mele</a>
+    
+    <!-- Link vizibil DOAR pentru administratori -->
+    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+        <a href="admin_tichete.php" style="color: var(--accent-edit); font-weight: bold; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px;">🛠️ Panou Tichete</a>
+    <?php endif; ?>
+    
     <a href="setari.php">⚙️ Setări Profil</a>
     <a href="logout.php" style="color: var(--accent-delete); font-weight: 600;">🚪 Ieșire Cont</a>
 </div>

@@ -10,17 +10,26 @@ $mesaj_raport = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adauga_raport'])) {
     if (isset($_SESSION['user_id'])) {
         $autor = isset($_SESSION['nume']) ? $_SESSION['nume'] : 'Vizitator';
-        $tip = mysqli_real_escape_string($conn, $_POST['tip_problema']);
-        $locatie = mysqli_real_escape_string($conn, $_POST['locatie']);
-        $descriere = mysqli_real_escape_string($conn, $_POST['descriere']);
         
+        // Nu mai avem nevoie de mysqli_real_escape_string, prepared statements fac treaba automat!
+        $tip = $_POST['tip_problema'];
+        $locatie = trim($_POST['locatie']);
+        $descriere = trim($_POST['descriere']);
+        
+        // Asigurăm că coordonatele sunt numere zecimale (float)
         $lat = isset($_POST['lat']) && !empty($_POST['lat']) ? floatval($_POST['lat']) : 45.2692;
         $lng = isset($_POST['lng']) && !empty($_POST['lng']) ? floatval($_POST['lng']) : 27.9575;
-        
+
         if(!empty($locatie)) {
-            $sql = "INSERT INTO rapoarte_trafic (autor, tip_problema, locatie, descriere, lat, lng) VALUES ('$autor', '$tip', '$locatie', '$descriere', $lat, $lng)";
-            $conn->query($sql);
-            $mesaj_raport = "Raportul a fost trimis și apare pe hartă!";
+            // SQL INJECTION FIX: Prepared Statement pentru INSERT
+            $stmt = $conn->prepare("INSERT INTO rapoarte_trafic (autor, tip_problema, locatie, descriere, lat, lng) VALUES (?, ?, ?, ?, ?, ?)");
+            // 'ssssdd' = string, string, string, string, double, double
+            $stmt->bind_param("ssssdd", $autor, $tip, $locatie, $descriere, $lat, $lng);
+            
+            if ($stmt->execute()) {
+                $mesaj_raport = "Raportul a fost trimis și apare pe hartă!";
+            }
+            $stmt->close();
         }
     }
 }

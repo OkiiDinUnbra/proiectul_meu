@@ -12,9 +12,6 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
 </footer>
 <?php endif; ?>
 
-<!-- ===================================== -->
-<!-- POP-UP-URI ȘI OVERLAY-URI EXISTENTE   -->
-<!-- ===================================== -->
 <div class="popup-overlay" id="loginPopup" style="z-index: 99999 !important;">
     <div class="popup-box modern-popup">
         <span class="close-btn" onclick="closePopup('loginPopup')">&times;</span>
@@ -118,9 +115,6 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
     </div>
 </div>
 
-<!-- ===================================== -->
-<!-- CHATBOT AI HTML & CSS                 -->
-<!-- ===================================== -->
 <style>
     #chatbot-toggle-btn {
         position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
@@ -177,14 +171,16 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
         <span>🤖 Ghid AI Brăila</span>
         <span id="chatbot-close" onclick="toggleChatbot()">&times;</span>
     </div>
-    <div id="chatbot-messages">
-    </div>
+    
+    <div id="chatbot-messages"></div>
     <div class="typing-indicator" id="chatbot-typing">Asistentul tastează...</div>
+    
+    <div style="padding: 15px; border-top: 1px solid #eee; background: white; display: flex; gap: 10px;">
+        <input type="text" id="chatInputText" placeholder="Scrie ceva..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px;" onkeypress="handleChatEnter(event)">
+        <button onclick="trimiteMesajScris()" style="background: var(--link-color); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px;">➤</button>
+    </div>
 </div>
 
-<!-- ===================================== -->
-<!-- SCRIPT-URI GENERALE                   -->
-<!-- ===================================== -->
 <script>
     // --- 1. POP-UP-URI ---
     function openPopup(id) {
@@ -284,7 +280,7 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
         fetch('chatbot_api.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: action })
+            body: JSON.stringify({ action: action, textUser: textUser })
         })
         .then(response => response.json())
         .then(data => {
@@ -305,6 +301,86 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
                     btn.className = 'chat-option-btn';
                     btn.innerText = opt.text;
                     btn.onclick = () => trimiteMesajChat(opt.action, opt.text, opt.link);
+                    divOptiuni.appendChild(btn);
+                });
+                
+                containerMesaje.appendChild(divOptiuni);
+            }
+            containerMesaje.scrollTop = containerMesaje.scrollHeight;
+        })
+        .catch(error => {
+            console.error("Eroare Chatbot:", error);
+            indicatorTyping.style.display = 'none';
+        });
+    }
+
+    // === FUNCȚII NOI PENTRU TEXT ===
+    function handleChatEnter(event) {
+        if (event.key === "Enter") {
+            trimiteMesajScris();
+        }
+    }
+
+    function trimiteMesajScris() {
+        const input = document.getElementById('chatInputText');
+        const mesaj = input.value.trim();
+        
+        if (mesaj === "") return;
+        
+        // Curățăm inputul
+        input.value = "";
+        
+        // Apelăm funcția generală și îi spunem că e un Search
+        trimiteMesajChatDinamic(mesaj);
+    }
+
+    // Această funcție o extinde pe cea de butoane
+    function trimiteMesajChatDinamic(textUser) {
+        const containerMesaje = document.getElementById('chatbot-messages');
+        const indicatorTyping = document.getElementById('chatbot-typing');
+
+        const divUser = document.createElement('div');
+        divUser.className = 'chat-bubble chat-user';
+        divUser.innerText = textUser;
+        containerMesaje.appendChild(divUser);
+        
+        const butoaneVechi = containerMesaje.querySelectorAll('.chat-options-container');
+        butoaneVechi.forEach(b => b.remove());
+        
+        containerMesaje.scrollTop = containerMesaje.scrollHeight;
+        indicatorTyping.style.display = 'block';
+
+        fetch('chatbot_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'search_intent', textUser: textUser })
+        })
+        .then(response => response.json())
+        .then(data => {
+            indicatorTyping.style.display = 'none';
+
+            const divBot = document.createElement('div');
+            divBot.className = 'chat-bubble chat-bot';
+            divBot.innerHTML = data.message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            containerMesaje.appendChild(divBot);
+
+            if (data.options && data.options.length > 0) {
+                const divOptiuni = document.createElement('div');
+                divOptiuni.className = 'chat-options-container';
+                
+                data.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'chat-option-btn';
+                    btn.innerText = opt.text;
+                    btn.onclick = () => {
+                        // Verificăm dacă era în modul de așteptare salvare tichet
+                        if(opt.action === 'salveaza_tichet') {
+                            // PHP știe asta din sesiune
+                            trimiteMesajChat('salveaza_tichet', opt.text, opt.link);
+                        } else {
+                            trimiteMesajChat(opt.action, opt.text, opt.link);
+                        }
+                    };
                     divOptiuni.appendChild(btn);
                 });
                 
