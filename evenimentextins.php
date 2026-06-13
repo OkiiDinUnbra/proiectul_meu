@@ -8,7 +8,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $id_eveniment = intval($_GET['id']);
-
 $stmt = $conn->prepare("SELECT * FROM evenimente WHERE id = ?");
 $stmt->bind_param("i", $id_eveniment);
 $stmt->execute();
@@ -23,7 +22,7 @@ $stmt->close();
 $show_free_ticket_popup = false;
 $are_bilet = false;
 $tip_bilet_cumparat = null;
-$is_favorite = false; // Variabilă pentru a verifica dacă e la favorite
+$is_favorite = false;
 
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
@@ -48,7 +47,7 @@ if (isset($_SESSION['user_id'])) {
         $row_bilet = $res_check->fetch_assoc();
         $tip_bilet_cumparat = $row_bilet['tip_bilet'];
     } else {
-        // Logica pentru bilete gratuite
+        // Logica pentru bilete gratuite (primul venit, primul servit)
         if (isset($eveniment['bilete_gratuite_total']) && isset($eveniment['bilete_gratuite_date']) && 
             $eveniment['bilete_gratuite_total'] > $eveniment['bilete_gratuite_date']) {
             
@@ -80,18 +79,18 @@ $timp_eveniment = strtotime($eveniment['data_eveniment']);
 // Dacă adminul a uitat să pună o durată, setăm 90 minute by default
 $durata_secunde = (isset($eveniment['durata_minute']) && $eveniment['durata_minute'] > 0 ? $eveniment['durata_minute'] : 90) * 60;
 $timp_final_eveniment = $timp_eveniment + $durata_secunde;
-
 $minute_ramase = floor(($timp_eveniment - $timp_curent) / 60);
 
-// Este în timpul evenimentului dacă ora curentă e între (Ora de start - 15 minute) și Ora de final
+// Status eveniment
 $este_in_timpul_evenimentului = ($timp_curent >= ($timp_eveniment - 15 * 60) && $timp_curent <= $timp_final_eveniment);
-// Evenimentul s-a încheiat
 $eveniment_expirat = ($timp_curent > $timp_final_eveniment);
 
 $pret_online = $eveniment['pret'] + 15;
 $are_link_live = !empty($eveniment['link_live']);
 
+// ==========================================
 // Logica Recenzii
+// ==========================================
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adauga_recenzie'])) {
     if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
@@ -222,6 +221,14 @@ include 'header.php';
             
             <div class="event-meta">
                 <p>📅 <strong>Dată:</strong> <?= date('d/m/Y H:i', strtotime($eveniment['data_eveniment'])) ?></p>
+                
+                <?php if (!$eveniment_expirat && !$este_in_timpul_evenimentului): ?>
+                <div id="countdown-container" style="background: rgba(255, 215, 0, 0.1); border-left: 4px solid #ffd700; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; display: inline-block;">
+                    <span style="font-size: 14px; color: var(--text-light); display: block; margin-bottom: 5px;">⏳ Evenimentul începe în:</span>
+                    <span id="countdown-timer" style="font-size: 18px; font-weight: bold; color: var(--text-main); font-family: 'Courier New', monospace;">Calculez...</span>
+                </div>
+                <?php endif; ?>
+                
                 <p>📍 <strong>Locație:</strong> <?= htmlspecialchars($eveniment['locatie']) ?></p>
                 
                 <?php if(isset($eveniment['pret']) && $eveniment['pret'] > 0): ?>
@@ -256,9 +263,6 @@ include 'header.php';
                                         </div>
                                     <?php endif; ?>
                                 <?php endif; ?>
-                                
-                            <?php else: ?>
-                                <a href="genereaza_bilet.php?id_eveniment=<?= $eveniment['id'] ?>&tip=fizic" class="btn-cumpara">🎟️ Rezervă Loc Gratuit</a>
                             <?php endif; ?>
                         <?php endif; ?>
                         
@@ -419,5 +423,44 @@ function toggleFavorite(event, itemId, tipItem, element) {
     .catch(error => console.error('Eroare AJAX Favorite:', error));
 }
 </script>
+
+<?php if (!$eveniment_expirat && !$este_in_timpul_evenimentului): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const eventDate = new Date("<?= date('Y-m-d\TH:i:s', strtotime($eveniment['data_eveniment'])) ?>").getTime();
+    
+    const timerElement = document.getElementById('countdown-timer');
+    const containerElement = document.getElementById('countdown-container');
+
+    const countdownFunction = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = eventDate - now;
+
+        if (distance < 0) {
+            clearInterval(countdownFunction);
+            if(containerElement) {
+                containerElement.innerHTML = '<span style="color: var(--accent-success); font-weight: bold;">🔴 Evenimentul este în desfășurare!</span>';
+            }
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        let displayString = '';
+        if (days > 0) displayString += days + "z ";
+        displayString += hours.toString().padStart(2, '0') + "h ";
+        displayString += minutes.toString().padStart(2, '0') + "m ";
+        displayString += seconds.toString().padStart(2, '0') + "s";
+
+        if(timerElement) {
+            timerElement.innerHTML = displayString;
+        }
+    }, 1000);
+});
+</script>
+<?php endif; ?>
 
 <?php include 'footer.php'; ?>

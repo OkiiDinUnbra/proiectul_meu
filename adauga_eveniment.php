@@ -19,10 +19,22 @@ if (!in_array($categorie_preselectata, $categorii_valide)) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $titlu          = trim($_POST['titlu']);
     $descriere      = trim($_POST['descriere']);
-    $data_eveniment = $_POST['data_eveniment'];
+    
+    // Preluăm separat Data, Ora și Minutele din dropdown-urile noastre personalizate
+    $data_doar      = isset($_POST['data_doar']) ? trim($_POST['data_doar']) : '';
+    $ora            = isset($_POST['ora']) ? trim($_POST['ora']) : '19';
+    $minut          = isset($_POST['minut']) ? trim($_POST['minut']) : '00';
+    
+    // REZOLVARE CALENDAR: Adăugăm litera 'T' la mijloc pentru a recrea 
+    // exact formatul original pe care îl generează browserele și pe care îl așteaptă calendarul tău (ex: 2026-09-07T19:00)
+    $data_eveniment = $data_doar . 'T' . $ora . ':' . $minut;
+    
     $locatie        = trim($_POST['locatie']);
-    $categorie      = isset($_POST['categorie']) ? $_POST['categorie'] : $categorie_preselectata;
+    
+    // NOU: Preluăm prețul biletului
     $pret           = isset($_POST['pret']) && is_numeric($_POST['pret']) ? floatval($_POST['pret']) : 0.00;
+    
+    $categorie      = isset($_POST['categorie']) ? $_POST['categorie'] : $categorie_preselectata;
 
     // Preluăm link-ul live doar dacă bifa este pusă
     $link_live      = isset($_POST['este_live']) && !empty(trim($_POST['link_live'])) ? trim($_POST['link_live']) : NULL;
@@ -54,16 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Inserăm în baza de date INCLUSIV imaginea și link-ul live
+    // Inserăm în baza de date INCLUSIV imaginea, link-ul live și prețul
     if (empty($mesaj)) {
         $stmt = $conn->prepare('INSERT INTO evenimente (titlu, descriere, data_eveniment, locatie, categorie, pret, imagine, link_live) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->bind_param('sssssdss', $titlu, $descriere, $data_eveniment, $locatie, $categorie, $pret, $cale_imagine, $link_live);
 
         if ($stmt->execute()) {
-            $mesaj = "<div style='color: #155724; background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin-bottom: 25px;'>✅ Evenimentul a fost adăugat cu succes!</div>";
+            $mesaj = "<div style='color: #155724; background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin-bottom: 25px;'>✅ Evenimentul a fost adăugat cu succes! Îl poți vedea în calendar.</div>";
         } else {
             error_log("Eroare adaugare eveniment: " . $stmt->error);
-            $mesaj = "<div style='color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-bottom: 25px;'>❌ A apărut o eroare. Încearcă din nou.</div>";
+            $mesaj = "<div style='color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px; margin-bottom: 25px;'>❌ A apărut o eroare la salvarea în baza de date. Încearcă din nou.</div>";
         }
         $stmt->close();
     }
@@ -84,14 +96,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <div style="display: flex; gap: 20px; margin-bottom: 25px;">
             <div style="flex: 1;">
-                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Data Evenimentului:</label>
-               <input type="datetime-local" name="data_eveniment" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Dată și Oră Eveniment:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="date" name="data_doar" required style="flex: 2; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+                    
+                    <select name="ora" required style="flex: 1; padding: 12px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main); text-align: center;">
+                        <?php 
+                        for($i=0; $i<=23; $i++) {
+                            $val = str_pad($i, 2, '0', STR_PAD_LEFT);
+                            // Setăm ora 19:00 default (ora clasică pt evenimente)
+                            $selected = ($val === '19') ? 'selected' : '';
+                            echo "<option value='{$val}' {$selected}>{$val}</option>";
+                        }
+                        ?>
+                    </select>
+                    
+                    <span style="font-weight: bold; color: var(--text-main);">:</span>
+                    
+                    <select name="minut" required style="flex: 1; padding: 12px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main); text-align: center;">
+                        <?php 
+                        for($i=0; $i<=59; $i+=5) { // Punem minutele din 5 în 5 (00, 05, 10...)
+                            $val = str_pad($i, 2, '0', STR_PAD_LEFT);
+                            echo "<option value='{$val}'>{$val}</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
 
-           <div style="flex: 1;">
-    <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Durată (minute):</label>
-    <input type="number" name="durata_minute" value="<?= isset($eveniment) ? $eveniment['durata_minute'] : '90' ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; background: var(--bg-main); color: var(--text-main);">
-</div>
+            <div style="flex: 1;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Durată (minute):</label>
+                <input type="number" name="durata_minute" value="<?= isset($eveniment) ? $eveniment['durata_minute'] : '90' ?>" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; background: var(--bg-main); color: var(--text-main);">
+            </div>
         </div>
 
         <div style="display: flex; gap: 20px; margin-bottom: 25px;">
@@ -102,16 +138,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <option value="sportiv" <?= $categorie_preselectata === 'sportiv' ? 'selected' : '' ?>>Sportiv</option>
                 </select>
             </div>
-            
+           
             <div style="flex: 1;">
                 <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Afiș / Poză Eveniment:</label>
                 <input type="file" name="imagine" accept="image/*" style="width: 100%; padding: 9px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 14px; background: var(--bg-main); color: var(--text-main);">
             </div>
         </div>
 
-        <div style="margin-bottom: 25px;">
-            <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Locație:</label>
-            <input type="text" name="locatie" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+        <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+            <div style="flex: 2;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Locație:</label>
+                <input type="text" name="locatie" required style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+            </div>
+            
+            <div style="flex: 1;">
+                <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 12px; font-size: 16px;">Preț Bilet (RON):</label>
+                <input type="number" name="pret" step="0.01" min="0" placeholder="Ex: 50 (Lasă 0 pt gratuit)" style="width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 15px; background: var(--bg-main); color: var(--text-main);">
+            </div>
         </div>
 
         <div style="margin-bottom: 25px; padding: 15px; border: 2px dashed var(--accent-delete); border-radius: 10px; background: rgba(255,0,0,0.03);">
@@ -130,6 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             function toggleLiveField() {
                 var checkBox = document.getElementById("checkLive");
                 var divLive = document.getElementById("divLinkLive");
+    
                 if (checkBox.checked == true) {
                     divLive.style.display = "block";
                 } else {

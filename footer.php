@@ -433,6 +433,26 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
             observer.observe(el);
         });
     });
+
+    // --- 4. SKELETON LOADING LA ÎNCĂRCARE ---
+    document.addEventListener("DOMContentLoaded", function() {
+        // Selectăm cardurile importante din site care au nevoie de timp să încarce imagini
+        const elementeSkeleton = document.querySelectorAll('.eveniment-card, .card-bilet-wrapper, .card-fav-wrapper, .raport-card-modern');
+        
+        // Pasul 1: Imediat cum se citește structura paginii, le adăugăm clasa de skeleton
+        elementeSkeleton.forEach(el => el.classList.add('skeleton'));
+
+        // Pasul 2: Când fereastra și TOATE resursele (inclusiv pozele grele) s-au descărcat complet
+        window.addEventListener('load', function() {
+            // Am pus un mic delay de 600ms. Acest lucru asigură că profesorii vor observa 
+            // efectul premium la prezentarea de licență, chiar dacă site-ul se încarcă instant.
+            setTimeout(() => {
+                elementeSkeleton.forEach(el => {
+                    el.classList.remove('skeleton');
+                });
+            }, 600); 
+        });
+    });
 </script>
 
 </body>
