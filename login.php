@@ -57,7 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['nume'] = $user['nume'];
             $_SESSION['rol'] = $user['rol'];
 
-            header("Location: index.php?login=succes");
+            // REDIRECȚIONARE CĂTRE ACASĂ CU MESAJ DE SUCCES (Punctul 6 + Autentificare)
+            header("Location: acasa.php?action=login_success");
             exit;
         } else {
             // EROARE: Parolă greșită
@@ -70,8 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // EROARE: Email inexistent
-        // NOTĂ DE SECURITATE: Contorizăm și emailul greșit pentru a nu permite 
-        // hackerilor să verifice prin "ghicire" ce adrese de mail sunt înregistrate pe site.
         $_SESSION['login_attempts']++;
         if ($_SESSION['login_attempts'] >= $max_incercari) {
             $_SESSION['lockout_until'] = time() + $timp_blocare; // Setăm blocajul

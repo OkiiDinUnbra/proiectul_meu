@@ -158,29 +158,47 @@ while ($row = $statii_query->fetch_assoc()) {
 
     <div class="card-modul">
         <h2>📍 Află Traseul</h2>
-        <form method="GET" action="rutare.php">
-            <div class="form-group">
-                <label>De unde pleci?</label>
-                <select name="plecare" required>
-                    <option value="" disabled selected>Alege stația de pornire...</option>
-                    <?php foreach ($toate_statiile as $statie): ?>
-                        <option value="<?= $statie['id'] ?>"><?= htmlspecialchars($statie['nume_statie']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+        <form method="GET" action="rutare.php" id="smartRouteForm">
+    <div class="form-group">
+        <label>De unde pleci?</label>
+        <button type="button" id="btnGPS" class="btn-full btn-accent-border" style="margin-top:0; border: 2px dashed #007bff; color: #007bff; background: transparent;">
+            📍 Preia Locația Mea (GPS)
+        </button>
+        <!-- Aici ascundem coordonatele -->
+        <input type="hidden" name="gps_lat" id="gps_lat">
+        <input type="hidden" name="gps_lng" id="gps_lng">
+        <div id="gps_status" style="color:#10b981; display:none; margin-top:10px; font-weight:bold; font-size: 14px;">
+            ✓ Locație preluată cu succes! Poți continua.
+        </div>
+    </div>
 
-            <div class="form-group">
-                <label>Unde vrei să ajungi?</label>
-                <select name="destinatie" required>
-                    <option value="" disabled selected>Alege stația destinație...</option>
-                    <?php foreach ($toate_statiile as $statie): ?>
-                        <option value="<?= $statie['id'] ?>"><?= htmlspecialchars($statie['nume_statie']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+    <div class="form-group">
+    <label>Unde vrei să ajungi? (Stradă / Atracție / Restaurant)</label>
+    <input type="text" name="adresa_destinatie" class="form-control" placeholder="ex: Faleza Dunării, Teatrul Maria Filotti..." required style="width: 100%; padding: 16px 15px; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-main); color: var(--text-main); font-size: 18px; outline: none; transition: 0.3s; font-family: inherit;">
+    </div>
 
-            <button type="submit" class="btn-full">🔍 Caută Traseul</button>
-        </form>
+    <button type="submit" class="btn-full" style="background: #10b981;">🗺️ Navighează (Smart Route)</button>
+</form>
+
+<script>
+    // Script pentru a prelua locatia curenta
+    document.getElementById('btnGPS').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            this.innerText = "⏳ Se caută sateliții...";
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('gps_lat').value = position.coords.latitude;
+                document.getElementById('gps_lng').value = position.coords.longitude;
+                document.getElementById('btnGPS').style.display = 'none';
+                document.getElementById('gps_status').style.display = 'block';
+            }, function() {
+                alert("Eroare la preluarea GPS-ului. Te rugăm să permiți accesul la locație din browser.");
+                document.getElementById('btnGPS').innerText = "📍 Încearcă din nou (GPS)";
+            });
+        } else {
+            alert("Browser-ul tău nu suportă Geolocation.");
+        }
+    });
+        </script>
     </div>
 
     <div class="card-modul">

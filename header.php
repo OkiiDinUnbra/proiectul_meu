@@ -39,12 +39,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         /* === HEADER PREMIUM: NAVY BLUE & WHITE === */
         header { 
-            padding: 15px 0 !important; 
+            padding: 15px 0 !important;
             background: rgba(10, 25, 47, 0.98) !important; 
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255,255,255,0.05);
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            position: fixed; 
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -54,97 +54,103 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
         
         header .container { 
-            display: flex; 
+            display: flex;
             justify-content: space-between; 
             align-items: center; 
             width: 100%;
-            max-width: 100%; /* Folosește 100% din lățimea monitorului */
+            max-width: 100%;
             margin: 0;
-            padding: 0 40px; /* Margini laterale generoase */
+            padding: 0 40px; 
             box-sizing: border-box;
         }
 
         /* STÂNGA: Logo */
         .header-logo { 
-            flex: 1; 
+            flex: 1;
             display: flex; 
             justify-content: flex-start; 
         }
         .logo a { 
-            font-size: 36px !important; /* Mărit */
+            font-size: 36px !important;
             color: #ffffff !important; 
-            text-decoration: none; 
+            text-decoration: none;
             font-weight: 800;
             letter-spacing: 0.5px;
             white-space: nowrap;
         }
         .logo-tagline { 
-            font-size: 16px !important; /* Mărit */
+            font-size: 16px !important;
             display: block; 
             margin-top: 2px; 
-            font-weight: 500; 
+            font-weight: 500;
             color: #8892b0 !important; 
             white-space: nowrap;
         }
         
         /* CENTRU: Vreme & Căutare */
         .header-center {
-            flex: 1.5; /* Primește spațiu mai generos */
-            display: flex; 
+            flex: 1.5;
+            display: flex;
             justify-content: center; 
             align-items: center; 
-            gap: 30px; /* Extins spațiul dintre ele */
+            gap: 30px; 
         }
 
         /* WIDGET VREME/ORĂ - SCALAT FOARTE MARE */
         .header-weather-time {
-            display: flex; align-items: center; gap: 20px; 
-            font-weight: 800; font-size: 21px; /* MĂRIT DE 2.5X */
-            color: #ffffff; 
+            display: flex;
+            align-items: center; gap: 20px; 
+            font-weight: 800; font-size: 21px; 
+            color: #ffffff;
             background: rgba(255, 255, 255, 0.05); 
             padding: 15px 40px; 
             border-radius: 50px; 
-            border: 1px solid rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .search-container { position: relative; display: flex; align-items: center; }
         .search-input {
-            background: rgba(0, 0, 0, 0.2); 
+            background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #ffffff; padding: 12px 20px 12px 45px; border-radius: 30px; font-size: 16px; /* Mărit */
-            outline: none; width: 220px; transition: 0.3s ease; font-family: inherit;
+            color: #ffffff; padding: 12px 20px 12px 45px; border-radius: 30px; font-size: 16px;
+            outline: none; width: 220px;
+            transition: 0.3s ease; font-family: inherit;
         }
         .search-input::placeholder { color: #8892b0; }
         .search-input:focus { 
-            width: 320px; /* Se extinde mai mult la click */
-            border-color: #38bdf8; 
+            width: 320px;
+            border-color: #38bdf8;
             background: rgba(0, 0, 0, 0.4); 
             box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
         }
         .search-icon { position: absolute; left: 18px; color: #8892b0; font-size: 16px; pointer-events: none; }
         
         .search-results-dropdown {
-            position: absolute; top: 55px; left: 0; width: 100%; min-width: 320px;
+            position: absolute;
+            top: 55px; left: 0; width: 100%; min-width: 320px;
             background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; display: none; overflow: hidden;
             text-align: left;
         }
-        .search-results-dropdown a { display: block; padding: 12px 15px !important; font-size: 15px !important; color: #0f172a !important; text-decoration: none; border-bottom: 1px solid #f1f5f9; transition: 0.2s; }
+        .search-results-dropdown a { display: block; padding: 12px 15px !important; font-size: 15px !important;
+            color: #0f172a !important; text-decoration: none; border-bottom: 1px solid #f1f5f9; transition: 0.2s;
+        }
         .search-results-dropdown a:hover { background: #f8fafc; color: #007bff !important; }
-        .search-type-badge { font-size: 12px; background: #e2e8f0; padding: 4px 8px; border-radius: 6px; margin-right: 8px; color: #475569; font-weight: bold;}
+        .search-type-badge { font-size: 12px; background: #e2e8f0; padding: 4px 8px; border-radius: 6px;
+            margin-right: 8px; color: #475569; font-weight: bold;}
         .no-results { padding: 15px; color: #64748b; text-align: center; font-size: 15px; }
 
         /* DREAPTA: Meniu Navigație */
         nav.header-nav { 
-            flex: 2; /* Are nevoie de cel mai mult spațiu */
-            display: flex; 
+            flex: 2;
+            display: flex;
             justify-content: flex-end; 
         }
-        nav.header-nav ul { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; gap: 10px; /* Extins */ }
+        nav.header-nav ul { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; gap: 10px; }
         
         nav.header-nav ul li a, .dropbtn { 
-            font-size: 18px !important; /* Mărit considerabil pentru lizibilitate */
-            padding: 12px 16px !important; 
+            font-size: 18px !important;
+            padding: 12px 16px !important;
             font-weight: 700; 
             color: #e2e8f0 !important; 
             text-decoration: none;
@@ -154,7 +160,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
         
         nav.header-nav ul li a:hover, .dropbtn:hover { 
-            color: #38bdf8 !important; 
+            color: #38bdf8 !important;
             background: rgba(56, 189, 248, 0.05);
         }
         
@@ -168,13 +174,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
             text-align: left;
         }
         .dropdown-content a { 
-            font-size: 16px !important; /* Mărit */
-            padding: 14px 20px !important; 
+            font-size: 16px !important;
+            padding: 14px 20px !important;
             color: #0f172a !important; 
             font-weight: 600;
         }
         .dropdown-content a:hover { 
-            color: #007bff !important; 
+            color: #007bff !important;
             background: #f1f5f9; 
         }
     </style>
@@ -255,8 +261,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </li>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
+                    
                     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-                        <li><a href="statistici.php">Statistici</a></li>
+                        <li><a href="admin.php" style="background: #dc3545; color: white !important; padding: 10px 16px !important; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 10px rgba(220,53,69,0.3); margin-left: 10px;">⚙️ Admin Tools</a></li>
                     <?php endif; ?>
                     
                     <li class="dropdown-profil">
@@ -264,11 +271,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                        <div class="dropdown-content" style="right: 0;">
                             <a href="profil.php">🎫 Biletele Mele</a>
                             <a href="favorite.php">❤️ Favoritele Mele</a>
-                            
-                            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-                                <a href="admin_tichete.php" style="color: #dc3545 !important; font-weight: bold; border-top: 1px solid #e2e8f0; margin-top: 5px; padding-top: 10px;">🛠️ Panou Tichete</a>
-                            <?php endif; ?>
-                            
                             <a href="setari.php">⚙️ Setări Profil</a>
                             <a href="logout.php" style="color: #dc3545 !important; font-weight: 600;">🚪 Ieșire Cont</a>
                         </div>
@@ -361,7 +363,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 searchResults.style.display = 'none';
             }
         });
-        
         searchInput.addEventListener('focus', function() {
             if (this.value.trim().length >= 2 && searchResults.innerHTML !== '') {
                 searchResults.style.display = 'block';
@@ -369,4 +370,52 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+</script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.js"></script>
+
+<script>
+    function arataNotificare(mesaj, tip) {
+        Toastify({
+            text: mesaj,
+            duration: 4000,
+            close: true,
+            gravity: "top", 
+            position: "right", 
+            stopOnFocus: true, 
+            offset: {
+                x: 20, 
+                y: 80  // Ajustează acest număr dacă vrei mai sus/jos
+            },
+            style: {
+                background: tip === 'success' ? "#10b981" : "#38bdf8",
+                borderRadius: "12px",
+                fontWeight: "600",
+                fontSize: "15px",
+                padding: "16px 24px",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+            }
+        }).showToast();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Dacă există parametru în URL, afișăm mesajul, apoi curățăm URL-ul ascuns (fără refresh)
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('action')) {
+            const action = urlParams.get('action');
+            
+            if (action === 'logout_success') {
+                arataNotificare('Te-ai deconectat cu succes.', 'info');
+            } else if (action === 'login_success') {
+                arataNotificare('Bine ai revenit! Autentificare reușită.', 'success');
+            }
+            
+            // Curățăm url-ul să arate curat (ex: din acasa.php?action=login_success -> acasa.php)
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
+        }
+    });
 </script>
