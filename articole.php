@@ -23,7 +23,7 @@ if ($result && $result->num_rows > 0) {
     .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1200px; margin: auto; }
     
     .blog-card { 
-        background: var(--card-bg); 
+        background: var(--card-bg);
         border: 1px solid var(--border-color); 
         border-radius: 16px; 
         overflow: hidden; 
@@ -34,14 +34,33 @@ if ($result && $result->num_rows > 0) {
     .blog-info { padding: 25px; }
     
     .blog-tag { 
-        display: inline-block; 
+        display: inline-block;
         padding: 5px 12px; font-size: 12px; font-weight: bold; border-radius: 20px; margin-bottom: 15px; 
-        background: rgba(0, 123, 255, 0.1); color: #007bff; 
+        background: rgba(0, 123, 255, 0.1); color: #007bff;
         border: 1px solid rgba(0, 123, 255, 0.2); 
     }
     .blog-title { font-size: 20px; margin-bottom: 15px; color: var(--text-main); line-height: 1.4; }
     .blog-btn { display: inline-block; color: #007bff; text-decoration: none; font-weight: 600; font-size: 15px; transition: 0.2s; }
     .blog-btn:hover { color: #0056b3; transform: translateX(5px); }
+
+    /* Stil NOU pentru butonul de ADMIN - Roșu Premium */
+    .btn-admin-red {
+        background: #dc3545; 
+        color: white;
+        padding: 12px 28px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+    .btn-admin-red:hover {
+        background: #c82333;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
 </style>
 
 <div class="blog-page">
@@ -51,7 +70,7 @@ if ($result && $result->num_rows > 0) {
         
         <?php if($este_admin): ?>
             <div style="margin-top: 25px;">
-                <a href="admin_articol.php" class="btn" style="background: #28a745; color: white;">+ Adaugă Articol Nou</a>
+                <a href="admin_articol.php" class="btn-admin-red">+ Adaugă Articol Nou</a>
             </div>
         <?php endif; ?>
     </div>

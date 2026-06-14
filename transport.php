@@ -11,8 +11,10 @@ while ($row = $statii_query->fetch_assoc()) {
 ?>
 
 <style>
+    /* FUNDAL FĂRĂ FILTRU ÎNTUNECAT */
     body {
-        background-color: var(--bg-main) !important;
+        background: url('img/transport-bg.jpg') no-repeat center center fixed !important;
+        background-size: cover !important;
         color: var(--text-main);
         margin: 0;
         padding: 0;
@@ -23,30 +25,34 @@ while ($row = $statii_query->fetch_assoc()) {
 
     .hero-transport {
         text-align: center;
-        padding: 140px 20px 40px;
-        background: var(--bg-main) !important; 
-        background-image: none !important;
-        color: var(--text-main);
+        padding: 180px 20px 60px;
+        background: transparent !important; 
+        color: #ffffff;
     }
     .hero-transport h1 {
-        font-size: 38px;
-        color: var(--text-main);
+        font-size: 54px; 
+        color: #ffffff;
         margin-bottom: 10px;
+        text-shadow: 0 4px 10px rgba(0,0,0,0.8); 
     }
     .hero-transport p {
-        color: var(--text-light);
-        font-size: 16px;
+        color: #ffffff;
+        font-size: 22px; 
+        text-shadow: 0 2px 5px rgba(0,0,0,0.8);
     }
 
     .transport-container {
         display: flex;
         justify-content: center;
-        gap: 30px;
-        max-width: 900px; /* Lățime redusă pentru un aspect mai compact */
+        align-items: flex-start;
+        gap: 40px;
+        max-width: 1000px; 
         margin: 0 auto 60px;
         padding: 0 20px;
         flex-wrap: wrap;
         flex-grow: 1;
+        position: relative;
+        z-index: 2;
     }
 
     .card-modul {
@@ -55,96 +61,108 @@ while ($row = $statii_query->fetch_assoc()) {
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid var(--border-color);
         border-radius: 16px;
-        padding: 25px; /* Spațiere interioară redusă */
-        flex: 1 1 300px;
-        max-width: 420px; /* Limităm alungirea cardurilor */
+        padding: 35px; 
+        flex: 1 1 350px;
+        max-width: 460px; 
         color: var(--text-main);
-        box-shadow: var(--shadow-medium);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: transform 0.3s;
+        height: auto; 
     }
+    
+    .card-modul:hover { transform: translateY(-5px); }
 
     .card-modul h2 {
-        color: var(--accent-primary);
-        margin-bottom: 20px;
-        border-bottom: 1px solid var(--border-light);
-        padding-bottom: 12px;
-        font-size: 20px;
+        color: var(--text-main);
+        margin-bottom: 25px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 15px;
+        font-size: 28px; 
+        font-weight: 800;
+        text-align: center;
     }
     
     .card-modul label { 
-        color: var(--text-light);
-        font-weight: 500;
+        color: var(--text-main);
+        font-weight: 700;
         display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
+        margin-bottom: 10px;
+        font-size: 18px; 
     }
     
     .bilet-info { 
-        color: var(--text-light); 
-        margin-bottom: 15px;
-        font-size: 13px; 
-        line-height: 1.5; 
+        color: #ffffff; /* Făcut alb conform cerinței */
+        margin-bottom: 25px;
+        font-size: 18px; 
+        line-height: 1.6; 
+        text-align: center;
+        font-weight: 500;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* O mică umbră pentru claritate extra */
     }
     
-    .form-group { margin-bottom: 15px; }
+    .form-group { margin-bottom: 25px; }
     
     .form-group select {
         width: 100%;
-        padding: 12px 15px;
+        padding: 16px 15px; 
         border-radius: 10px;
-        border: 1px solid var(--border-color);
-        background: var(--input-bg);
+        border: 2px solid var(--border-color);
+        background: var(--bg-main);
         color: var(--text-main);
         outline: none;
-        font-family: 'Poppins', sans-serif;
-        font-size: 14px;
+        font-family: inherit;
+        font-size: 18px; 
+        font-weight: 500;
         transition: 0.3s;
     }
-    .form-group select:focus { border-color: var(--link-color); box-shadow: 0 0 0 3px rgba(91, 176, 255, 0.15); }
-    .form-group select option { background: var(--bg-section); color: var(--text-main); }
+    .form-group select:focus { border-color: var(--link-color); }
+    .form-group select option { background: var(--card-bg); color: var(--text-main); font-size: 18px; }
     
     .btn-full {
         width: 100%;
-        padding: 12px;
+        padding: 18px;
         border: none;
         border-radius: 10px;
         font-weight: bold;
-        font-size: 15px;
+        font-size: 20px; 
         cursor: pointer;
-        background: var(--accent-primary);
-        color: #111;
+        background: #007bff;
+        color: #fff;
         transition: 0.3s;
+        margin-top: 15px;
     }
-    .btn-full:hover { background: var(--accent-primary-dark); transform: translateY(-2px); }
-    .btn-success { background: var(--accent-success); color: #000; }
-    .btn-success:hover { background: var(--accent-success-dark); }
+    .btn-full:hover { background: #0056b3; transform: translateY(-2px); }
+    
+    .btn-success { background: #28a745; color: #fff; }
+    .btn-success:hover { background: #1e7e34; }
     
     .ticket-demo {
-        background: rgba(0,0,0,0.3);
-        padding: 20px;
+        background: rgba(40, 167, 69, 0.05);
+        padding: 30px 20px;
         border-radius: 12px;
         text-align: center;
-        border: 1px dashed rgba(255, 215, 0, 0.3);
+        border: 2px dashed #28a745;
     }
     
-    .text-error { color: var(--accent-delete); font-size: 14px; margin-bottom: 10px; font-weight: 600; }
-    .btn-accent-border { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); }
-    .btn-accent-border:hover { background: var(--accent-primary); color: #000; }
+    .text-error { color: #dc3545; font-size: 18px; margin-bottom: 10px; font-weight: 600; }
+    .btn-accent-border { background: transparent; border: 2px solid #007bff; color: #007bff; }
+    .btn-accent-border:hover { background: #007bff; color: #fff; }
 </style>
 
 <section class="hero-transport">
-    <h1><?= t('transport_title') ?></h1>
-    <p><?= t('transport_subtitle') ?></p>
+    <h1>Transport Public</h1>
+    <p>Alege o destinație sau cumpără un tichet rapid.</p>
 </section>
 
-<div class="transport-container">
+<div class="transport-container fade-up-element">
 
     <div class="card-modul">
-        <h2>📍 <?= t('transport_plan') ?></h2>
+        <h2>📍 Află Traseul</h2>
         <form method="GET" action="rutare.php">
             <div class="form-group">
-                <label><?= t('transport_from') ?></label>
+                <label>De unde pleci?</label>
                 <select name="plecare" required>
-                    <option value="" disabled selected><?= t('transport_from_placeholder') ?></option>
+                    <option value="" disabled selected>Alege stația de pornire...</option>
                     <?php foreach ($toate_statiile as $statie): ?>
                         <option value="<?= $statie['id'] ?>"><?= htmlspecialchars($statie['nume_statie']) ?></option>
                     <?php endforeach; ?>
@@ -152,36 +170,36 @@ while ($row = $statii_query->fetch_assoc()) {
             </div>
 
             <div class="form-group">
-                <label><?= t('transport_to') ?></label>
+                <label>Unde vrei să ajungi?</label>
                 <select name="destinatie" required>
-                    <option value="" disabled selected><?= t('transport_to_placeholder') ?></option>
+                    <option value="" disabled selected>Alege stația destinație...</option>
                     <?php foreach ($toate_statiile as $statie): ?>
                         <option value="<?= $statie['id'] ?>"><?= htmlspecialchars($statie['nume_statie']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
 
-            <button type="submit" class="btn-full">🔍 <?= t('transport_search') ?></button>
+            <button type="submit" class="btn-full">🔍 Caută Traseul</button>
         </form>
     </div>
 
     <div class="card-modul">
-        <h2>🎫 <?= t('transport_digital_ticket') ?></h2>
+        <h2>🎫 Bilet Digital</h2>
         <?php if (isset($_SESSION['user_id'])): ?>
-            <p class="bilet-info"><?= t('transport_ticket_info') ?></p>
+            <p class="bilet-info">Biletul tău va fi valabil 90 de minute de la achiziție pe orice linie din oraș.</p>
 
             <div class="ticket-demo">
-                <h3 style="margin-bottom: 15px; color: var(--text-main); font-size: 22px;"><?= t('transport_price') ?></h3>
+                <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 36px; font-weight: 800;">3.00 RON</h3>
                 <?php $_SESSION['payment_token'] = bin2hex(random_bytes(16)); ?>
                 <form method="POST" action="genereaza_bilet.php">
                     <input type="hidden" name="payment_token" value="<?= $_SESSION['payment_token'] ?>">
-                    <button type="submit" class="btn-full btn-success">💳 <?= t('transport_buy_ticket') ?></button>
+                    <button type="submit" class="btn-full btn-success">💳 Cumpără Biletul</button>
                 </form>
             </div>
         <?php else: ?>
-            <div class="ticket-demo">
-                <p class="text-error"><?= t('transport_login_required') ?></p>
-                <button onclick="openPopup('loginPopup')" class="btn-full btn-accent-border">🔒 Login pentru achiziție</button>
+            <div class="ticket-demo" style="border-color: #007bff; background: rgba(0, 123, 255, 0.05);">
+                <p class="text-error" style="color: #007bff;">Trebuie să fii conectat.</p>
+                <button onclick="openPopup('loginPopup')" class="btn-full btn-accent-border">🔒 Loghează-te</button>
             </div>
         <?php endif; ?>
     </div>

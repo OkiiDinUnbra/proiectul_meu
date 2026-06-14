@@ -1,16 +1,3 @@
-<?php
-// Ascundem textul cu copyright doar pe pagina acasa.php
-$is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
-?>
-
-<?php if (!$is_home): ?>
-<footer style="background: var(--bg-section); color: var(--text-light); text-align: center; padding: 40px 20px; border-top: 1px solid var(--border-color); font-size: 14px; margin-top: auto;">
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        <p>&copy; <?= date('Y') ?> Descoperă Brăila. Proiect pentru Licență.</p>
-        <p style="margin-top: 10px; font-size: 13px;">Acesta este un proiect educațional dezvoltat cu pasiune.</p>
-    </div>
-</footer>
-<?php endif; ?>
 
 <div class="popup-overlay" id="loginPopup" style="z-index: 99999 !important;">
     <div class="popup-box modern-popup">
@@ -81,15 +68,22 @@ $is_home = basename($_SERVER['PHP_SELF']) === 'acasa.php';
 </div>
 
 <div class="popup-overlay" id="contactPopup" style="z-index: 99999 !important;">
-    <div class="popup-box modern-popup">
+    <div class="popup-box modern-popup" style="max-width: 500px !important; width: 90%;">
         <span class="close-btn" onclick="closePopup('contactPopup')">&times;</span>
         <h2><?= t('nav_contact') ?></h2>
         <p class="popup-subtitle" style="margin-bottom: 25px;">Suntem aici! Scrie-ne pe platforma ta preferată.</p>
         
-        <ul class="contact-social-list">
-            <li><a href="mailto:contact@braila.ro" class="x-link"><i>✉️</i> contact@braila.ro</a></li>
-            <li><a href="https://facebook.com/PrimariaBraila" target="_blank" class="fb-link"><i>📘</i> Primăria Brăila</a></li>
-            <li><a href="https://instagram.com/descopera.braila" target="_blank" class="insta-link"><i>📸</i> @descopera.braila</a></li>
+        <ul class="contact-social-list" style="list-style: none; padding: 0; text-align: left;">
+            <li style="margin-bottom: 15px;">
+                <a href="mailto:mf207@student.ugal.ro" style="color: var(--text-main); text-decoration: none; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">
+                    <span style="font-size: 24px;">✉️</span> mf207@student.ugal.ro
+                </a>
+            </li>
+            <li>
+                <a href="https://instagram.com/descopera.braila" target="_blank" style="color: var(--link-color); text-decoration: none; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">
+                    <span style="font-size: 24px;">📸</span> @descopera.braila
+                </a>
+            </li>
         </ul>
     </div>
 </div>

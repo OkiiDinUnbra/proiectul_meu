@@ -53,7 +53,7 @@ include 'header.php';
     }
     .eveniment-card:hover { 
         transform: translateY(-8px);
-        border-color: rgba(255, 215, 0, 0.3); 
+        border-color: rgba(0, 123, 255, 0.5); /* Hover mai neutru/albastru, nu auriu */
         box-shadow: var(--shadow-heavy);
     }
     .eveniment-card img { 
@@ -101,14 +101,19 @@ include 'header.php';
     .eveniment-card-price {
         display: inline-block;
         padding: 6px 14px;
-        background: rgba(255, 215, 0, 0.1);
-        color: var(--accent-primary);
-        border: 1px solid rgba(255, 215, 0, 0.3);
+        background: rgba(0, 123, 255, 0.1); /* Modificat pe nuanțe de albastru modern */
+        color: #007bff;
+        border: 1px solid rgba(0, 123, 255, 0.3);
         border-radius: 8px;
         font-weight: 700;
         font-size: 14px;
         width: fit-content;
         margin-top: auto;
+        transition: 0.3s;
+    }
+    .eveniment-card:hover .eveniment-card-price {
+        background: #007bff;
+        color: white;
     }
 
     /* === STILURI NOI PENTRU BUTONUL DE FAVORITE === */
@@ -142,6 +147,26 @@ include 'header.php';
         border-color: rgba(255, 77, 77, 0.5);
         background: rgba(255, 77, 77, 0.1);
     }
+
+    /* Stil NOU pentru butonul de ADMIN - Roșu Premium */
+    .btn-admin-red {
+        background: #dc3545; 
+        color: white;
+        padding: 12px 28px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        border: none;
+    }
+    .btn-admin-red:hover {
+        background: #c82333;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
 </style>
 
 <section class="evenimente-home">
@@ -150,7 +175,7 @@ include 'header.php';
 
     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
         <div style="margin-bottom: 24px;">
-            <a href="adauga_eveniment.php" class="btn" style="background: var(--accent-success); color: #000; border: none; font-weight: 600;">+ <?= t('events_add_new') ?></a>
+            <a href="adauga_eveniment.php" class="btn-admin-red">+ <?= t('events_add_new') ?></a>
         </div>
     <?php endif; ?>
 
