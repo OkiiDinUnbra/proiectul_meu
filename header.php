@@ -238,27 +238,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                 <li><a href="#" onclick="openPopup('contactPopup')">Contact</a></li>
 
-                <li class="dropdown-language" style="position: relative;">
-                    <a href="#" class="dropbtn">
-                        <?= $current_lang === 'ro' ? 'RO' : 'EN' ?> ▼
-                    </a>
-                    <div class="dropdown-content" style="width: 150px;">
-                        <?php if ($current_lang !== 'ro'): ?>
-                            <form method="POST" style="padding: 0; margin: 0;">
-                                <input type="hidden" name="change_language" value="1">
-                                <input type="hidden" name="language" value="ro">
-                                <button type="submit" style="width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 16px; font-weight: 600;">Română</button>
-                            </form>
-                        <?php endif; ?>
-                        <?php if ($current_lang !== 'en'): ?>
-                            <form method="POST" style="padding: 0; margin: 0;">
-                                <input type="hidden" name="change_language" value="1">
-                                <input type="hidden" name="language" value="en">
-                                <button type="submit" style="width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 16px; font-weight: 600;">English</button>
-                            </form>
-                        <?php endif; ?>
-                    </div>
-                </li>
+                <li class="dropdown-profil dropdown-language" style="position: relative;">
+    <a href="#" class="dropbtn" id="buton-limba-curenta">
+        <span id="text-limba">RO</span> ▼
+    </a>
+    
+    <div class="dropdown-content" style="width: 150px;">
+        <a href="#" onclick="schimbaLimbaGoogle('ro'); return false;" style="display: flex; align-items: center; gap: 8px;">🇷🇴 Română</a>
+        <a href="#" onclick="schimbaLimbaGoogle('en'); return false;" style="display: flex; align-items: center; gap: 8px;">🇬🇧 English</a>
+    </div>
+    
+    <div id="google_translate_element" style="display: none;"></div>
+</li>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     
@@ -276,12 +267,62 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </div>
                     </li>
                 <?php else: ?>
-                    <li><a href="#" onclick="openPopup('loginPopup')" style="background: #007bff; color: white !important; padding: 10px 18px !important; border-radius: 6px; margin-left: 10px;">Autentificare</a></li>
-                <?php endif; ?>
+    <li><a href="index.php" style="background: #007bff; color: white !important; padding: 10px 18px !important; border-radius: 6px; margin-left: 10px; font-weight: bold; box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);">Autentificare</a></li>
+<?php endif; ?>
             </ul>
         </nav>
     </div>
 </header>
+<!-- SCRIPT MAGIE GOOGLE TRANSLATE -->
+<!-- SCRIPT MAGIE GOOGLE TRANSLATE (ASCUNS) -->
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'ro', 
+            includedLanguages: 'en,ro', 
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+
+    function schimbaLimbaGoogle(limba) {
+        // Metoda 100% sigură: forțăm cookie-ul Google Translate și dăm refresh
+        if(limba === 'ro') {
+            // Ștergem cookie-ul pentru a reveni la limba originală (Română)
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=' + window.location.hostname + '; path=/;';
+        } else {
+            // Setăm cookie-ul pentru engleză (/limba_site/limba_traducere)
+            document.cookie = 'googtrans=/ro/' + limba + '; path=/;';
+            document.cookie = 'googtrans=/ro/' + limba + '; domain=' + window.location.hostname + '; path=/;';
+        }
+        // Reîncărcăm pagina ca să se aplice instant traducerea
+        window.location.reload();
+    }
+
+    // Când pagina se încarcă, verificăm cookie-ul să vedem ce scriem pe buton (RO sau EN)
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.cookie.indexOf('googtrans=/ro/en') !== -1) {
+            document.getElementById('text-limba').innerText = 'EN';
+        } else {
+            document.getElementById('text-limba').innerText = 'RO';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<style>
+    /* Ascundem bara de sus și elementele injectate de Google */
+    .skiptranslate iframe, .goog-te-banner-frame { display: none !important; }
+    body { top: 0px !important; }
+    
+    /* Ascundem iconițele și textele hover generate de Google */
+    .goog-te-gadget-icon { display: none; }
+    .goog-te-gadget-simple { background-color: transparent !important; border: none !important; }
+    #goog-gt-tt { display: none !important; top: 0px !important; }
+    .goog-tooltip skiptranslate { display: none !important; }
+    .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
