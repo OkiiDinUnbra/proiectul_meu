@@ -259,7 +259,7 @@ if ($action === 'start') {
 
     $nume_utilizator = isset($_SESSION['nume']) ? htmlspecialchars($_SESSION['nume']) : 'Vizitatorule';
 
-    $response['message'] = "Salut, **{$nume_utilizator}**! 👋 Cu ce te pot ajuta astăzi?<br><br>💡 **Noutate:** M-am conectat la internet! Mă poți întreba *„cum e vremea?”*, *„cât e cursul euro?”* sau *„despre Panait Istrati”*.";
+    $response['message'] = "Salut, **{$nume_utilizator}**! 👋 Cu ce te pot ajuta astăzi?";
     $response['options'] = [
         ['text' => '🎫 Ce evenimente sunt?', 'action' => 'meniu_evenimente'],
         ['text' => '🍔 Unde pot mânca?', 'action' => 'meniu_mancare'],

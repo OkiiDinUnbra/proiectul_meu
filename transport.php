@@ -162,7 +162,7 @@ while ($row = $statii_query->fetch_assoc()) {
     <div class="form-group">
         <label>De unde pleci?</label>
         <button type="button" id="btnGPS" class="btn-full btn-accent-border" style="margin-top:0; border: 2px dashed #007bff; color: #007bff; background: transparent;">
-            📍 Preia Locația Mea (GPS)
+             Preia Locația Mea
         </button>
         <!-- Aici ascundem coordonatele -->
         <input type="hidden" name="gps_lat" id="gps_lat">
@@ -177,7 +177,7 @@ while ($row = $statii_query->fetch_assoc()) {
     <input type="text" name="adresa_destinatie" class="form-control" placeholder="ex: Faleza Dunării, Teatrul Maria Filotti..." required style="width: 100%; padding: 16px 15px; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-main); color: var(--text-main); font-size: 18px; outline: none; transition: 0.3s; font-family: inherit;">
     </div>
 
-    <button type="submit" class="btn-full" style="background: #10b981;">🗺️ Navighează (Smart Route)</button>
+    <button type="submit" class="btn-full" style="background: #10b981;">Navighează</button>
 </form>
 
 <script>

@@ -159,7 +159,7 @@ if (isset($_GET['register'])) {
             </div>
 
             <div id="register-section" class="form-container <?php echo $show_register ? 'active' : ''; ?>">
-                <h2><?= getCurrentLanguage() === 'ro' ? 'Cont Nou 🚀' : 'New Account 🚀' ?></h2>
+                <h2><?= getCurrentLanguage() === 'ro' ? 'Cont Nou ' : 'New Account' ?></h2>
                 <p class="glass-subtitle"><?= getCurrentLanguage() === 'ro' ? 'Alătură-te comunității noastre' : 'Join our community' ?></p>
                 
                 <button type="button" class="btn-back-register" onclick="toggleForms()" style="background: transparent; color: #ffd700; border: none; cursor: pointer; margin-bottom: 15px; font-weight: 600; text-decoration: underline;">

@@ -157,11 +157,15 @@ include 'header.php';
         <h1><span style="background: #dc3545; padding: 8px 12px; border-radius: 8px; color: white;">⚙️</span> Admin Tools & Analytics</h1>
         
         <div class="admin-actions" id="action-buttons">
-            <a href="admin_tichete.php" class="btn-admin btn-tichete">🛠️ Panou Tichete Suport</a>
-            
-            <a href="admin.php?export=excel" class="btn-admin btn-excel">📊 Exportă Excel Utilizatori</a>
-            <button onclick="genereazaPDF()" class="btn-admin">📄 Salvează Raport PDF</button>
-        </div>
+    <!-- Butoanele NOI pentru hărți -->
+    <a href="mapare_statii.php" class="btn-admin" style="background: #6f42c1; box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);">📍 Mapare Stații</a>
+    <a href="mapare_rute.php" class="btn-admin" style="background: #fd7e14; box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);">🗺️ Mapare Rute</a>
+    
+    <!-- Butoanele vechi care existau deja -->
+    <a href="admin_tichete.php" class="btn-admin btn-tichete">🛠️ Panou Tichete Suport</a>
+    <a href="admin.php?export=excel" class="btn-admin btn-excel">📊 Exportă Excel Utilizatori</a>
+    <button onclick="genereazaPDF()" class="btn-admin">📄 Salvează Raport PDF</button>
+</div>
     </div>
 
     <h2 class="section-title">Financiar & Audiență</h2>
